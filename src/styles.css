@@ -1,0 +1,13 @@
+body {
+  margin: 0;
+  font-family: 'Nunito', system-ui, sans-serif;
+  background: var(--color-background);
+  color: var(--color-text);
+}
+.card {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin: 1rem;
+}
+h1 { color: var(--color-primary); }
