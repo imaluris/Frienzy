@@ -11,3 +11,17 @@ body {
   margin: 1rem;
 }
 h1 { color: var(--color-primary); }
+.brand { text-align: center; }
+label { display: block; margin-bottom: 0.75rem; font-weight: 600; }
+input {
+  display: block; width: 100%; box-sizing: border-box; margin-top: 0.25rem;
+  padding: 0.6rem; font: inherit; border: 1px solid #d9cbbd; border-radius: 8px;
+}
+button {
+  font: inherit; font-weight: 700; color: #fff; background: var(--color-primary);
+  border: 0; border-radius: var(--radius); padding: 0.6rem 1.2rem; cursor: pointer;
+}
+button:disabled { opacity: 0.6; }
+button.link { background: none; color: var(--color-secondary); padding: 0; text-decoration: underline; }
+.error { color: #b3261e; }
+.switch { text-align: center; }
