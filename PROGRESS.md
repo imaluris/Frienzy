@@ -4,3 +4,4 @@
 - Task 2 fatto: Modello e livello dati
 - Task 3 fatto: Implementazione Firebase
 - Task 4 fatto: Registrazione e login
+- Task 5 fatto: Profilo

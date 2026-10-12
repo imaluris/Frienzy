@@ -3,8 +3,8 @@ import { ServicesProvider, useServices } from './app/ServicesContext'
 import { useSession } from './auth/useSession'
 import type { Services } from './firebase/createServices'
 import { appConfig } from './config/app'
-import { HomeScreen } from './screens/HomeScreen'
 import { LoginScreen } from './screens/LoginScreen'
+import { ProfileGate } from './screens/ProfileGate'
 import { RegisterScreen } from './screens/RegisterScreen'
 
 // Schermate per chi non è collegato. Lo stato "sto registrando" vive qui:
@@ -28,7 +28,7 @@ function Router() {
   const { auth } = useServices()
   const session = useSession(auth)
   if (!session.ready) return <p className="card">Caricamento…</p>
-  return session.uid ? <HomeScreen /> : <LoggedOut />
+  return session.uid ? <ProfileGate uid={session.uid} /> : <LoggedOut />
 }
 
 export function App({ services }: { services: Services }) {

@@ -50,4 +50,26 @@ describe('App: registrazione, login e logout', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Accedi' }))
     expect(await screen.findByRole('alert')).toHaveTextContent('Email o password errate.')
   })
+
+  it('dopo la registrazione chiede il profilo, blocca i minorenni e poi mostra l\'età', async () => {
+    render(<App services={createMemoryServices()} />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Registrati' }))
+    type('Email', 'ada@example.com')
+    type('Password', 'segreta1')
+    type('Ripeti la password', 'segreta1')
+    fireEvent.click(screen.getByRole('button', { name: 'Registrati' }))
+
+    await screen.findByRole('heading', { name: 'Completa il tuo profilo' })
+    type('Nome', 'Ada')
+    const year = new Date().getUTCFullYear()
+    type('Data di nascita', `${year - 10}-01-01`)
+    fireEvent.click(screen.getByRole('button', { name: 'Salva' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('almeno 18')
+
+    type('Data di nascita', `${year - 30}-01-01`)
+    fireEvent.click(screen.getByLabelText(/aperitivo/))
+    fireEvent.click(screen.getByRole('button', { name: 'Salva' }))
+    expect(await screen.findByText(/Ciao Ada, 3[01] anni/)).toBeInTheDocument()
+    expect(screen.queryByText(/-01-01/)).toBeNull()
+  })
 })
