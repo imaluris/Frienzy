@@ -1,0 +1,168 @@
+rules_version = '2';
+
+// Regole di sicurezza di Frienzy. Principi (vedi docs/giorno-06-regole-sicurezza.md):
+//  1. ognuno scrive solo il proprio profilo;
+//  2. solo l'organizzatore modifica/annulla il suo evento;
+//  3. chi si iscrive crea solo la propria partecipazione, con lo stato iniziale corretto;
+//  4. solo l'organizzatore passa una richiesta a confermato/rifiutato;
+//  5. il luogo esatto lo legge solo l'organizzatore o chi è confermato.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- funzioni di aiuto ----------
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // Evento com'è ORA (prima della scrittura in corso).
+    function eventNow(eventId) {
+      return get(/databases/$(database)/documents/events/$(eventId)).data;
+    }
+
+    // Evento com'è DOPO la scrittura in corso (serve per i batch che creano evento + luogo).
+    function eventAfter(eventId) {
+      return getAfter(/databases/$(database)/documents/events/$(eventId)).data;
+    }
+
+    function isOrganizer(eventId) {
+      return signedIn() && eventNow(eventId).organizzatoreId == request.auth.uid;
+    }
+
+    function isConfirmed(eventId) {
+      let path = /databases/$(database)/documents/events/$(eventId)/partecipanti/$(request.auth.uid);
+      return signedIn() && exists(path) && get(path).data.stato == 'confermato';
+    }
+
+    function hasOnly(data, keys) {
+      return data.keys().hasOnly(keys) && data.keys().hasAll(keys);
+    }
+
+    // ---------- profili ----------
+    match /users/{uid} {
+      allow read: if signedIn();
+
+      allow create: if isOwner(uid)
+        && hasOnly(request.resource.data,
+             ['nome', 'dataNascita', 'bio', 'interessi', 'fotoUrl', 'creatoIl'])
+        && validProfile(request.resource.data)
+        && request.resource.data.creatoIl is timestamp;
+
+      // Il creatoIl non si cambia mai.
+      allow update: if isOwner(uid)
+        && hasOnly(request.resource.data,
+             ['nome', 'dataNascita', 'bio', 'interessi', 'fotoUrl', 'creatoIl'])
+        && validProfile(request.resource.data)
+        && request.resource.data.creatoIl == resource.data.creatoIl;
+
+      allow delete: if false;
+    }
+
+    function validProfile(d) {
+      return d.nome is string && d.nome.size() >= 2 && d.nome.size() <= 50
+        && d.dataNascita is timestamp
+        // 18 anni = 6575 giorni al massimo (con i bisestili): cautela di un giorno.
+        && d.dataNascita <= request.time - duration.value(6575, 'd')
+        && d.bio is string && d.bio.size() <= 300
+        && d.interessi is list && d.interessi.size() <= 7
+        && d.interessi.hasOnly(['aperitivo', 'cena', 'mostra', 'trekking', 'passeggiata', 'sport', 'altro'])
+        && d.fotoUrl is string && d.fotoUrl.size() <= 2000;
+    }
+
+    // ---------- eventi ----------
+    match /events/{eventId} {
+      allow read: if signedIn();
+
+      allow create: if signedIn()
+        && validNewEvent(request.resource.data);
+
+      // Solo l'organizzatore; organizzatoreId e creatoIl restano quelli di prima.
+      allow update: if isOrganizer(eventId)
+        && request.resource.data.organizzatoreId == resource.data.organizzatoreId
+        && request.resource.data.creatoIl == resource.data.creatoIl
+        && validEventFields(request.resource.data);
+
+      // Un evento non si cancella: si annulla (stato = 'annullato').
+      allow delete: if false;
+
+      // Luogo esatto: events/{id}/privato/luogo
+      match /privato/{doc} {
+        allow read: if isOrganizer(eventId) || isConfirmed(eventId);
+
+        // Creato nello stesso batch dell'evento: si guarda l'evento "dopo" la scrittura.
+        allow create: if signedIn()
+          && doc == 'luogo'
+          && eventAfter(eventId).organizzatoreId == request.auth.uid
+          && validPlace(request.resource.data);
+
+        allow update: if isOrganizer(eventId) && doc == 'luogo' && validPlace(request.resource.data);
+        allow delete: if false;
+      }
+
+      // Partecipazioni: events/{id}/partecipanti/{uid}
+      match /partecipanti/{uid} {
+        // Si vedono: la propria, quelle di un evento che organizzi, e quelle già confermate.
+        allow read: if isOwner(uid)
+          || isOrganizer(eventId)
+          || (signedIn() && resource.data.stato == 'confermato');
+
+        // Chi si iscrive crea solo la propria, con lo stato iniziale deciso dall'evento.
+        allow create: if isOwner(uid)
+          && hasOnly(request.resource.data, ['eventId', 'uid', 'stato', 'creatoIl'])
+          && request.resource.data.eventId == eventId
+          && request.resource.data.uid == uid
+          && request.resource.data.creatoIl is timestamp
+          && eventNow(eventId).stato == 'aperto'
+          && request.resource.data.stato ==
+               (eventNow(eventId).richiedeApprovazione ? 'richiesta' : 'confermato');
+
+        // Solo l'organizzatore decide, e solo su una richiesta; cambia soltanto lo stato.
+        allow update: if isOrganizer(eventId)
+          && resource.data.stato == 'richiesta'
+          && request.resource.data.stato in ['confermato', 'rifiutato']
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stato']);
+
+        // Ritiro: la propria partecipazione. L'organizzatore può anche toglierla.
+        allow delete: if isOwner(uid) || isOrganizer(eventId);
+      }
+    }
+
+    // "Le mie iscrizioni": ricerca sulle sotto-raccolte "partecipanti" di tutti gli eventi.
+    // Ognuno trova solo le proprie (il campo uid del documento deve essere il suo).
+    match /{path=**}/partecipanti/{uid} {
+      allow read: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    function validEventFields(d) {
+      return d.tipo in ['aperitivo', 'cena', 'mostra', 'trekking', 'passeggiata', 'sport', 'altro']
+        && d.titolo is string && d.titolo.size() >= 3 && d.titolo.size() <= 100
+        && d.descrizione is string && d.descrizione.size() <= 1000
+        && d.dataOra is timestamp
+        && d.zonaNome is string && d.zonaNome.size() > 0 && d.zonaNome.size() <= 100
+        && d.latApprossimata is number && d.lngApprossimata is number
+        && d.geohash is string && d.geohash.size() > 0
+        && d.maxPartecipanti is int && d.maxPartecipanti >= 1 && d.maxPartecipanti <= 200
+        && d.richiedeApprovazione is bool
+        && d.stato in ['aperto', 'chiuso', 'annullato'];
+    }
+
+    function validNewEvent(d) {
+      return hasOnly(d, ['organizzatoreId', 'tipo', 'titolo', 'descrizione', 'dataOra', 'zonaNome',
+                         'latApprossimata', 'lngApprossimata', 'geohash', 'maxPartecipanti',
+                         'richiedeApprovazione', 'stato', 'creatoIl'])
+        && d.organizzatoreId == request.auth.uid
+        && d.stato == 'aperto'
+        && d.creatoIl == request.time
+        && validEventFields(d);
+    }
+
+    function validPlace(d) {
+      return hasOnly(d, ['indirizzo', 'lat', 'lng'])
+        && d.indirizzo is string && d.indirizzo.size() > 0 && d.indirizzo.size() <= 200
+        && d.lat is number && d.lng is number;
+    }
+  }
+}

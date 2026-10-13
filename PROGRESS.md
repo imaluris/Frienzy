@@ -5,3 +5,4 @@
 - Task 3 fatto: Implementazione Firebase
 - Task 4 fatto: Registrazione e login
 - Task 5 fatto: Profilo
+- Task 6 fatto: Regole di sicurezza
