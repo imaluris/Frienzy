@@ -6,3 +6,4 @@
 - Task 4 fatto: Registrazione e login
 - Task 5 fatto: Profilo
 - Task 6 fatto: Regole di sicurezza
+- Task 7 fatto: Crea evento
