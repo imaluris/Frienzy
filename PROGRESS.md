@@ -7,3 +7,4 @@
 - Task 5 fatto: Profilo
 - Task 6 fatto: Regole di sicurezza
 - Task 7 fatto: Crea evento
+- Task 8 fatto: Lista e dettaglio eventi

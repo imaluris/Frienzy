@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useServices } from '../app/ServicesContext'
 import { useProfile } from '../profile/useProfile'
 import { CreateEventScreen } from './CreateEventScreen'
+import { EventDetailScreen } from './EventDetailScreen'
+import { EventListScreen } from './EventListScreen'
 import { HomeScreen } from './HomeScreen'
 import { ProfileScreen } from './ProfileScreen'
 
@@ -11,6 +13,8 @@ export function ProfileGate({ uid }: { uid: string }) {
   const { loading, profile, setProfile } = useProfile(users, uid)
   const [editing, setEditing] = useState(false)
   const [creating, setCreating] = useState(false)
+  const [browsing, setBrowsing] = useState(false)
+  const [openId, setOpenId] = useState<string | null>(null)
 
   if (loading) return <p className="card">Caricamento…</p>
   if (!profile || editing) {
@@ -28,5 +32,14 @@ export function ProfileGate({ uid }: { uid: string }) {
   if (creating) {
     return <CreateEventScreen uid={uid} onDone={() => setCreating(false)} onCancel={() => setCreating(false)} />
   }
-  return <HomeScreen profile={profile} onEdit={() => setEditing(true)} onCreateEvent={() => setCreating(true)} />
+  if (browsing && openId) return <EventDetailScreen eventId={openId} onBack={() => setOpenId(null)} />
+  if (browsing) return <EventListScreen onOpen={setOpenId} onBack={() => setBrowsing(false)} />
+  return (
+    <HomeScreen
+      profile={profile}
+      onEdit={() => setEditing(true)}
+      onCreateEvent={() => setCreating(true)}
+      onBrowse={() => setBrowsing(true)}
+    />
+  )
 }
