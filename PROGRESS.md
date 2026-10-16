@@ -8,3 +8,4 @@
 - Task 6 fatto: Regole di sicurezza
 - Task 7 fatto: Crea evento
 - Task 8 fatto: Lista e dettaglio eventi
+- Task 9 fatto: Mappa con marker

@@ -34,3 +34,8 @@ label.inline input { display: inline; width: auto; }
 .event-list { list-style: none; padding: 0; margin: 0 0 1rem; }
 .event-item { display: block; width: 100%; text-align: left; margin-bottom: 0.5rem; }
 .event-item small { display: block; font-weight: 400; }
+.event-map { height: 60vh; min-height: 280px; border-radius: var(--radius); margin: 0.75rem 0; }
+.emoji-marker span {
+  display: flex; align-items: center; justify-content: center; width: 36px; height: 36px;
+  font-size: 20px; background: #fff; border: 2px solid var(--color-primary); border-radius: 50%;
+}
