@@ -1,5 +1,5 @@
 import { assertFails, assertSucceeds, type RulesTestEnvironment } from '@firebase/rules-unit-testing'
-import { Timestamp, deleteDoc, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
+import { Timestamp, deleteDoc, doc, getDoc, updateDoc, writeBatch } from 'firebase/firestore'
 import { ANNA, BRUNO, ORG, createEnv, seedEvent, seedParticipation } from './env'
 
 let env: RulesTestEnvironment
@@ -9,29 +9,54 @@ beforeEach(async () => { await env.clearFirestore() })
 
 const as = (uid: string) => env.authenticatedContext(uid).firestore()
 const ref = (db: ReturnType<typeof as>, uid: string) => doc(db, 'events', 'e1', 'partecipanti', uid)
+const seats = (db: ReturnType<typeof as>) => doc(db, 'events', 'e1', 'contatori', 'posti')
+/** Iscrizione come la fa l'app: partecipazione + contatore (se confermato) nello stesso batch. */
+async function join(uid: string, stato: string, confermati = 1) {
+  const db = as(uid)
+  const batch = writeBatch(db)
+  batch.set(ref(db, uid), body(uid, stato))
+  if (stato === 'confermato') batch.set(seats(db), { confermati })
+  return batch.commit()
+}
 const body = (uid: string, stato: string) => ({ eventId: 'e1', uid, stato, creatoIl: Timestamp.now() })
 
 describe('regole: iscrizione', () => {
   it('evento libero: si crea solo "confermato"', async () => {
     await seedEvent(env, 'e1', { richiedeApprovazione: false })
-    await assertSucceeds(setDoc(ref(as(ANNA), ANNA), body(ANNA, 'confermato')))
-    await assertFails(setDoc(ref(as(BRUNO), BRUNO), body(BRUNO, 'richiesta')))
+    await assertSucceeds(join(ANNA, 'confermato'))
+    await assertFails(join(BRUNO, 'richiesta'))
   })
 
   it('evento con approvazione: si crea solo "richiesta"', async () => {
     await seedEvent(env, 'e1', { richiedeApprovazione: true })
-    await assertFails(setDoc(ref(as(ANNA), ANNA), body(ANNA, 'confermato')))
-    await assertSucceeds(setDoc(ref(as(ANNA), ANNA), body(ANNA, 'richiesta')))
+    await assertFails(join(ANNA, 'confermato'))
+    await assertSucceeds(join(ANNA, 'richiesta'))
   })
 
   it('ci si iscrive solo a nome proprio', async () => {
     await seedEvent(env, 'e1')
-    await assertFails(setDoc(ref(as(ANNA), BRUNO), body(BRUNO, 'confermato')))
+    await assertFails(writeBatch(as(ANNA)).set(ref(as(ANNA), BRUNO), body(BRUNO, 'confermato')).commit())
   })
 
   it('non ci si iscrive a un evento annullato', async () => {
     await seedEvent(env, 'e1', { stato: 'annullato' })
-    await assertFails(setDoc(ref(as(ANNA), ANNA), body(ANNA, 'confermato')))
+    await assertFails(join(ANNA, 'confermato'))
+  })
+
+  it('confermato senza aggiornare il contatore: rifiutato', async () => {
+    await seedEvent(env, 'e1')
+    await assertFails(writeBatch(as(ANNA)).set(ref(as(ANNA), ANNA), body(ANNA, 'confermato')).commit())
+  })
+
+  it('oltre il massimo posti: rifiutato', async () => {
+    await seedEvent(env, 'e1', { maxPartecipanti: 1 })
+    await assertSucceeds(join(ANNA, 'confermato', 1))
+    await assertFails(join(BRUNO, 'confermato', 2))
+  })
+
+  it('il contatore non si cambia da solo', async () => {
+    await seedEvent(env, 'e1')
+    await assertFails(writeBatch(as(ANNA)).set(seats(as(ANNA)), { confermati: 1 }).commit())
   })
 })
 

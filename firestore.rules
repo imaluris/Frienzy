@@ -28,6 +28,17 @@ service cloud.firestore {
       return getAfter(/databases/$(database)/documents/events/$(eventId)).data;
     }
 
+    // Posti occupati: events/{id}/contatori/posti.confermati (0 se il documento non c'è ancora).
+    function seatsNow(eventId) {
+      let p = /databases/$(database)/documents/events/$(eventId)/contatori/posti;
+      return exists(p) ? get(p).data.confermati : 0;
+    }
+
+    function seatsAfter(eventId) {
+      let p = /databases/$(database)/documents/events/$(eventId)/contatori/posti;
+      return existsAfter(p) ? getAfter(p).data.confermati : 0;
+    }
+
     function isOrganizer(eventId) {
       return signedIn() && eventNow(eventId).organizzatoreId == request.auth.uid;
     }
@@ -102,6 +113,22 @@ service cloud.firestore {
         allow delete: if false;
       }
 
+      // Contatore dei posti: sale di 1 solo insieme alla propria iscrizione 'confermato'
+      // (le decisioni dell'organizzatore e i ritiri arrivano nei task 11 e 15).
+      match /contatori/{doc} {
+        allow read: if signedIn();
+        allow create, update: if signedIn()
+          && doc == 'posti'
+          && hasOnly(request.resource.data, ['confermati'])
+          && request.resource.data.confermati is int
+          && request.resource.data.confermati == seatsNow(eventId) + 1
+          && request.resource.data.confermati <= eventNow(eventId).maxPartecipanti
+          && !exists(/databases/$(database)/documents/events/$(eventId)/partecipanti/$(request.auth.uid))
+          && existsAfter(/databases/$(database)/documents/events/$(eventId)/partecipanti/$(request.auth.uid))
+          && getAfter(/databases/$(database)/documents/events/$(eventId)/partecipanti/$(request.auth.uid)).data.stato == 'confermato';
+        allow delete: if false;
+      }
+
       // Partecipazioni: events/{id}/partecipanti/{uid}
       match /partecipanti/{uid} {
         // Si vedono: la propria, quelle di un evento che organizzi, e quelle già confermate.
@@ -117,7 +144,11 @@ service cloud.firestore {
           && request.resource.data.creatoIl is timestamp
           && eventNow(eventId).stato == 'aperto'
           && request.resource.data.stato ==
-               (eventNow(eventId).richiedeApprovazione ? 'richiesta' : 'confermato');
+               (eventNow(eventId).richiedeApprovazione ? 'richiesta' : 'confermato')
+          // Un posto occupato = contatore +1 nello stesso batch/transazione, mai oltre il massimo.
+          && (request.resource.data.stato != 'confermato'
+              || (seatsAfter(eventId) == seatsNow(eventId) + 1
+                  && seatsAfter(eventId) <= eventNow(eventId).maxPartecipanti));
 
         // Solo l'organizzatore decide, e solo su una richiesta; cambia soltanto lo stato.
         allow update: if isOrganizer(eventId)

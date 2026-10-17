@@ -7,7 +7,7 @@ const rules = readFileSync('firestore.rules', 'utf8')
 
 describe('firestore.rules (controllo statico)', () => {
   it('nomina le raccolte previste', () => {
-    for (const path of ['match /users/{uid}', 'match /events/{eventId}', 'match /privato/{doc}', 'match /partecipanti/{uid}']) {
+    for (const path of ['match /users/{uid}', 'match /events/{eventId}', 'match /privato/{doc}', 'match /partecipanti/{uid}', 'match /contatori/{doc}']) {
       expect(rules).toContain(path)
     }
   })
@@ -22,5 +22,10 @@ describe('firestore.rules (controllo statico)', () => {
 
   it('il luogo esatto passa da organizzatore o confermato', () => {
     expect(rules).toContain('isOrganizer(eventId) || isConfirmed(eventId)')
+  })
+
+  it('il limite posti sta nelle regole (contatore +1 e mai oltre il massimo)', () => {
+    expect(rules).toContain('seatsAfter(eventId) == seatsNow(eventId) + 1')
+    expect(rules).toContain('<= eventNow(eventId).maxPartecipanti')
   })
 })

@@ -7,11 +7,12 @@ import { MemoryUserRepository } from './memoryUserRepository'
 
 // Servizi tutti in memoria: usati dai test al posto di Firebase.
 export function createMemoryServices(): Services {
+  const events = new MemoryEventRepository()
   return {
     auth: new MemoryAuthService(),
     users: new MemoryUserRepository(),
-    events: new MemoryEventRepository(),
-    participations: new MemoryParticipationRepository(),
+    events,
+    participations: new MemoryParticipationRepository(events),
     photos: new MemoryPhotoStorage(),
   }
 }

@@ -1,10 +1,15 @@
+import type { EventRepository } from '../eventRepository'
 import type { ParticipationRepository } from '../participationRepository'
+import { decideJoin } from '../../participation/joinDecision'
 import type { Participation, ParticipationStatus } from '../../domain/participation'
 
 export class MemoryParticipationRepository implements ParticipationRepository {
   private items = new Map<string, Participation>()
 
-  constructor(private now: () => Date = () => new Date()) {}
+  constructor(
+    private events: Pick<EventRepository, 'getById'> | null = null,
+    private now: () => Date = () => new Date(),
+  ) {}
 
   // Stessa forma del percorso Firestore: evento + utente identificano la partecipazione.
   private key(eventId: string, uid: string): string {
@@ -38,5 +43,16 @@ export class MemoryParticipationRepository implements ParticipationRepository {
     const updated = { ...current, stato }
     this.items.set(this.key(eventId, uid), updated)
     return { ...updated }
+  }
+
+  // Atomico perché, dopo l'unico await (la lettura dell'evento), controllo e scrittura
+  // avvengono nello stesso passo di JavaScript: nessun'altra iscrizione può infilarsi in mezzo.
+  async join(eventId: string, uid: string): Promise<Participation> {
+    if (!this.events) throw new Error('Repository degli eventi non collegato')
+    const event = await this.events.getById(eventId)
+    const confermati = [...this.items.values()].filter((p) => p.eventId === eventId && p.stato === 'confermato').length
+    const decision = decideJoin({ event, uid, existing: this.items.get(this.key(eventId, uid)) ?? null, confermati })
+    if (!decision.ok) throw new Error(decision.motivo)
+    return this.add(eventId, uid, decision.stato)
   }
 }

@@ -1,8 +1,9 @@
-import { collectionGroup, doc, getDoc, getDocs, query, setDoc, updateDoc, where, collection } from 'firebase/firestore'
+import { collectionGroup, doc, getDoc, getDocs, query, runTransaction, setDoc, updateDoc, where, collection } from 'firebase/firestore'
 import type { ParticipationRepository } from '../data/participationRepository'
 import type { Participation, ParticipationStatus } from '../domain/participation'
 import { db } from './app'
-import { participationFromData, participationToData } from './converters'
+import { decideJoin } from '../participation/joinDecision'
+import { eventFromData, participationFromData, participationToData } from './converters'
 
 const ref = (eventId: string, uid: string) => doc(db(), 'events', eventId, 'partecipanti', uid)
 
@@ -35,5 +36,34 @@ export class FirestoreParticipationRepository implements ParticipationRepository
     const updated = await this.get(eventId, uid)
     if (!updated) throw new Error('Partecipazione non trovata')
     return updated
+  }
+
+  // Transazione: Firestore rilegge e riprova se qualcun altro scrive nel frattempo,
+  // quindi leggere il contatore e scriverlo +1 non può far superare i posti.
+  // Il numero di confermati sta in events/{id}/contatori/posti (una query non è ammessa in transazione).
+  async join(eventId: string, uid: string): Promise<Participation> {
+    const eventRef = doc(db(), 'events', eventId)
+    const seatsRef = doc(eventRef, 'contatori', 'posti')
+    return runTransaction(db(), async (tx) => {
+      const [eventSnap, seatsSnap, existingSnap] = await Promise.all([
+        tx.get(eventRef),
+        tx.get(seatsRef),
+        tx.get(ref(eventId, uid)),
+      ])
+      const decision = decideJoin({
+        event: eventSnap.exists() ? eventFromData(eventId, eventSnap.data()) : null,
+        uid,
+        existing: existingSnap.exists() ? participationFromData(existingSnap.data()) : null,
+        confermati: seatsSnap.exists() ? (seatsSnap.data().confermati as number) : 0,
+      })
+      if (!decision.ok) throw new Error(decision.motivo)
+      const created: Participation = { eventId, uid, stato: decision.stato, creatoIl: new Date() }
+      tx.set(ref(eventId, uid), participationToData(created))
+      // Solo chi occupa un posto fa salire il contatore.
+      if (decision.stato === 'confermato') {
+        tx.set(seatsRef, { confermati: (seatsSnap.exists() ? (seatsSnap.data().confermati as number) : 0) + 1 })
+      }
+      return created
+    })
   }
 }
