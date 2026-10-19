@@ -48,6 +48,19 @@ service cloud.firestore {
       return signedIn() && exists(path) && get(path).data.stato == 'confermato';
     }
 
+    // Nello stesso batch l'utente crea la propria partecipazione 'confermato' (non esisteva prima).
+    function joinsConfirmed(eventId) {
+      let p = /databases/$(database)/documents/events/$(eventId)/partecipanti/$(request.auth.uid);
+      return !exists(p) && existsAfter(p) && getAfter(p).data.stato == 'confermato';
+    }
+
+    // Nello stesso batch l'organizzatore porta una richiesta a 'confermato'.
+    // Le regole non conoscono il uid del richiedente: basta che l'organizzatore sia chi scrive,
+    // la regola di update della partecipazione verifica poi che la richiesta esistesse.
+    function organizerAccepts(eventId) {
+      return isOrganizer(eventId);
+    }
+
     function hasOnly(data, keys) {
       return data.keys().hasOnly(keys) && data.keys().hasAll(keys);
     }
@@ -113,8 +126,9 @@ service cloud.firestore {
         allow delete: if false;
       }
 
-      // Contatore dei posti: sale di 1 solo insieme alla propria iscrizione 'confermato'
-      // (le decisioni dell'organizzatore e i ritiri arrivano nei task 11 e 15).
+      // Contatore dei posti: sale di 1, mai oltre il massimo, in due soli casi:
+      //  a) chi si iscrive a un evento libero (la propria iscrizione 'confermato' nasce nello stesso batch);
+      //  b) l'organizzatore che accetta una richiesta (la richiesta passa a 'confermato' nello stesso batch).
       match /contatori/{doc} {
         allow read: if signedIn();
         allow create, update: if signedIn()
@@ -123,9 +137,7 @@ service cloud.firestore {
           && request.resource.data.confermati is int
           && request.resource.data.confermati == seatsNow(eventId) + 1
           && request.resource.data.confermati <= eventNow(eventId).maxPartecipanti
-          && !exists(/databases/$(database)/documents/events/$(eventId)/partecipanti/$(request.auth.uid))
-          && existsAfter(/databases/$(database)/documents/events/$(eventId)/partecipanti/$(request.auth.uid))
-          && getAfter(/databases/$(database)/documents/events/$(eventId)/partecipanti/$(request.auth.uid)).data.stato == 'confermato';
+          && (joinsConfirmed(eventId) || organizerAccepts(eventId));
         allow delete: if false;
       }
 
@@ -151,10 +163,15 @@ service cloud.firestore {
                   && seatsAfter(eventId) <= eventNow(eventId).maxPartecipanti));
 
         // Solo l'organizzatore decide, e solo su una richiesta; cambia soltanto lo stato.
+        // Accettare occupa un posto: contatore +1 nello stesso batch, mai oltre il massimo.
         allow update: if isOrganizer(eventId)
           && resource.data.stato == 'richiesta'
           && request.resource.data.stato in ['confermato', 'rifiutato']
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stato']);
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stato'])
+          && (request.resource.data.stato == 'rifiutato'
+              || (eventNow(eventId).stato == 'aperto'
+                  && seatsAfter(eventId) == seatsNow(eventId) + 1
+                  && seatsAfter(eventId) <= eventNow(eventId).maxPartecipanti));
 
         // Ritiro: la propria partecipazione. L'organizzatore può anche toglierla.
         allow delete: if isOwner(uid) || isOrganizer(eventId);

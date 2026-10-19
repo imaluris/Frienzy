@@ -1,6 +1,7 @@
 import type { EventRepository } from '../eventRepository'
 import type { ParticipationRepository } from '../participationRepository'
 import { decideJoin } from '../../participation/joinDecision'
+import { decideResponse, type ResponseAction } from '../../participation/responseDecision'
 import type { Participation, ParticipationStatus } from '../../domain/participation'
 
 export class MemoryParticipationRepository implements ParticipationRepository {
@@ -54,5 +55,16 @@ export class MemoryParticipationRepository implements ParticipationRepository {
     const decision = decideJoin({ event, uid, existing: this.items.get(this.key(eventId, uid)) ?? null, confermati })
     if (!decision.ok) throw new Error(decision.motivo)
     return this.add(eventId, uid, decision.stato)
+  }
+
+  // Atomico come join: dopo l'unico await controllo e scrittura stanno nello stesso passo.
+  async respond(eventId: string, uid: string, actorUid: string, azione: ResponseAction): Promise<Participation> {
+    if (!this.events) throw new Error('Repository degli eventi non collegato')
+    const event = await this.events.getById(eventId)
+    const confermati = [...this.items.values()].filter((p) => p.eventId === eventId && p.stato === 'confermato').length
+    const participation = this.items.get(this.key(eventId, uid)) ?? null
+    const decision = decideResponse({ event, actorUid, participation, confermati, azione })
+    if (!decision.ok) throw new Error(decision.motivo)
+    return this.setStatus(eventId, uid, decision.stato)
   }
 }

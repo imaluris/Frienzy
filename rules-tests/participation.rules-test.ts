@@ -65,7 +65,7 @@ describe('regole: decisioni e ritiro', () => {
     await seedEvent(env, 'e1', { richiedeApprovazione: true })
     await seedParticipation(env, 'e1', ANNA, 'richiesta')
     await assertFails(updateDoc(ref(as(ANNA), ANNA), { stato: 'confermato' }))
-    await assertSucceeds(updateDoc(ref(as(ORG), ANNA), { stato: 'confermato' }))
+    await assertSucceeds(updateDoc(ref(as(ORG), ANNA), { stato: 'rifiutato' }))
   })
 
   it('non si torna indietro da rifiutato o confermato', async () => {
@@ -85,6 +85,51 @@ describe('regole: decisioni e ritiro', () => {
     await seedParticipation(env, 'e1', ANNA, 'confermato')
     await assertFails(deleteDoc(ref(as(BRUNO), ANNA)))
     await assertSucceeds(deleteDoc(ref(as(ANNA), ANNA)))
+  })
+})
+
+describe('regole: accettazione con contatore posti', () => {
+  const seats = (db: ReturnType<typeof as>) => doc(db, 'events', 'e1', 'contatori', 'posti')
+
+  async function accept(uid: string, n: number) {
+    const db = as(uid)
+    const batch = writeBatch(db)
+    batch.update(ref(db, ANNA), { stato: 'confermato' })
+    batch.set(seats(db), { confermati: n })
+    return batch.commit()
+  }
+
+  it("l'organizzatore accetta una richiesta e il contatore sale di 1", async () => {
+    await seedEvent(env, 'e1', { richiedeApprovazione: true, maxPartecipanti: 2 })
+    await seedParticipation(env, 'e1', ANNA, 'richiesta')
+    await assertSucceeds(accept(ORG, 1))
+  })
+
+  it('accettare senza aggiornare il contatore è rifiutato', async () => {
+    await seedEvent(env, 'e1', { richiedeApprovazione: true })
+    await seedParticipation(env, 'e1', ANNA, 'richiesta')
+    await assertFails(updateDoc(ref(as(ORG), ANNA), { stato: 'confermato' }))
+  })
+
+  it('non si accetta oltre il massimo', async () => {
+    await seedEvent(env, 'e1', { richiedeApprovazione: true, maxPartecipanti: 1 })
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(seats(ctx.firestore()), { confermati: 1 })
+    })
+    await seedParticipation(env, 'e1', ANNA, 'richiesta')
+    await assertFails(accept(ORG, 2))
+  })
+
+  it('un altro utente non può incrementare il contatore', async () => {
+    await seedEvent(env, 'e1', { richiedeApprovazione: true, maxPartecipanti: 5 })
+    await seedParticipation(env, 'e1', ANNA, 'richiesta')
+    await assertFails(setDoc(seats(as(BRUNO)), { confermati: 1 }))
+  })
+
+  it('rifiutare non tocca il contatore', async () => {
+    await seedEvent(env, 'e1', { richiedeApprovazione: true })
+    await seedParticipation(env, 'e1', ANNA, 'richiesta')
+    await assertSucceeds(updateDoc(ref(as(ORG), ANNA), { stato: 'rifiutato' }))
   })
 })
 

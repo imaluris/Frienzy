@@ -3,6 +3,7 @@ import type { ParticipationRepository } from '../data/participationRepository'
 import type { Participation, ParticipationStatus } from '../domain/participation'
 import { db } from './app'
 import { decideJoin } from '../participation/joinDecision'
+import { decideResponse, type ResponseAction } from '../participation/responseDecision'
 import { eventFromData, participationFromData, participationToData } from './converters'
 
 const ref = (eventId: string, uid: string) => doc(db(), 'events', eventId, 'partecipanti', uid)
@@ -64,6 +65,28 @@ export class FirestoreParticipationRepository implements ParticipationRepository
         tx.set(seatsRef, { confermati: (seatsSnap.exists() ? (seatsSnap.data().confermati as number) : 0) + 1 })
       }
       return created
+    })
+  }
+
+  // Transazione: legge evento, richiesta e contatore; se si accetta, stato e contatore +1 si scrivono insieme.
+  async respond(eventId: string, uid: string, actorUid: string, azione: ResponseAction): Promise<Participation> {
+    const eventRef = doc(db(), 'events', eventId)
+    const seatsRef = doc(eventRef, 'contatori', 'posti')
+    return runTransaction(db(), async (tx) => {
+      const [eventSnap, seatsSnap, partSnap] = await Promise.all([tx.get(eventRef), tx.get(seatsRef), tx.get(ref(eventId, uid))])
+      const confermati = seatsSnap.exists() ? (seatsSnap.data().confermati as number) : 0
+      const participation = partSnap.exists() ? participationFromData(partSnap.data()) : null
+      const decision = decideResponse({
+        event: eventSnap.exists() ? eventFromData(eventId, eventSnap.data()) : null,
+        actorUid,
+        participation,
+        confermati,
+        azione,
+      })
+      if (!decision.ok || !participation) throw new Error(decision.ok ? 'Richiesta non trovata' : decision.motivo)
+      tx.update(ref(eventId, uid), { stato: decision.stato })
+      if (decision.stato === 'confermato') tx.set(seatsRef, { confermati: confermati + 1 })
+      return { ...participation, stato: decision.stato }
     })
   }
 }

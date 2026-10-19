@@ -10,3 +10,4 @@
 - Task 8 fatto: Lista e dettaglio eventi
 - Task 9 fatto: Mappa con marker
 - Task 10 fatto: Iscrizione libera
+- Task 11 fatto: Iscrizione con approvazione
