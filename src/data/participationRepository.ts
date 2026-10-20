@@ -6,6 +6,8 @@ export interface ParticipationRepository {
   add(eventId: string, uid: string, stato: ParticipationStatus): Promise<Participation>
   get(eventId: string, uid: string): Promise<Participation | null>
   listByEvent(eventId: string): Promise<Participation[]>
+  /** Solo i confermati: è la lista che può leggere anche chi non organizza l'evento. */
+  listConfirmed(eventId: string): Promise<Participation[]>
   listByUser(uid: string): Promise<Participation[]>
   /** Cambia lo stato; errore se la partecipazione non esiste. */
   setStatus(eventId: string, uid: string, stato: ParticipationStatus): Promise<Participation>

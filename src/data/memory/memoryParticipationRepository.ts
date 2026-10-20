@@ -34,6 +34,10 @@ export class MemoryParticipationRepository implements ParticipationRepository {
     return [...this.items.values()].filter((p) => p.eventId === eventId).map((p) => ({ ...p }))
   }
 
+  async listConfirmed(eventId: string): Promise<Participation[]> {
+    return (await this.listByEvent(eventId)).filter((p) => p.stato === 'confermato')
+  }
+
   async listByUser(uid: string): Promise<Participation[]> {
     return [...this.items.values()].filter((p) => p.uid === uid).map((p) => ({ ...p }))
   }

@@ -2,11 +2,14 @@ import { useEffect, useState } from 'react'
 import { useServices } from '../app/ServicesContext'
 import type { FrienzyEvent } from '../domain/event'
 import { EVENT_TYPE_EMOJI } from '../domain/eventTypes'
+import { useEventPeople } from '../people/useEventPeople'
+import { EventPeople } from './EventPeople'
 import { describeCapacity, formatEventDate } from '../events/format'
 
 // Dettaglio di un evento: solo dati pubblici (la zona, mai l'indirizzo esatto).
 export function EventDetailScreen({ eventId, onBack }: { eventId: string; onBack: () => void }) {
-  const { events } = useServices()
+  const services = useServices()
+  const { events } = services
   const [state, setState] = useState<{ loading: boolean; event: FrienzyEvent | null }>({ loading: true, event: null })
 
   useEffect(() => {
@@ -20,6 +23,8 @@ export function EventDetailScreen({ eventId, onBack }: { eventId: string; onBack
     }
   }, [events, eventId])
 
+  const people = useEventPeople(services, state.event)
+
   if (state.loading) return <p className="card">Caricamento…</p>
   const event = state.event
   return (
@@ -32,6 +37,7 @@ export function EventDetailScreen({ eventId, onBack }: { eventId: string; onBack
           {event.descrizione && <p>{event.descrizione}</p>}
           <p>{describeCapacity(event.maxPartecipanti)}</p>
           {event.richiedeApprovazione && <p>L'organizzatore approva le richieste.</p>}
+          <EventPeople people={people} />
         </>
       ) : (
         <p role="alert" className="error">Evento non trovato.</p>

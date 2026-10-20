@@ -26,6 +26,12 @@ export class FirestoreParticipationRepository implements ParticipationRepository
     return snap.docs.map((d) => participationFromData(d.data()))
   }
 
+  async listConfirmed(eventId: string): Promise<Participation[]> {
+    const q = query(collection(db(), 'events', eventId, 'partecipanti'), where('stato', '==', 'confermato'))
+    const snap = await getDocs(q)
+    return snap.docs.map((d) => participationFromData(d.data()))
+  }
+
   // collectionGroup: cerca nella sotto-raccolta "partecipanti" di TUTTI gli eventi.
   async listByUser(uid: string): Promise<Participation[]> {
     const snap = await getDocs(query(collectionGroup(db(), 'partecipanti'), where('uid', '==', uid)))
