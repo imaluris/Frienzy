@@ -43,3 +43,7 @@ label.inline input { display: inline; width: auto; }
 .people { list-style: none; padding: 0; display: grid; gap: 8px; }
 .people li { background: #fff; border-radius: 16px; padding: 8px 12px; }
 .people img { border-radius: 50%; vertical-align: middle; margin-right: 8px; object-fit: cover; }
+
+.filters { display: grid; gap: 8px; margin-bottom: 12px; }
+.filters [role='group'] { display: flex; flex-wrap: wrap; gap: 6px; }
+.filters button[aria-pressed='true'] { background: #2F5D50; color: #fff; }
