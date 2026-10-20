@@ -2,7 +2,7 @@ import { collection, doc, getDoc, getDocs, serverTimestamp, Timestamp, updateDoc
 import type { EventRepository } from '../data/eventRepository'
 import type { ExactPlace, FrienzyEvent, NewEvent } from '../domain/event'
 import { db } from './app'
-import { eventFromData, newEventToData, placeToData } from './converters'
+import { eventFromData, newEventToData, placeFromData, placeToData } from './converters'
 
 type Changes = Partial<NewEvent & Pick<FrienzyEvent, 'stato'>>
 
@@ -20,6 +20,19 @@ export class FirestoreEventRepository implements EventRepository {
   async getById(id: string): Promise<FrienzyEvent | null> {
     const snap = await getDoc(doc(db(), 'events', id))
     return snap.exists() ? eventFromData(id, snap.data()) : null
+  }
+
+  // Le regole di sicurezza decidono davvero: a chi non può leggere Firestore risponde "permission-denied",
+  // che qui diventa null (nessuna differenza tra "non esiste" e "non puoi vederlo").
+  async getExactPlace(eventId: string, viewerUid: string | null): Promise<ExactPlace | null> {
+    if (!viewerUid) return null
+    try {
+      const snap = await getDoc(doc(db(), 'events', eventId, 'privato', 'luogo'))
+      return snap.exists() ? placeFromData(snap.data()) : null
+    } catch (error) {
+      if ((error as { code?: string }).code === 'permission-denied') return null
+      throw error
+    }
   }
 
   async list(): Promise<FrienzyEvent[]> {

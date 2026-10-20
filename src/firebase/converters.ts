@@ -57,6 +57,11 @@ export function eventFromData(id: string, d: Data): FrienzyEvent {
 }
 
 export const placeToData = (place: ExactPlace): Data => ({ ...place })
+export const placeFromData = (data: Data): ExactPlace => ({
+  indirizzo: data.indirizzo as string,
+  lat: data.lat as number,
+  lng: data.lng as number,
+})
 
 // La partecipazione salva anche uid ed eventId: servono per cercare "le mie iscrizioni"
 // su tutti gli eventi con una collectionGroup.

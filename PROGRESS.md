@@ -12,3 +12,4 @@
 - Task 10 fatto: Iscrizione libera
 - Task 11 fatto: Iscrizione con approvazione
 - Task 12 fatto: Profili visibili nell'evento
+- Task 13 fatto: Posizione esatta riservata

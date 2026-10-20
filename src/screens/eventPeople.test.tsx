@@ -34,5 +34,6 @@ describe('persone nel dettaglio evento', () => {
     expect(screen.getByText('Bruno')).toBeInTheDocument()
     expect(screen.queryByText('Ada')).toBeNull()
     expect(screen.queryByText(/1990/)).toBeNull()
+    expect(screen.queryByText(/Via Segreta/)).toBeNull() // Ada ha solo una richiesta: niente indirizzo
   })
 })

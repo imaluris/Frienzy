@@ -3,10 +3,11 @@ import { useServices } from '../app/ServicesContext'
 import type { FrienzyEvent } from '../domain/event'
 import { EVENT_TYPE_EMOJI } from '../domain/eventTypes'
 import { useEventPeople } from '../people/useEventPeople'
+import { useExactPlace } from '../place/useExactPlace'
 import { EventPeople } from './EventPeople'
 import { describeCapacity, formatEventDate } from '../events/format'
 
-// Dettaglio di un evento: solo dati pubblici (la zona, mai l'indirizzo esatto).
+// Dettaglio di un evento: la zona per tutti; l'indirizzo esatto solo a organizzatore e confermati.
 export function EventDetailScreen({ eventId, onBack }: { eventId: string; onBack: () => void }) {
   const services = useServices()
   const { events } = services
@@ -24,6 +25,7 @@ export function EventDetailScreen({ eventId, onBack }: { eventId: string; onBack
   }, [events, eventId])
 
   const people = useEventPeople(services, state.event)
+  const place = useExactPlace(services, state.event?.id ?? null)
 
   if (state.loading) return <p className="card">Caricamento…</p>
   const event = state.event
@@ -34,6 +36,7 @@ export function EventDetailScreen({ eventId, onBack }: { eventId: string; onBack
           <h2>{EVENT_TYPE_EMOJI[event.tipo]} {event.titolo}</h2>
           <p>{formatEventDate(event.dataOra)}</p>
           <p>Zona: {event.zonaNome}</p>
+          {place && <p>Indirizzo: {place.indirizzo}</p>}
           {event.descrizione && <p>{event.descrizione}</p>}
           <p>{describeCapacity(event.maxPartecipanti)}</p>
           {event.richiedeApprovazione && <p>L'organizzatore approva le richieste.</p>}
