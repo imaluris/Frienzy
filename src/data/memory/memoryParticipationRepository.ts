@@ -1,6 +1,7 @@
 import type { EventRepository } from '../eventRepository'
 import type { ParticipationRepository } from '../participationRepository'
 import { decideJoin } from '../../participation/joinDecision'
+import { decideWithdraw } from '../../participation/withdrawDecision'
 import { decideResponse, type ResponseAction } from '../../participation/responseDecision'
 import type { Participation, ParticipationStatus } from '../../domain/participation'
 
@@ -70,5 +71,12 @@ export class MemoryParticipationRepository implements ParticipationRepository {
     const decision = decideResponse({ event, actorUid, participation, confermati, azione })
     if (!decision.ok) throw new Error(decision.motivo)
     return this.setStatus(eventId, uid, decision.stato)
+  }
+
+  // Il contatore dei posti in memoria è sempre contato dalle partecipazioni: togliere la riga libera il posto.
+  async withdraw(eventId: string, uid: string): Promise<void> {
+    const decision = decideWithdraw(this.items.get(this.key(eventId, uid)) ?? null)
+    if (!decision.ok) throw new Error(decision.motivo)
+    this.items.delete(this.key(eventId, uid))
   }
 }

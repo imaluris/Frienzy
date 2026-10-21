@@ -29,3 +29,15 @@ describe('firestore.rules (controllo statico)', () => {
     expect(rules).toContain('<= eventNow(eventId).maxPartecipanti')
   })
 })
+
+describe('firestore.rules: ritiro', () => {
+  it('il ritiro di un confermato abbassa il contatore di 1 nello stesso batch', () => {
+    expect(rules).toContain('seatsAfter(eventId) == seatsNow(eventId) - 1')
+    expect(rules).toContain('request.resource.data.confermati == seatsNow(eventId) - 1')
+    expect(rules).toContain('withdrawsConfirmed(eventId)')
+  })
+
+  it("l'organizzatore non può togliere un confermato", () => {
+    expect(rules).toContain("isOrganizer(eventId) && resource.data.stato != 'confermato'")
+  })
+})

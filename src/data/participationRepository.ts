@@ -23,4 +23,9 @@ export interface ParticipationRepository {
    * Errore con il motivo se non è possibile.
    */
   respond(eventId: string, uid: string, actorUid: string, azione: ResponseAction): Promise<Participation>
+  /**
+   * Ritiro: `uid` toglie la PROPRIA partecipazione (richiesta, confermata o rifiutata), in modo ATOMICO
+   * (vedi decideWithdraw): se era confermata libera un posto. Errore se non è iscritto.
+   */
+  withdraw(eventId: string, uid: string): Promise<void>
 }

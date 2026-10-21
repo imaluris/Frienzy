@@ -1,5 +1,5 @@
 import { assertFails, assertSucceeds, type RulesTestEnvironment } from '@firebase/rules-unit-testing'
-import { Timestamp, deleteDoc, doc, getDoc, updateDoc, writeBatch } from 'firebase/firestore'
+import { Timestamp, deleteDoc, doc, getDoc, setDoc, updateDoc, writeBatch } from 'firebase/firestore'
 import { ANNA, BRUNO, ORG, createEnv, seedEvent, seedParticipation } from './env'
 
 let env: RulesTestEnvironment
@@ -82,9 +82,54 @@ describe('regole: decisioni e ritiro', () => {
 
   it('ognuno ritira la propria partecipazione, non quella degli altri', async () => {
     await seedEvent(env, 'e1')
-    await seedParticipation(env, 'e1', ANNA, 'confermato')
+    await seedParticipation(env, 'e1', ANNA, 'richiesta')
     await assertFails(deleteDoc(ref(as(BRUNO), ANNA)))
     await assertSucceeds(deleteDoc(ref(as(ANNA), ANNA)))
+  })
+})
+
+describe('regole: ritiro di un confermato (contatore -1)', () => {
+  async function seedConfirmed(confermati: number) {
+    await seedEvent(env, 'e1', { maxPartecipanti: 5 })
+    await seedParticipation(env, 'e1', ANNA, 'confermato')
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(seats(ctx.firestore()), { confermati })
+    })
+  }
+
+  async function withdraw(uid: string, n: number) {
+    const db = as(uid)
+    const batch = writeBatch(db)
+    batch.delete(ref(db, uid))
+    batch.set(seats(db), { confermati: n })
+    return batch.commit()
+  }
+
+  it('il ritiro con contatore -1 nello stesso batch è accettato', async () => {
+    await seedConfirmed(2)
+    await assertSucceeds(withdraw(ANNA, 1))
+  })
+
+  it('ritirarsi senza abbassare il contatore è rifiutato', async () => {
+    await seedConfirmed(2)
+    await assertFails(deleteDoc(ref(as(ANNA), ANNA)))
+  })
+
+  it('il contatore non scende di più di 1', async () => {
+    await seedConfirmed(3)
+    await assertFails(withdraw(ANNA, 0))
+  })
+
+  it('abbassare il contatore senza ritirarsi è rifiutato', async () => {
+    await seedConfirmed(2)
+    await assertFails(setDoc(seats(as(ANNA)), { confermati: 1 }))
+  })
+
+  it("l'organizzatore non toglie un confermato, toglie una richiesta", async () => {
+    await seedConfirmed(1)
+    await assertFails(deleteDoc(ref(as(ORG), ANNA)))
+    await seedParticipation(env, 'e1', BRUNO, 'richiesta')
+    await assertSucceeds(deleteDoc(ref(as(ORG), BRUNO)))
   })
 })
 

@@ -61,6 +61,12 @@ service cloud.firestore {
       return isOrganizer(eventId);
     }
 
+    // Nello stesso batch l'utente toglie la propria partecipazione, che prima era 'confermato'.
+    function withdrawsConfirmed(eventId) {
+      let p = /databases/$(database)/documents/events/$(eventId)/partecipanti/$(request.auth.uid);
+      return exists(p) && get(p).data.stato == 'confermato' && !existsAfter(p);
+    }
+
     function hasOnly(data, keys) {
       return data.keys().hasOnly(keys) && data.keys().hasAll(keys);
     }
@@ -126,9 +132,10 @@ service cloud.firestore {
         allow delete: if false;
       }
 
-      // Contatore dei posti: sale di 1, mai oltre il massimo, in due soli casi:
+      // Contatore dei posti: sale di 1, mai oltre il massimo, in tre soli casi (sale o scende di 1):
       //  a) chi si iscrive a un evento libero (la propria iscrizione 'confermato' nasce nello stesso batch);
       //  b) l'organizzatore che accetta una richiesta (la richiesta passa a 'confermato' nello stesso batch).
+      //  c) chi si ritira da confermato: il contatore scende di 1 (mai sotto zero) e la sua iscrizione sparisce nello stesso batch.
       match /contatori/{doc} {
         allow read: if signedIn();
         allow create, update: if signedIn()
@@ -138,6 +145,13 @@ service cloud.firestore {
           && request.resource.data.confermati == seatsNow(eventId) + 1
           && request.resource.data.confermati <= eventNow(eventId).maxPartecipanti
           && (joinsConfirmed(eventId) || organizerAccepts(eventId));
+        allow update: if signedIn()
+          && doc == 'posti'
+          && hasOnly(request.resource.data, ['confermati'])
+          && request.resource.data.confermati is int
+          && request.resource.data.confermati >= 0
+          && request.resource.data.confermati == seatsNow(eventId) - 1
+          && withdrawsConfirmed(eventId);
         allow delete: if false;
       }
 
@@ -173,8 +187,12 @@ service cloud.firestore {
                   && seatsAfter(eventId) == seatsNow(eventId) + 1
                   && seatsAfter(eventId) <= eventNow(eventId).maxPartecipanti));
 
-        // Ritiro: la propria partecipazione. L'organizzatore può anche toglierla.
-        allow delete: if isOwner(uid) || isOrganizer(eventId);
+        // Ritiro: la propria partecipazione. Se era confermata libera un posto: contatore -1 nello stesso batch.
+        // L'organizzatore può togliere solo richieste e rifiutati (non occupano posti).
+        allow delete: if (isOwner(uid)
+              && (resource.data.stato != 'confermato'
+                  || seatsAfter(eventId) == seatsNow(eventId) - 1))
+          || (isOrganizer(eventId) && resource.data.stato != 'confermato');
       }
     }
 

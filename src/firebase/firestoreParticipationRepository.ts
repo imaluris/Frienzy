@@ -3,6 +3,7 @@ import type { ParticipationRepository } from '../data/participationRepository'
 import type { Participation, ParticipationStatus } from '../domain/participation'
 import { db } from './app'
 import { decideJoin } from '../participation/joinDecision'
+import { decideWithdraw } from '../participation/withdrawDecision'
 import { decideResponse, type ResponseAction } from '../participation/responseDecision'
 import { eventFromData, participationFromData, participationToData } from './converters'
 
@@ -93,6 +94,20 @@ export class FirestoreParticipationRepository implements ParticipationRepository
       tx.update(ref(eventId, uid), { stato: decision.stato })
       if (decision.stato === 'confermato') tx.set(seatsRef, { confermati: confermati + 1 })
       return { ...participation, stato: decision.stato }
+    })
+  }
+
+  // Transazione: se la partecipazione era confermata, la cancellazione e il contatore -1 avvengono insieme.
+  async withdraw(eventId: string, uid: string): Promise<void> {
+    const seatsRef = doc(db(), 'events', eventId, 'contatori', 'posti')
+    await runTransaction(db(), async (tx) => {
+      const [seatsSnap, partSnap] = await Promise.all([tx.get(seatsRef), tx.get(ref(eventId, uid))])
+      const decision = decideWithdraw(partSnap.exists() ? participationFromData(partSnap.data()) : null)
+      if (!decision.ok) throw new Error(decision.motivo)
+      tx.delete(ref(eventId, uid))
+      if (decision.liberaPosto && seatsSnap.exists()) {
+        tx.set(seatsRef, { confermati: Math.max(0, (seatsSnap.data().confermati as number) - 1) })
+      }
     })
   }
 }

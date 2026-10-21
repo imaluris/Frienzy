@@ -14,3 +14,4 @@
 - Task 12 fatto: Profili visibili nell'evento
 - Task 13 fatto: Posizione esatta riservata
 - Task 14 fatto: Filtri
+- Task 15 fatto: I miei eventi e le mie iscrizioni
