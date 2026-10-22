@@ -36,15 +36,16 @@ jobs:
             echo "Secret GOOGLE_SERVICES_JSON assente: compilo senza notifiche"
           fi
 
-      # Valori finti: la configurazione web vera non serve per compilare.
+      # Configurazione web di Firebase: non è una password (è inclusa in ogni app pubblicata),
+      # i dati sono protetti dalle regole di sicurezza di Firestore.
       - name: Build web
         env:
-          VITE_FIREBASE_API_KEY: finta-api-key
-          VITE_FIREBASE_AUTH_DOMAIN: frienzy-finto.firebaseapp.com
-          VITE_FIREBASE_PROJECT_ID: frienzy-finto
-          VITE_FIREBASE_STORAGE_BUCKET: frienzy-finto.appspot.com
-          VITE_FIREBASE_MESSAGING_SENDER_ID: "000000000000"
-          VITE_FIREBASE_APP_ID: 1:000000000000:web:0000000000000000
+          VITE_FIREBASE_API_KEY: AIzaSyBXOejOTR2RPYugw-a7C7yj7I3D7MdAjkc
+          VITE_FIREBASE_AUTH_DOMAIN: frienzy-57ace.firebaseapp.com
+          VITE_FIREBASE_PROJECT_ID: frienzy-57ace
+          VITE_FIREBASE_STORAGE_BUCKET: frienzy-57ace.firebasestorage.app
+          VITE_FIREBASE_MESSAGING_SENDER_ID: "870807149383"
+          VITE_FIREBASE_APP_ID: 1:870807149383:web:77031ff79f92f69c850a62
         run: npm run build
 
       - name: Sincronizza Capacitor
