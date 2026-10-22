@@ -1,3 +1,4 @@
+import { MemoryPushService } from '../../push/memoryPushService'
 import { MemoryAuthService } from '../../auth/memoryAuthService'
 import type { Services } from '../../firebase/createServices'
 import { MemoryEventRepository } from './memoryEventRepository'
@@ -17,5 +18,6 @@ export function createMemoryServices(): Services {
     events,
     participations,
     photos: new MemoryPhotoStorage(),
+    push: new MemoryPushService(),
   }
 }

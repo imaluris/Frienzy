@@ -3,6 +3,8 @@ import type { EventRepository } from '../data/eventRepository'
 import type { ParticipationRepository } from '../data/participationRepository'
 import type { PhotoStorage } from '../data/photoStorage'
 import type { UserRepository } from '../data/userRepository'
+import { CapacitorPushService } from '../push/capacitorPushService'
+import type { PushService } from '../push/pushService'
 import { FirebaseAuthService } from './firebaseAuthService'
 import { FirebasePhotoStorage } from './firebasePhotoStorage'
 import { FirestoreEventRepository } from './firestoreEventRepository'
@@ -16,6 +18,7 @@ export interface Services {
   events: EventRepository
   participations: ParticipationRepository
   photos: PhotoStorage
+  push: PushService
 }
 
 export function createFirebaseServices(): Services {
@@ -25,5 +28,6 @@ export function createFirebaseServices(): Services {
     events: new FirestoreEventRepository(),
     participations: new FirestoreParticipationRepository(),
     photos: new FirebasePhotoStorage(),
+    push: new CapacitorPushService(),
   }
 }

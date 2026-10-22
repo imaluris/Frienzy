@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Frienzy</string>
+    <string name="title_activity_main">Frienzy</string>
+    <string name="package_name">it.andrea.frienzy</string>
+    <string name="custom_url_scheme">it.andrea.frienzy</string>
+</resources>

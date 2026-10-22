@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useServices } from '../app/ServicesContext'
 import { useProfile } from '../profile/useProfile'
+import { DebugScreen } from './DebugScreen'
 import { CreateEventScreen } from './CreateEventScreen'
 import { EventDetailScreen } from './EventDetailScreen'
 import { EventListScreen } from './EventListScreen'
@@ -18,6 +19,7 @@ export function ProfileGate({ uid }: { uid: string }) {
   const [browsing, setBrowsing] = useState(false)
   const [mapping, setMapping] = useState(false)
   const [mine, setMine] = useState(false)
+  const [debug, setDebug] = useState(false)
   const [openId, setOpenId] = useState<string | null>(null)
 
   if (loading) return <p className="card">Caricamento…</p>
@@ -33,6 +35,7 @@ export function ProfileGate({ uid }: { uid: string }) {
       />
     )
   }
+  if (debug) return <DebugScreen onBack={() => setDebug(false)} />
   if (creating) {
     return <CreateEventScreen uid={uid} onDone={() => setCreating(false)} onCancel={() => setCreating(false)} />
   }
@@ -48,6 +51,7 @@ export function ProfileGate({ uid }: { uid: string }) {
       onBrowse={() => setBrowsing(true)}
       onMap={() => setMapping(true)}
       onMine={() => setMine(true)}
+      onDebug={() => setDebug(true)}
     />
   )
 }
