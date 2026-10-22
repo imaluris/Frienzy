@@ -1,0 +1,60 @@
+name: APK Android (debug)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Installa le dipendenze
+        run: npm ci
+
+      # Ricrea il file di Firebase dal secret. Se il secret manca si compila lo stesso, senza notifiche.
+      - name: Ricrea google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -n "$GOOGLE_SERVICES_JSON" ]; then
+            printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+            echo "google-services.json creato"
+          else
+            echo "Secret GOOGLE_SERVICES_JSON assente: compilo senza notifiche"
+          fi
+
+      # Valori finti: la configurazione web vera non serve per compilare.
+      - name: Build web
+        env:
+          VITE_FIREBASE_API_KEY: finta-api-key
+          VITE_FIREBASE_AUTH_DOMAIN: frienzy-finto.firebaseapp.com
+          VITE_FIREBASE_PROJECT_ID: frienzy-finto
+          VITE_FIREBASE_STORAGE_BUCKET: frienzy-finto.appspot.com
+          VITE_FIREBASE_MESSAGING_SENDER_ID: "000000000000"
+          VITE_FIREBASE_APP_ID: 1:000000000000:web:0000000000000000
+        run: npm run build
+
+      - name: Sincronizza Capacitor
+        run: npx cap sync android
+
+      - name: Compila l'APK di debug
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frienzy-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
