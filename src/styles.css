@@ -10,7 +10,7 @@ body {
   padding: 1rem;
   margin: 1rem;
 }
-h1 { color: var(--color-primary); }
+h1 { color: var(--color-secondary); }
 .brand { text-align: center; }
 label { display: block; margin-bottom: 0.75rem; font-weight: 600; }
 input {
@@ -18,7 +18,7 @@ input {
   padding: 0.6rem; font: inherit; border: 1px solid #d9cbbd; border-radius: 8px;
 }
 button {
-  font: inherit; font-weight: 700; color: #fff; background: var(--color-primary);
+  font: inherit; font-weight: 700; color: var(--color-text); background: var(--color-primary);
   border: 0; border-radius: var(--radius); padding: 0.6rem 1.2rem; cursor: pointer;
 }
 button:disabled { opacity: 0.6; }

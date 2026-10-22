@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Frienzy">
+  <!-- fumetto terracotta con la coda in basso a sinistra -->
+  <path fill="#E2725B" d="M112 64h288a48 48 0 0 1 48 48v208a48 48 0 0 1-48 48H264l-96 80v-80h-56a48 48 0 0 1-48-48V112a48 48 0 0 1 48-48z"/>
+  <!-- lettera F bianca disegnata a tratti -->
+  <path fill="#fff" d="M172 128h160v48H228v32h88v48h-88v72h-56z"/>
+  <!-- scintilla senape a quattro punte -->
+  <path fill="#F2B94B" d="M368 96l10 34 34 10-34 10-10 34-10-34-34-10 34-10z"/>
+</svg>

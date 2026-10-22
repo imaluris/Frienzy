@@ -16,3 +16,6 @@
 - Task 14 fatto: Filtri
 - Task 15 fatto: I miei eventi e le mie iscrizioni
 - Task 16 fatto: Capacitor Android
+- Task 17 fatto: Workflow per l'APK
+- Task 18 fatto: Rifinitura grafica
+MVP completato

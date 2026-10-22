@@ -1,0 +1,12 @@
+{
+  "name": "Frienzy",
+  "short_name": "Frienzy",
+  "lang": "it",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFF8F0",
+  "theme_color": "#E2725B",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

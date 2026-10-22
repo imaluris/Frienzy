@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "preview": "vite preview",
+    "check:contrast": "node scripts/check-contrast.ts",
     "test:rules": "npx firebase-tools emulators:exec --only firestore --project frienzy-test \"vitest run --config vitest.rules.config.ts\""
   },
   "dependencies": {
