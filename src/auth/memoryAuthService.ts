@@ -18,12 +18,15 @@ export class MemoryAuthService implements AuthService {
   private listeners = new Set<(uid: string | null) => void>()
   private counter = 0
 
+  // `newUid` permette alla modalità demo di scegliere l'uid dell'utente d'esempio.
+  constructor(private newUid: (n: number) => string = (n) => `utente-${n}`) {}
+
   async register(email: string, password: string): Promise<string> {
     const key = email.trim().toLowerCase()
     if (validateEmail(key)) throw authError('auth/invalid-email')
     if (validatePassword(password)) throw authError('auth/weak-password')
     if (this.accounts.has(key)) throw authError('auth/email-already-in-use')
-    const uid = `utente-${++this.counter}`
+    const uid = this.newUid(++this.counter)
     this.accounts.set(key, { uid, password })
     this.setUid(uid) // come Firebase: dopo la registrazione si è già dentro
     return uid

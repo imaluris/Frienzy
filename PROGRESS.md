@@ -19,3 +19,4 @@
 - Task 17 fatto: Workflow per l'APK
 - Task 18 fatto: Rifinitura grafica
 MVP completato
+- Task 19 fatto: Anteprima visiva
