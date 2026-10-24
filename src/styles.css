@@ -47,3 +47,11 @@ label.inline input { display: inline; width: auto; }
 .filters { display: grid; gap: 8px; margin-bottom: 12px; }
 .filters [role='group'] { display: flex; flex-wrap: wrap; gap: 6px; }
 .filters button[aria-pressed='true'] { background: #2F5D50; color: #fff; }
+button.secondary { background: #fff; color: var(--color-secondary); border: 2px solid var(--color-secondary); }
+section[aria-label='Partecipazione'], section[aria-label='Organizzazione'] { margin: 1rem 0; }
+section[aria-label='Partecipazione'] button + button { margin-left: 0.5rem; }
+section[aria-label='Organizzazione'] > button.secondary { margin-bottom: 1rem; }
+.requests { list-style: none; padding: 0; display: grid; gap: 8px; }
+.requests li { background: #fff; border-radius: 16px; padding: 8px 12px; }
+.row-actions { display: flex; gap: 8px; margin-top: 6px; }
+.row-actions button.secondary { margin-left: 0; }

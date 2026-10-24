@@ -5,12 +5,17 @@ import { EVENT_TYPE_EMOJI } from '../domain/eventTypes'
 import { useEventPeople } from '../people/useEventPeople'
 import { useExactPlace } from '../place/useExactPlace'
 import { EventPeople } from './EventPeople'
+import { OrganizerActions } from './OrganizerActions'
+import { ParticipationActions } from './ParticipationActions'
+import { decideView } from '../participation/participationView'
+import { useEventParticipation } from '../participation/useEventParticipation'
 import { describeCapacity, formatEventDate } from '../events/format'
 
 // Dettaglio di un evento: la zona per tutti; l'indirizzo esatto solo a organizzatore e confermati.
 export function EventDetailScreen({ eventId, onBack }: { eventId: string; onBack: () => void }) {
   const services = useServices()
   const { events } = services
+  const [version, setVersion] = useState(0) // sale a ogni azione: fa ricaricare evento, persone e luogo
   const [state, setState] = useState<{ loading: boolean; event: FrienzyEvent | null }>({ loading: true, event: null })
 
   useEffect(() => {
@@ -22,10 +27,13 @@ export function EventDetailScreen({ eventId, onBack }: { eventId: string; onBack
     return () => {
       active = false
     }
-  }, [events, eventId])
+  }, [events, eventId, version])
 
   const people = useEventPeople(services, state.event)
-  const place = useExactPlace(services, state.event?.id ?? null)
+  const place = useExactPlace(services, state.event?.id ?? null, version)
+  const uid = services.auth.currentUid()
+  const participation = useEventParticipation(services, state.event, uid, version)
+  const reload = () => setVersion((v) => v + 1)
 
   if (state.loading) return <p className="card">Caricamento…</p>
   const event = state.event
@@ -41,6 +49,13 @@ export function EventDetailScreen({ eventId, onBack }: { eventId: string; onBack
           <p>{describeCapacity(event.maxPartecipanti)}</p>
           {event.richiedeApprovazione && <p>L'organizzatore approva le richieste.</p>}
           <EventPeople people={people} />
+          {uid && participation.loaded && (
+            event.organizzatoreId === uid ? (
+              <OrganizerActions event={event} uid={uid} requests={participation.requests} confirmedCount={participation.confirmedCount} onChanged={reload} />
+            ) : (
+              <ParticipationActions view={decideView({ event, uid, mine: participation.mine, confirmedCount: participation.confirmedCount })} eventId={event.id} uid={uid} onChanged={reload} />
+            )
+          )}
         </>
       ) : (
         <p role="alert" className="error">Evento non trovato.</p>
