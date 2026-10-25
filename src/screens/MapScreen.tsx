@@ -18,7 +18,7 @@ export function MapScreen({ onOpen, onBack }: Props) {
   return (
     <section className="card">
       <h2>Mappa</h2>
-      {loading && <p>Caricamento…</p>}
+      {loading && <p className="loading">Caricamento…</p>}
       {failed && <p role="alert" className="error">Non riesco a caricare gli eventi.</p>}
       {!loading && !failed && <EventMap markers={markers} onSelect={onOpen} />}
       <button type="button" className="link" onClick={onBack}>Indietro</button>

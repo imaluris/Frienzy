@@ -1,0 +1,5 @@
+.event-map { height: 60vh; min-height: 280px; border-radius: var(--radius); margin: var(--space-3) 0; }
+.emoji-marker span {
+  display: flex; align-items: center; justify-content: center; width: 36px; height: 36px;
+  font-size: 20px; background: #fff; border: 2px solid var(--color-primary); border-radius: 50%;
+}

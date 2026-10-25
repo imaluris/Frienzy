@@ -23,7 +23,7 @@ export function OrganizerActions({ event, uid, requests, confirmedCount, onChang
       <h3>Sei l'organizzatore</h3>
       <p>Posti occupati: {confirmedCount} su {event.maxPartecipanti}</p>
       {cancelled && <p>Questo evento è stato annullato.</p>}
-      {!cancelled && requests.length === 0 && event.richiedeApprovazione && <p>Nessuna richiesta in attesa.</p>}
+      {!cancelled && requests.length === 0 && event.richiedeApprovazione && <p className="empty">Nessuna richiesta in attesa.</p>}
       {!cancelled && requests.length > 0 && (
         <ul className="requests">
           {requests.map((r) => (

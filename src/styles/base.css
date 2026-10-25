@@ -1,0 +1,19 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.45;
+  background: var(--color-background);
+  color: var(--color-text);
+  -webkit-tap-highlight-color: transparent;
+}
+h1, h2, h3 { line-height: 1.2; margin: 0 0 var(--space-3); font-weight: 800; }
+h1 { color: var(--color-secondary); font-size: 1.75rem; }
+h2 { font-size: 1.35rem; }
+h3 { font-size: 1.1rem; }
+p { margin: 0 0 var(--space-3); }
+small { color: var(--color-muted); }
+:focus-visible { outline: 3px solid var(--color-secondary); outline-offset: 2px; }
+.brand { text-align: center; }
+.switch { text-align: center; }

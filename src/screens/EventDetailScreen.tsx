@@ -35,7 +35,7 @@ export function EventDetailScreen({ eventId, onBack }: { eventId: string; onBack
   const participation = useEventParticipation(services, state.event, uid, version)
   const reload = () => setVersion((v) => v + 1)
 
-  if (state.loading) return <p className="card">Caricamento…</p>
+  if (state.loading) return <p className="card loading">Caricamento…</p>
   const event = state.event
   return (
     <section className="card">

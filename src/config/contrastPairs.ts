@@ -13,6 +13,8 @@ export const PAIRS = [
   { name: 'testo su accento', fg: text, bg: accent, min: 4.5 },
   { name: 'titoli e link (secondario su sfondo)', fg: secondary, bg: background, min: 4.5 },
   { name: 'bianco su secondario (filtri attivi)', fg: WHITE, bg: secondary, min: 4.5 },
+  { name: 'testo secondario (grigio caldo su sfondo)', fg: '#6b5a4c', bg: background, min: 4.5 },
+  { name: 'errori (rosso su schede bianche)', fg: '#b3261e', bg: WHITE, min: 4.5 },
   { name: 'bordo marker (primario su bianco)', fg: primary, bg: WHITE, min: 3 },
 ] as const
 

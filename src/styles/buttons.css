@@ -1,0 +1,15 @@
+/* Tre varianti: primario (default), secondario (.secondary), testo (.link). */
+button {
+  font: inherit; font-weight: 800; color: var(--color-text); background: var(--color-primary);
+  border: 2px solid transparent; border-radius: var(--radius);
+  min-height: var(--tap); padding: 0 var(--space-6); cursor: pointer;
+  transition: transform 0.08s ease, filter 0.15s ease;
+}
+button:active:not(:disabled) { transform: scale(0.97); }
+button:hover:not(:disabled) { filter: brightness(0.96); }
+button:disabled { opacity: 0.55; cursor: not-allowed; }
+button.secondary { background: var(--color-surface); color: var(--color-secondary); border-color: var(--color-secondary); }
+button.link {
+  background: none; color: var(--color-secondary); padding: 0 var(--space-2);
+  text-decoration: underline; min-height: var(--tap);
+}

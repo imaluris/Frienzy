@@ -3,7 +3,7 @@ export const appConfig = {
   name: 'Frienzy',
   appId: 'it.andrea.frienzy',
   icon: '/icon.svg',
-  fontFamily: 'Nunito',
+  fontFamily: 'Nunito Variable',
   radius: '16px',
   colors: {
     primary: '#E2725B',

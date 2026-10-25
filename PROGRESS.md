@@ -21,3 +21,4 @@
 MVP completato
 - Task 19 fatto: Anteprima visiva
 - Task 20 fatto: Pulsanti di partecipazione
+- Task 21 fatto: Base grafica

@@ -28,7 +28,7 @@ export function MyEventsScreen({ uid, onOpen, onBack }: { uid: string; onOpen: (
   return (
     <section className="card">
       <h2>I miei eventi</h2>
-      {loading && <p>Caricamento…</p>}
+      {loading && <p className="loading">Caricamento…</p>}
       {failed && <p role="alert" className="error">Non riesco a caricare i tuoi eventi.</p>}
       {error && <p role="alert" className="error">{error}</p>}
       {!loading && !failed && mine.organized.length === 0 && <p>Non organizzi ancora nessun evento.</p>}

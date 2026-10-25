@@ -22,7 +22,7 @@ export function ProfileGate({ uid }: { uid: string }) {
   const [debug, setDebug] = useState(false)
   const [openId, setOpenId] = useState<string | null>(null)
 
-  if (loading) return <p className="card">Caricamento…</p>
+  if (loading) return <p className="card loading">Caricamento…</p>
   if (!profile || editing) {
     return (
       <ProfileScreen
