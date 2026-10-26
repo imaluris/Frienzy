@@ -1,3 +1,4 @@
+import { AVATAR_COLORS } from './avatarColors.ts'
 import { appConfig } from './app.ts'
 import { contrastRatio } from './contrast.ts'
 
@@ -16,6 +17,7 @@ export const PAIRS = [
   { name: 'testo secondario (grigio caldo su sfondo)', fg: '#6b5a4c', bg: background, min: 4.5 },
   { name: 'errori (rosso su schede bianche)', fg: '#b3261e', bg: WHITE, min: 4.5 },
   { name: 'bordo marker (primario su bianco)', fg: primary, bg: WHITE, min: 3 },
+  ...AVATAR_COLORS.map((c) => ({ name: `iniziali su avatar ${c}`, fg: text, bg: c, min: 4.5 })),
 ] as const
 
 export interface ContrastResult {

@@ -5,20 +5,21 @@ interface Props {
   onChange: (selected: string[]) => void
 }
 
-// Una casella per ogni tipo di evento: stessi id usati dagli eventi.
+// Un chip per ogni tipo di evento (stessi id degli eventi). aria-pressed dice se è scelto.
 export function InterestPicker({ selected, onChange }: Props) {
   function toggle(id: string) {
     onChange(selected.includes(id) ? selected.filter((x) => x !== id) : [...selected, id])
   }
   return (
-    <fieldset>
+    <fieldset className="interests">
       <legend>Interessi</legend>
-      {EVENT_TYPE_IDS.map((id) => (
-        <label key={id} className="inline">
-          <input type="checkbox" checked={selected.includes(id)} onChange={() => toggle(id)} />
-          {EVENT_TYPE_EMOJI[id]} {id}
-        </label>
-      ))}
+      <div className="chip-row">
+        {EVENT_TYPE_IDS.map((id) => (
+          <button key={id} type="button" className="chip-toggle" aria-pressed={selected.includes(id)} onClick={() => toggle(id)}>
+            <span aria-hidden="true">{EVENT_TYPE_EMOJI[id]}</span> {id}
+          </button>
+        ))}
+      </div>
     </fieldset>
   )
 }

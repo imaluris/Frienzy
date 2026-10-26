@@ -1,0 +1,8 @@
+/* Schermate per chi non è collegato: marchio in alto, scheda del modulo, link per cambiare schermata. */
+.auth { max-width: 460px; margin: 0 auto; padding: var(--space-6) 0; }
+.auth-brand { text-align: center; padding: var(--space-4) var(--space-4) var(--space-2); }
+.auth-logo { width: 84px; height: 84px; border-radius: 22px; box-shadow: var(--shadow-card); }
+.auth-brand h1 { margin: var(--space-3) 0 var(--space-1); font-size: 2.1rem; }
+.auth-tagline { margin: 0; color: var(--color-muted); }
+.auth .card button[type='submit'] { width: 100%; margin-top: var(--space-2); }
+.auth .switch { margin-top: var(--space-2); }

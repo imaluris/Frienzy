@@ -4,7 +4,7 @@ import type { UserProfile } from '../domain/user'
 import { saveProfile, toProfileInput } from '../profile/profileService'
 import { BIO_MAX, type ProfileInput } from '../profile/validation'
 import { InterestPicker } from './InterestPicker'
-import { PhotoField } from './PhotoField'
+import { Avatar } from '../ui/Avatar'
 
 const EMPTY: ProfileInput = { nome: '', dataNascita: '', bio: '', interessi: [], fotoUrl: '' }
 
@@ -39,7 +39,7 @@ export function ProfileScreen({ uid, current, onSaved }: Props) {
   return (
     <form className="card" onSubmit={handleSubmit} noValidate>
       {!current && <h2>Completa il tuo profilo</h2>}
-      <PhotoField uid={uid} fotoUrl={input.fotoUrl} onChange={(fotoUrl) => set({ fotoUrl })} />
+      <div className="avatar-edit"><Avatar name={input.nome} size="lg" /></div>
       <label>
         Nome
         <input value={input.nome} onChange={(e) => set({ nome: e.target.value })} />

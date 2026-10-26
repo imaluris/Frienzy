@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ServicesProvider, useServices } from './app/ServicesContext'
 import { useSession } from './auth/useSession'
 import type { Services } from './firebase/createServices'
-import { appConfig } from './config/app'
+import { AuthBrand } from './screens/AuthBrand'
 import { LoginScreen } from './screens/LoginScreen'
 import { ProfileGate } from './screens/ProfileGate'
 import { RegisterScreen } from './screens/RegisterScreen'
@@ -12,8 +12,8 @@ import { RegisterScreen } from './screens/RegisterScreen'
 function LoggedOut() {
   const [registering, setRegistering] = useState(false)
   return (
-    <main>
-      <h1 className="brand">{appConfig.name}</h1>
+    <main className="auth">
+      <AuthBrand />
       {registering ? (
         <RegisterScreen onGoLogin={() => setRegistering(false)} />
       ) : (

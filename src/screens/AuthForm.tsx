@@ -41,7 +41,7 @@ export function AuthForm({ title, submitLabel, askConfirm, validate, onSubmit, d
       <h2>{title}</h2>
       <label>
         Email
-        <input type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <input type="email" inputMode="email" autoComplete="email" aria-invalid={error ? true : undefined} value={email} onChange={(e) => setEmail(e.target.value)} />
       </label>
       <label>
         Password

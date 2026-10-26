@@ -23,3 +23,4 @@ MVP completato
 - Task 20 fatto: Pulsanti di partecipazione
 - Task 21 fatto: Base grafica
 - Task 22 fatto: Navigazione a schede
+- Task 23 fatto: Accesso, registrazione, profilo

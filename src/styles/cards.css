@@ -5,4 +5,3 @@
   padding: var(--space-4);
   margin: var(--space-4);
 }
-.avatar { width: 96px; height: 96px; object-fit: cover; border-radius: 50%; }

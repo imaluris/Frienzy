@@ -67,7 +67,7 @@ describe('App: registrazione, login e logout', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('almeno 18')
 
     type('Data di nascita', `${year - 30}-01-01`)
-    fireEvent.click(screen.getByLabelText(/aperitivo/))
+    fireEvent.click(screen.getByRole('button', { name: /aperitivo/ }))
     fireEvent.click(screen.getByRole('button', { name: 'Salva' }))
     fireEvent.click(await screen.findByRole('button', { name: 'Profilo' }))
     expect(await screen.findByText(/Ada, 3[01] anni/)).toBeInTheDocument()
