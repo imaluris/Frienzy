@@ -9,11 +9,10 @@ import { FiltersBar } from './FiltersBar'
 
 interface Props {
   onOpen: (eventId: string) => void
-  onBack: () => void
 }
 
 // Elenco degli eventi futuri, dal più vicino. Toccando una scheda si apre il dettaglio.
-export function EventListScreen({ onOpen, onBack }: Props) {
+export function EventListScreen({ onOpen }: Props) {
   const { events } = useServices()
   const { loading, list, failed } = useUpcomingEvents(events)
   const [filters, setFilters] = useState<EventFilters>(NO_FILTERS)
@@ -22,7 +21,6 @@ export function EventListScreen({ onOpen, onBack }: Props) {
 
   return (
     <section className="card">
-      <h2>Eventi in programma</h2>
       <FiltersBar filters={filters} onChange={setFilters} position={position} onAskPosition={ask} />
       {loading && <p className="loading">Caricamento…</p>}
       {failed && <p role="alert" className="error">Non riesco a caricare gli eventi.</p>}
@@ -38,7 +36,6 @@ export function EventListScreen({ onOpen, onBack }: Props) {
           </li>
         ))}
       </ul>
-      <button type="button" className="link" onClick={onBack}>Indietro</button>
     </section>
   )
 }

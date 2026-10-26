@@ -20,11 +20,10 @@ const EMPTY: EventInput = {
 interface Props {
   uid: string
   onDone: () => void
-  onCancel: () => void
 }
 
 // Form per creare un evento. La mappa per scegliere il punto arriverà col task 9: per ora le coordinate si scrivono.
-export function CreateEventScreen({ uid, onDone, onCancel }: Props) {
+export function CreateEventScreen({ uid, onDone }: Props) {
   const { events } = useServices()
   const [input, setInput] = useState<EventInput>(EMPTY)
   const [error, setError] = useState<string | null>(null)
@@ -47,7 +46,6 @@ export function CreateEventScreen({ uid, onDone, onCancel }: Props) {
 
   return (
     <form className="card" onSubmit={handleSubmit} noValidate>
-      <h2>Crea un evento</h2>
       <label>
         Tipo
         <select value={input.tipo} onChange={(e) => set({ tipo: e.target.value })}>
@@ -97,8 +95,7 @@ export function CreateEventScreen({ uid, onDone, onCancel }: Props) {
         Le richieste vanno approvate da me
       </label>
       {error && <p role="alert" className="error">{error}</p>}
-      <button type="submit" disabled={busy}>Crea evento</button>{' '}
-      <button type="button" className="link" onClick={onCancel}>Annulla</button>
+      <button type="submit" disabled={busy}>Crea evento</button>
     </form>
   )
 }

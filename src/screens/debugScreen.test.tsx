@@ -8,6 +8,7 @@ async function setup(push: MemoryPushService) {
   const uid = await services.auth.register('ada@example.com', 'segreta1')
   await services.users.save({ uid, nome: 'Ada', dataNascita: new Date('1990-01-01T00:00:00Z'), bio: '', interessi: [], fotoUrl: '', creatoIl: new Date() })
   render(<App services={services} />)
+  fireEvent.click(await screen.findByRole('button', { name: 'Profilo' }))
   fireEvent.click(await screen.findByRole('button', { name: 'Debug' }))
 }
 

@@ -43,8 +43,8 @@ describe('elenco e dettaglio eventi', () => {
     expect(screen.getByText('Massimo 8 persone')).toBeInTheDocument()
     expect(screen.queryByText(/Via Segreta/)).toBeNull()
 
-    fireEvent.click(screen.getByRole('button', { name: "Torna all'elenco" }))
-    expect(await screen.findByRole('heading', { name: 'Eventi in programma' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Indietro' }))
+    expect(await screen.findByRole('button', { name: /Vicino/ })).toBeInTheDocument()
   })
 
   it('senza eventi lo dice', async () => {

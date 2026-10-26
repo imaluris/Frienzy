@@ -12,7 +12,7 @@ import { useEventParticipation } from '../participation/useEventParticipation'
 import { describeCapacity, formatEventDate } from '../events/format'
 
 // Dettaglio di un evento: la zona per tutti; l'indirizzo esatto solo a organizzatore e confermati.
-export function EventDetailScreen({ eventId, onBack }: { eventId: string; onBack: () => void }) {
+export function EventDetailScreen({ eventId }: { eventId: string }) {
   const services = useServices()
   const { events } = services
   const [version, setVersion] = useState(0) // sale a ogni azione: fa ricaricare evento, persone e luogo
@@ -60,7 +60,6 @@ export function EventDetailScreen({ eventId, onBack }: { eventId: string; onBack
       ) : (
         <p role="alert" className="error">Evento non trovato.</p>
       )}
-      <button type="button" className="link" onClick={onBack}>Torna all'elenco</button>
     </section>
   )
 }

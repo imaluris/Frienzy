@@ -38,7 +38,7 @@ export function ProfileScreen({ uid, current, onSaved }: Props) {
 
   return (
     <form className="card" onSubmit={handleSubmit} noValidate>
-      <h2>{current ? 'Modifica il profilo' : 'Completa il tuo profilo'}</h2>
+      {!current && <h2>Completa il tuo profilo</h2>}
       <PhotoField uid={uid} fotoUrl={input.fotoUrl} onChange={(fotoUrl) => set({ fotoUrl })} />
       <label>
         Nome
@@ -55,7 +55,7 @@ export function ProfileScreen({ uid, current, onSaved }: Props) {
       <InterestPicker selected={input.interessi} onChange={(interessi) => set({ interessi })} />
       {error && <p role="alert" className="error">{error}</p>}
       <button type="submit" disabled={busy}>Salva</button>
-      <button type="button" className="link" onClick={() => void auth.logout()}>Esci</button>
+      {!current && <button type="button" className="link" onClick={() => void auth.logout()}>Esci</button>}
     </form>
   )
 }

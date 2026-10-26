@@ -9,7 +9,7 @@ import { withdrawFromEvent } from '../participation/withdrawFromEvent'
 const STATO_LABEL = { richiesta: 'In attesa di risposta', confermato: 'Confermato', rifiutato: 'Rifiutato' } as const
 
 // "I miei eventi" (che organizzo) e "Le mie iscrizioni", con annullamento e ritiro.
-export function MyEventsScreen({ uid, onOpen, onBack }: { uid: string; onOpen: (eventId: string) => void; onBack: () => void }) {
+export function MyEventsScreen({ uid, onOpen }: { uid: string; onOpen: (eventId: string) => void }) {
   const services = useServices()
   const { loading, failed, mine, reload } = useMine(services, uid)
   const [error, setError] = useState('')
@@ -27,7 +27,7 @@ export function MyEventsScreen({ uid, onOpen, onBack }: { uid: string; onOpen: (
 
   return (
     <section className="card">
-      <h2>I miei eventi</h2>
+      <h2>Che organizzo</h2>
       {loading && <p className="loading">Caricamento…</p>}
       {failed && <p role="alert" className="error">Non riesco a caricare i tuoi eventi.</p>}
       {error && <p role="alert" className="error">{error}</p>}
@@ -64,7 +64,6 @@ export function MyEventsScreen({ uid, onOpen, onBack }: { uid: string; onOpen: (
           </li>
         ))}
       </ul>
-      <button type="button" className="link" onClick={onBack}>Indietro</button>
     </section>
   )
 }
