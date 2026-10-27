@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useServices } from '../app/ServicesContext'
 import type { FrienzyEvent } from '../domain/event'
-import { EVENT_TYPE_EMOJI } from '../domain/eventTypes'
 import { useEventPeople } from '../people/useEventPeople'
 import { useExactPlace } from '../place/useExactPlace'
+import { EventInfo } from './EventInfo'
 import { EventPeople } from './EventPeople'
 import { OrganizerActions } from './OrganizerActions'
 import { ParticipationActions } from './ParticipationActions'
 import { decideView } from '../participation/participationView'
 import { useEventParticipation } from '../participation/useEventParticipation'
-import { describeCapacity, formatEventDate } from '../events/format'
 
 // Dettaglio di un evento: la zona per tutti; l'indirizzo esatto solo a organizzatore e confermati.
 export function EventDetailScreen({ eventId }: { eventId: string }) {
@@ -38,16 +37,10 @@ export function EventDetailScreen({ eventId }: { eventId: string }) {
   if (state.loading) return <p className="card loading">Caricamento…</p>
   const event = state.event
   return (
-    <section className="card">
+    <section className="card detail">
       {event ? (
         <>
-          <h2>{EVENT_TYPE_EMOJI[event.tipo]} {event.titolo}</h2>
-          <p>{formatEventDate(event.dataOra)}</p>
-          <p>Zona: {event.zonaNome}</p>
-          {place && <p>Indirizzo: {place.indirizzo}</p>}
-          {event.descrizione && <p>{event.descrizione}</p>}
-          <p>{describeCapacity(event.maxPartecipanti)}</p>
-          {event.richiedeApprovazione && <p>L'organizzatore approva le richieste.</p>}
+          <EventInfo event={event} place={place} />
           <EventPeople people={people} />
           {uid && participation.loaded && (
             event.organizzatoreId === uid ? (

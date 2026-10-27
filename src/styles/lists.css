@@ -1,10 +1,4 @@
-.event-list, .people, .requests { list-style: none; padding: 0; margin: 0 0 var(--space-4); display: grid; gap: var(--space-2); }
-.event-item {
-  display: block; width: 100%; text-align: left; padding: var(--space-3) var(--space-4);
-  background: var(--color-background); color: var(--color-text);
-  border: 2px solid var(--color-border); font-weight: 800;
-}
-.event-item small { display: block; font-weight: 400; }
+.event-list, .people, .requests { list-style: none; padding: 0; margin: 0 0 var(--space-4); display: grid; gap: var(--space-3); }
 .people li, .requests li { background: var(--color-background); border-radius: var(--radius); padding: var(--space-2) var(--space-3); }
 .row-actions { display: flex; gap: var(--space-2); margin-top: 6px; }
 .filters { display: grid; gap: var(--space-2); margin-bottom: var(--space-3); }

@@ -5,3 +5,5 @@
   padding: var(--space-4);
   margin: var(--space-4);
 }
+.screen { padding: var(--space-4); }
+.screen > h2 { margin-top: var(--space-2); }

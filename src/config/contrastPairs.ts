@@ -16,6 +16,9 @@ export const PAIRS = [
   { name: 'bianco su secondario (filtri attivi)', fg: WHITE, bg: secondary, min: 4.5 },
   { name: 'testo secondario (grigio caldo su sfondo)', fg: '#6b5a4c', bg: background, min: 4.5 },
   { name: 'errori (rosso su schede bianche)', fg: '#b3261e', bg: WHITE, min: 4.5 },
+  { name: 'badge neutro (testo su beige)', fg: text, bg: '#ece3d8', min: 4.5 },
+  { name: 'badge annullato', fg: '#7a1913', bg: '#f6d5d1', min: 4.5 },
+  { name: 'testo secondario su scheda bianca', fg: '#6b5a4c', bg: WHITE, min: 4.5 },
   { name: 'bordo marker (primario su bianco)', fg: primary, bg: WHITE, min: 3 },
   ...AVATAR_COLORS.map((c) => ({ name: `iniziali su avatar ${c}`, fg: text, bg: c, min: 4.5 })),
 ] as const

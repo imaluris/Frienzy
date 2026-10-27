@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react'
 import { useServices } from '../app/ServicesContext'
-import { EVENT_TYPE_EMOJI } from '../domain/eventTypes'
-import { formatEventDate } from '../events/format'
 import { useUpcomingEvents } from '../events/useUpcomingEvents'
 import { filterEvents, NO_FILTERS, type EventFilters } from '../filters/eventFilters'
 import { useMyPosition } from '../filters/useMyPosition'
+import { EmptyState } from '../ui/EmptyState'
+import { EventCard } from '../ui/EventCard'
 import { FiltersBar } from './FiltersBar'
 
 interface Props {
@@ -20,20 +20,15 @@ export function EventListScreen({ onOpen }: Props) {
   const shown = useMemo(() => filterEvents(list, filters), [list, filters])
 
   return (
-    <section className="card">
+    <section className="screen">
       <FiltersBar filters={filters} onChange={setFilters} position={position} onAskPosition={ask} />
       {loading && <p className="loading">Caricamento…</p>}
       {failed && <p role="alert" className="error">Non riesco a caricare gli eventi.</p>}
-      {!loading && !failed && list.length === 0 && <p className="empty">Nessun evento in programma.</p>}
-      {!loading && !failed && list.length > 0 && shown.length === 0 && <p className="empty">Nessun evento con questi filtri.</p>}
+      {!loading && !failed && list.length === 0 && <EmptyState emoji="🗓️" text="Nessun evento in programma." />}
+      {!loading && !failed && list.length > 0 && shown.length === 0 && <EmptyState emoji="🔍" text="Nessun evento con questi filtri." />}
       <ul className="event-list">
         {shown.map((event) => (
-          <li key={event.id}>
-            <button type="button" className="event-item" onClick={() => onOpen(event.id)}>
-              <span aria-hidden="true">{EVENT_TYPE_EMOJI[event.tipo]}</span> {event.titolo}
-              <small>{formatEventDate(event.dataOra)} · {event.zonaNome}</small>
-            </button>
-          </li>
+          <li key={event.id}><EventCard event={event} onOpen={() => onOpen(event.id)} /></li>
         ))}
       </ul>
     </section>

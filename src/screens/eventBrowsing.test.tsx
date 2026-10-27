@@ -39,7 +39,7 @@ describe('elenco e dettaglio eventi', () => {
 
     fireEvent.click(items[0])
     expect(await screen.findByRole('heading', { name: /Vicino/ })).toBeInTheDocument()
-    expect(screen.getByText('Zona: Navigli')).toBeInTheDocument()
+    expect(screen.getByText('Navigli')).toBeInTheDocument()
     expect(screen.getByText('Massimo 8 persone')).toBeInTheDocument()
     expect(screen.queryByText(/Via Segreta/)).toBeNull()
 
