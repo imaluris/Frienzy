@@ -25,3 +25,4 @@ MVP completato
 - Task 22 fatto: Navigazione a schede
 - Task 23 fatto: Accesso, registrazione, profilo
 - Task 24 fatto: Schede evento e stati vuoti
+- Task 25 fatto: Creazione evento

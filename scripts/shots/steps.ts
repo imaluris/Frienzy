@@ -28,6 +28,18 @@ export const STEPS: Step[] = [
   { name: '08-miei-eventi', go: (p) => fromHome(p, 'I miei eventi') },
   { name: '09-mappa', go: (p) => fromHome(p, 'Mappa') },
   { name: '10-crea-evento', go: (p) => fromHome(p, 'Crea') },
+  { name: '19-crea-errori', go: async (p) => { await fromHome(p, 'Crea', 'Crea evento'); await p.getByText(/almeno 3 caratteri/).waitFor() } },
+  {
+    name: '20-crea-compilato',
+    go: async (p) => {
+      await fromHome(p, 'Crea')
+      await p.getByRole('radio', { name: /cena/ }).click()
+      await p.getByLabel(/^Titolo/).fill('Cena in terrazza')
+      await p.locator('.point-picker').click({ position: { x: 190, y: 110 } })
+      await p.getByLabel(/^Zona/).fill('Navigli')
+      await p.getByText(/Punto scelto/).waitFor()
+    },
+  },
   { name: '18-profilo-scheda', go: (p) => fromHome(p, 'Profilo') },
   { name: '11-profilo', go: (p) => fromHome(p, 'Profilo', 'Modifica profilo') },
   { name: '12-debug', go: (p) => fromHome(p, 'Profilo', 'Debug') },
