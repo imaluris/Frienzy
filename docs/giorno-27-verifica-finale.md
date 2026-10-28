@@ -22,3 +22,6 @@ Nota sugli screenshot: nelle immagini a pagina intera la barra in basso compare 
 
 ## Esercizio
 In `FiltersMore` aggiungi un pulsante "Azzera filtri" dentro il pannello che rimette `NO_FILTERS`; scrivi un test che attiva una data, lo preme e controlla che il numerino sparisca.
+
+## Aggiunta: scheda Profilo ridisegnata
+Dopo la Fase 2 Andrea ha giudicato la scheda Profilo spoglia e sbilanciata (avatar solo a sinistra, grande vuoto, Debug ed Esci come link nudi). Ora `ProfileView` ha tre card: fascia colorata (sfumatura terracotta-senape) con avatar centrato e bordo bianco, nome ed età; "Chi sono" e "Cosa mi piace" con il pulsante Modifica a tutta larghezza; una card Account con Esci ben visibile e Debug più discreto. Stili in `src/styles/profile-view.css`. Il test di registrazione cercava il testo "Ada, 30 anni" in un solo elemento: ora nome ed età sono in due righe e il test li controlla separatamente (`findByText('Ada')` e `/^3[01] anni$/`). Screenshot `18-profilo-scheda` rifatto e guardato.
