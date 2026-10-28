@@ -17,6 +17,7 @@ async function fromHome(page: Page, ...clicks: (string | RegExp)[]) {
 
 export const STEPS: Step[] = [
   { name: '02-eventi', go: (p) => fromHome(p) },
+  { name: '22-filtri-aperti', go: async (p) => { await fromHome(p); await p.getByText('Data e distanza').click() } },
   { name: '03-dettaglio-libero', go: (p) => fromHome(p, /Aperitivo sul Naviglio/) },
   { name: '04-dettaglio-approvazione', go: (p) => fromHome(p, /pasta fatta/) },
   { name: '05-dettaglio-pieno', go: (p) => fromHome(p, /Calcetto/) },
@@ -34,6 +35,15 @@ export const STEPS: Step[] = [
       await p.locator('.emoji-marker').first().waitFor()
       await p.locator('.emoji-marker', { hasText: '🥾' }).click()
       await p.getByRole('button', { name: 'Apri evento' }).waitFor()
+    },
+  },
+  {
+    name: '23-mappa-cluster-aperto',
+    go: async (p) => {
+      await fromHome(p, 'Mappa')
+      await p.locator('.cluster-marker').waitFor()
+      await p.locator('.cluster-marker').click()
+      await p.waitForTimeout(800)
     },
   },
   { name: '10-crea-evento', go: (p) => fromHome(p, 'Crea') },

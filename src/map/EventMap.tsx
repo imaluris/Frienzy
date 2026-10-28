@@ -1,4 +1,5 @@
 import L from 'leaflet'
+import 'leaflet.markercluster'
 import 'leaflet/dist/leaflet.css'
 import { useEffect, useRef } from 'react'
 import type { LatLng } from '../events/geohashDecode'
@@ -18,11 +19,16 @@ function emojiIcon(emoji: string): L.DivIcon {
   return L.divIcon({ className: 'emoji-marker', html: `<span>${emoji}</span>`, iconSize: [44, 44], iconAnchor: [22, 22], popupAnchor: [0, -24] })
 }
 
+// Gruppo di marker vicini: un cerchio col numero. Toccandolo la mappa si avvicina e li separa.
+function clusterIcon(cluster: L.MarkerCluster): L.DivIcon {
+  return L.divIcon({ className: 'cluster-marker', html: `<span>${cluster.getChildCount()}</span>`, iconSize: [44, 44] })
+}
+
 // Mappa Leaflet in tre pezzi: la mappa (una volta sola), i marker (quando cambiano) e "tu" (quando arriva la posizione).
 export function EventMap({ markers, me, onSelect, onTilesFailed }: Props) {
   const container = useRef<HTMLDivElement>(null)
   const mapRef = useRef<L.Map | null>(null)
-  const layerRef = useRef<L.LayerGroup | null>(null)
+  const layerRef = useRef<L.MarkerClusterGroup | null>(null)
   const meRef = useRef<L.CircleMarker | null>(null)
   const failRef = useRef(onTilesFailed)
 
@@ -36,7 +42,7 @@ export function EventMap({ markers, me, onSelect, onTilesFailed }: Props) {
     const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap', maxZoom: 19 })
     tiles.on('tileerror', () => failRef.current()) // niente sfondo: i marker restano usabili
     tiles.addTo(map)
-    layerRef.current = L.layerGroup().addTo(map)
+    layerRef.current = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 50, iconCreateFunction: clusterIcon }).addTo(map)
     mapRef.current = map
     return () => {
       map.remove()

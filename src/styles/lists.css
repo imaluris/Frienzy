@@ -2,7 +2,8 @@
 .people li, .requests li { background: var(--color-background); border-radius: var(--radius); padding: var(--space-2) var(--space-3); }
 .row-actions { display: flex; gap: var(--space-2); margin-top: 6px; }
 .filters { display: grid; gap: var(--space-2); margin-bottom: var(--space-3); }
-.filters [role='group'] { display: flex; flex-wrap: wrap; gap: 6px; }
+.filters [role='group'] { display: flex; flex-wrap: nowrap; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+.filters [role='group'] button { flex: none; white-space: nowrap; }
 .filters button {
   min-height: 36px; padding: 0 var(--space-3);
   background: var(--color-surface); color: var(--color-secondary); border-color: var(--color-secondary);

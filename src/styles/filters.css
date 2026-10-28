@@ -1,0 +1,4 @@
+/* Pannello apribile "Data e distanza" sotto la riga dei tipi. */
+.filters-more summary { cursor: pointer; font-weight: 700; color: var(--color-secondary); min-height: 36px; display: flex; align-items: center; gap: var(--space-2); }
+.filters-more-body { display: grid; gap: var(--space-2); padding: var(--space-2) 0; }
+.filters-more-body label { margin: 0; }
