@@ -27,6 +27,15 @@ export const STEPS: Step[] = [
   { name: '17-organizzatore-richieste', go: (p) => fromHome(p, 'I miei eventi', /Brunch/) },
   { name: '08-miei-eventi', go: (p) => fromHome(p, 'I miei eventi') },
   { name: '09-mappa', go: (p) => fromHome(p, 'Mappa') },
+  {
+    name: '21-mappa-popup',
+    go: async (p) => {
+      await fromHome(p, 'Mappa')
+      await p.locator('.emoji-marker').first().waitFor()
+      await p.locator('.emoji-marker', { hasText: '🥾' }).click()
+      await p.getByRole('button', { name: 'Apri evento' }).waitFor()
+    },
+  },
   { name: '10-crea-evento', go: (p) => fromHome(p, 'Crea') },
   { name: '19-crea-errori', go: async (p) => { await fromHome(p, 'Crea', 'Crea evento'); await p.getByText(/almeno 3 caratteri/).waitFor() } },
   {

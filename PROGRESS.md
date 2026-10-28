@@ -26,3 +26,4 @@ MVP completato
 - Task 23 fatto: Accesso, registrazione, profilo
 - Task 24 fatto: Schede evento e stati vuoti
 - Task 25 fatto: Creazione evento
+- Task 26 fatto: Mappa rifinita

@@ -20,7 +20,8 @@ describe('eventsToMarkers', () => {
 
   it('copia id, titolo e posizione approssimata', () => {
     const [marker] = eventsToMarkers([makeEvent('a', 'cena')])
-    expect(marker).toEqual({ eventId: 'a', lat: 45.45, lng: 9.17, emoji: '🍽️', title: 'Evento a' })
+    expect(marker).toMatchObject({ eventId: 'a', lat: 45.45, lng: 9.17, emoji: '🍽️', title: 'Evento a', zone: 'Navigli' })
+    expect(marker.when).toContain('·')
   })
 
   it('senza eventi restituisce un elenco vuoto', () => {
@@ -34,8 +35,8 @@ describe('centerOf', () => {
   })
 
   it('con più marker fa la media', () => {
-    const a = { eventId: 'a', lat: 10, lng: 20, emoji: '✨', title: 'a' }
-    const b = { eventId: 'b', lat: 20, lng: 40, emoji: '✨', title: 'b' }
+    const a = { eventId: 'a', lat: 10, lng: 20, emoji: '✨', title: 'a', when: '', zone: '' }
+    const b = { eventId: 'b', lat: 20, lng: 40, emoji: '✨', title: 'b', when: '', zone: '' }
     expect(centerOf([a, b])).toEqual([15, 30])
   })
 })
