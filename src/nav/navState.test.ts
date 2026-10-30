@@ -1,4 +1,4 @@
-import { canGoBack, goBack, openDebug, openEdit, openEvent, selectTab, START, titleOf } from './navState'
+import { canGoBack, goBack, openDebug, openEdit, openEvent, selectTab, showsAppHeader, START, titleOf } from './navState'
 
 describe('navState', () => {
   it('parte dalla scheda Eventi, senza schermate aperte', () => {
@@ -23,5 +23,13 @@ describe('navState', () => {
     expect(titleOf(START)).toBe('Eventi in programma')
     expect(titleOf(selectTab('miei'))).toBe('I miei eventi')
     expect(titleOf(openEvent(START, 'x'))).toBe('Evento')
+  })
+})
+
+describe('barra del titolo', () => {
+  it('la schermata Eventi ha la sua testata, le altre usano la barra', () => {
+    expect(showsAppHeader(START)).toBe(false)
+    expect(showsAppHeader(openEvent(START, 'e1'))).toBe(true)
+    expect(showsAppHeader(selectTab('mappa'))).toBe(true)
   })
 })

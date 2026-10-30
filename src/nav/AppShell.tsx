@@ -9,7 +9,7 @@ import { MyEventsScreen } from '../screens/MyEventsScreen'
 import { ProfileScreen } from '../screens/ProfileScreen'
 import { ProfileView } from '../screens/ProfileView'
 import { AppHeader } from './AppHeader'
-import { canGoBack, goBack, openDebug, openEdit, openEvent, selectTab, START, titleOf, type Nav } from './navState'
+import { canGoBack, goBack, openDebug, openEdit, openEvent, selectTab, showsAppHeader, START, titleOf, type Nav } from './navState'
 import { TabBar } from './TabBar'
 
 interface Props {
@@ -30,7 +30,7 @@ export function AppShell({ uid, profile, onProfileSaved }: Props) {
       case 'edit': return <ProfileScreen uid={uid} current={profile} onSaved={(saved) => { onProfileSaved(saved); setNav((n) => goBack(n)) }} />
     }
     switch (nav.tab) {
-      case 'eventi': return <EventListScreen onOpen={open} />
+      case 'eventi': return <EventListScreen name={profile.nome} onOpen={open} onCreate={() => setNav(selectTab('crea'))} />
       case 'mappa': return <MapScreen onOpen={open} />
       case 'crea': return <CreateEventScreen uid={uid} onDone={() => setNav(selectTab('miei'))} />
       case 'miei': return <MyEventsScreen uid={uid} onOpen={open} />
@@ -40,7 +40,7 @@ export function AppShell({ uid, profile, onProfileSaved }: Props) {
 
   return (
     <div className="shell">
-      <AppHeader title={titleOf(nav)} onBack={canGoBack(nav) ? () => setNav((n) => goBack(n)) : null} />
+      {showsAppHeader(nav) && <AppHeader title={titleOf(nav)} onBack={canGoBack(nav) ? () => setNav((n) => goBack(n)) : null} />}
       <main className="shell-content">{content()}</main>
       <TabBar active={nav.tab} onSelect={(tab) => setNav(selectTab(tab))} />
     </div>

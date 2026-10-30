@@ -1,5 +1,6 @@
 import type { EventFilters } from '../filters/eventFilters'
 import type { PositionState } from '../filters/useMyPosition'
+import { Icon } from '../ui/Icon'
 
 interface Props {
   filters: EventFilters
@@ -24,7 +25,7 @@ export function FiltersMore({ filters, onChange, position, onAskPosition }: Prop
   const active = countMoreFilters(filters)
   return (
     <details className="filters-more">
-      <summary>Data e distanza{active > 0 && <span className="badge">{active}</span>}</summary>
+      <summary><Icon name="filters" size={20} />Data e distanza{active > 0 && <span className="badge">{active}</span>}</summary>
       <div className="filters-more-body">
         <label>Dal <input type="date" value={toText(filters.da)} onChange={(e) => onChange({ ...filters, da: toDate(e.target.value) })} /></label>
         <label>Al <input type="date" value={toText(filters.a)} onChange={(e) => onChange({ ...filters, a: toDate(e.target.value) })} /></label>

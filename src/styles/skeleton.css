@@ -1,0 +1,10 @@
+/* Scheletri di caricamento: forme grigie che pulsano piano. */
+.skeleton-list { display: grid; gap: var(--space-4); }
+.skeleton-card { padding-bottom: var(--space-4); }
+.skeleton { display: block; background: linear-gradient(90deg, var(--color-border-soft), #f6efe6, var(--color-border-soft)); background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite; }
+.skeleton-cover { height: 148px; }
+.skeleton-line { height: 14px; margin: var(--space-3) var(--space-4) 0; border-radius: 999px; }
+.skeleton-line-lg { height: 20px; width: 70%; }
+.skeleton-line-sm { width: 40%; }
+@keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+@media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }

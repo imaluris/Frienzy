@@ -1,38 +1,19 @@
-/* Scheda evento, riga informativa del dettaglio, stato vuoto. */
-.event-card { background: var(--color-surface); border-radius: var(--radius); box-shadow: var(--shadow-card); overflow: hidden; }
+/* Scheda evento grande: copertina in cima, corpo con titolo, quando, dove, avatar e posti. */
+.event-card { position: relative; background: var(--color-surface); border-radius: var(--radius); box-shadow: var(--shadow-1); overflow: hidden; border: 1px solid var(--color-border-soft); }
 .event-card.is-cancelled { opacity: 0.75; }
 .event-card-main {
-  display: flex; gap: var(--space-3); align-items: flex-start; width: 100%; text-align: left;
-  justify-content: flex-start; background: none; border-radius: 0; padding: var(--space-4); font-weight: 400; min-height: 0; box-shadow: none;
+  display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 0; width: 100%;
+  text-align: left; background: none; border: 0; border-radius: 0; padding: 0; font-weight: 400; min-height: 0; box-shadow: none;
 }
-.event-card-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.event-card-title { font-weight: 800; font-size: 1.1rem; line-height: 1.25; }
-.event-card-meta { color: var(--color-muted); font-size: 0.92rem; }
+.event-card-body { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; padding: var(--space-4); }
+.event-card-title { font-weight: var(--weight-heavy); font-size: var(--text-subtitle); line-height: 1.25; overflow-wrap: anywhere; }
+.event-card-meta { display: flex; align-items: center; gap: var(--space-2); color: var(--color-muted); font-size: 0.9375rem; font-weight: var(--weight-bold); min-width: 0; }
+.event-card-meta svg { flex: none; }
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.event-card-social { display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-2); }
 .event-card-badges { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-2); margin-top: var(--space-2); }
+.event-card-badges:empty { display: none; }
 .event-card > button.link { margin: 0 var(--space-2) var(--space-2); }
-.event-emoji {
-  flex: none; display: inline-flex; align-items: center; justify-content: center;
-  width: 52px; height: 52px; border-radius: 16px; font-size: 1.7rem; background: #fbe9d7;
-}
-.event-emoji-lg { width: 72px; height: 72px; font-size: 2.4rem; }
-.type-trekking, .type-passeggiata { background: #dcebe3; }
-.type-mostra, .type-altro { background: #fbefc9; }
 .badge-neutral { background: #ece3d8; }
 .badge-accent { background: var(--color-accent); }
 .badge-warn { background: #f6d5d1; color: #7a1913; }
-.event-hero { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); margin-bottom: var(--space-4); }
-.event-hero h2 { margin: 0; font-size: 1.6rem; }
-.info-rows { list-style: none; padding: 0; margin: 0 0 var(--space-4); display: grid; gap: var(--space-3); }
-.info-row { display: flex; gap: var(--space-3); align-items: flex-start; }
-.info-icon {
-  flex: none; display: inline-flex; align-items: center; justify-content: center;
-  width: 40px; height: 40px; border-radius: 12px; background: var(--color-secondary-soft); color: var(--color-secondary);
-}
-.info-text { display: flex; flex-direction: column; min-width: 0; font-weight: var(--weight-bold); overflow-wrap: anywhere; }
-.event-description { font-size: 1.05rem; }
-.empty-state { text-align: center; color: var(--color-muted); padding: var(--space-6) var(--space-4); }
-.empty-icon {
-  display: inline-flex; align-items: center; justify-content: center; width: 72px; height: 72px;
-  margin-bottom: var(--space-3); border-radius: 50%; background: var(--color-primary-soft); color: #a8452f;
-}
-.empty-state p { margin: 0; font-weight: 700; }

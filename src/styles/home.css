@@ -1,0 +1,11 @@
+/* Schermata Eventi: testata con saluto, ricerca, sezioni per periodo. */
+.home-header { display: flex; align-items: center; gap: var(--space-3); padding: calc(var(--space-4) + var(--safe-top)) var(--space-4) var(--space-2); }
+.home-logo { width: 44px; height: 44px; border-radius: 12px; box-shadow: var(--shadow-1); }
+.home-brand { margin: 0; font-size: var(--text-caption); font-weight: var(--weight-heavy); letter-spacing: 0.08em; text-transform: uppercase; color: #a8452f; }
+.home-title { margin: 0; font-size: var(--text-display); line-height: 1.1; color: var(--color-secondary); overflow-wrap: anywhere; }
+.home-body { padding: 0 var(--space-4) var(--space-4); }
+.search { position: relative; display: block; margin: 0 0 var(--space-3); }
+.search svg { position: absolute; left: var(--space-4); top: 50%; transform: translateY(-50%); color: var(--color-muted); pointer-events: none; }
+.search input { margin: 0; padding-left: 48px; border-radius: 999px; border-color: var(--color-border-soft); box-shadow: var(--shadow-1); }
+.period { margin-top: var(--space-6); }
+.period h2 { margin: 0 0 var(--space-3); font-size: var(--text-title); }

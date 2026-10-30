@@ -30,3 +30,4 @@ MVP completato
 - Task 27 fatto: Verifica finale
 Fase 2 completata
 - Task 28 fatto: Sistema grafico e icone
+- Task 29 fatto: Elenco eventi

@@ -34,6 +34,9 @@ export const goBack = (nav: Nav): Nav => ({ ...nav, overlay: { kind: 'none' } })
 
 export const canGoBack = (nav: Nav): boolean => nav.overlay.kind !== 'none'
 
+// La schermata Eventi ha una testata tutta sua (logo e saluto): niente barra del titolo.
+export const showsAppHeader = (nav: Nav): boolean => !(nav.tab === 'eventi' && nav.overlay.kind === 'none')
+
 // Titolo mostrato nell'intestazione.
 export function titleOf(nav: Nav): string {
   switch (nav.overlay.kind) {

@@ -1,0 +1,18 @@
+/* Avatar sovrapposti, barra dei posti, cuore per salvare. */
+.avatar-xs { width: 28px; height: 28px; font-size: 0.75rem; }
+.avatar-stack { display: inline-flex; flex: none; }
+.avatar-stack .avatar { border: 2px solid var(--color-surface); }
+.avatar-stack .avatar + .avatar { margin-left: -8px; }
+.avatar-more { background: var(--color-secondary-soft); color: var(--color-secondary); }
+.seats { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; flex: 1; }
+.seats-bar { display: block; height: 6px; border-radius: 999px; background: var(--color-border-soft); overflow: hidden; }
+.seats-fill { display: block; height: 100%; border-radius: 999px; background: var(--color-secondary); transition: width var(--motion-base) ease; }
+.seats-low .seats-fill { background: #d79a22; }
+.seats-full .seats-fill { background: var(--color-error); }
+.seats-label { font-size: var(--text-caption); font-weight: var(--weight-bold); color: var(--color-muted); }
+.seats-low .seats-label { color: #7a5200; }
+.save-button {
+  position: absolute; right: var(--space-3); top: var(--space-3); width: 44px; min-height: 44px; height: 44px; padding: 0;
+  border-radius: 50%; background: rgba(255, 255, 255, 0.92); color: var(--color-text); box-shadow: var(--shadow-2);
+}
+.save-button.is-saved { color: #c0432c; }

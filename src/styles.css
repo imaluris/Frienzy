@@ -8,6 +8,11 @@
 @import './styles/lists.css';
 @import './styles/filters.css';
 @import './styles/event-card.css';
+@import './styles/event-detail.css';
+@import './styles/cover.css';
+@import './styles/social.css';
+@import './styles/skeleton.css';
+@import './styles/home.css';
 @import './styles/map.css';
 @import './styles/create.css';
 @import './styles/nav.css';
