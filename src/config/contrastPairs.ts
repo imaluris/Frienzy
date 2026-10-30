@@ -19,6 +19,9 @@ export const PAIRS = [
   { name: 'badge neutro (testo su beige)', fg: text, bg: '#ece3d8', min: 4.5 },
   { name: 'badge annullato', fg: '#7a1913', bg: '#f6d5d1', min: 4.5 },
   { name: 'testo secondario su scheda bianca', fg: '#6b5a4c', bg: WHITE, min: 4.5 },
+  { name: 'icona attiva (secondario su pillola verde chiaro)', fg: secondary, bg: '#dcebe3', min: 4.5 },
+  { name: 'icona stato vuoto (terracotta scuro su rosa chiaro)', fg: '#a8452f', bg: '#fbe3dc', min: 3 },
+  { name: 'etichetta scheda inattiva (grigio caldo su bianco)', fg: '#6b5a4c', bg: WHITE, min: 4.5 },
   { name: 'bordo marker (primario su bianco)', fg: primary, bg: WHITE, min: 3 },
   ...AVATAR_COLORS.map((c) => ({ name: `iniziali su avatar ${c}`, fg: text, bg: c, min: 4.5 })),
 ] as const

@@ -5,6 +5,7 @@ import { useMyPosition } from '../filters/useMyPosition'
 import { EventMap } from '../map/EventMap'
 import { eventsToMarkers } from '../map/markers'
 import { positionMessage } from '../map/positionMessage'
+import { Icon } from '../ui/Icon'
 
 interface Props {
   onOpen: (eventId: string) => void
@@ -27,7 +28,7 @@ export function MapScreen({ onOpen }: Props) {
       {!loading && !failed && (
         <>
           <div className="locate-bar">
-            <button type="button" className="locate-button" onClick={ask}>Centra su di me</button>
+            <button type="button" className="locate-button" onClick={ask}><Icon name="locate" size={20} />Centra su di me</button>
           </div>
           <div className="map-wrap">
             <EventMap markers={markers} me={state.status === 'ok' ? state.point : null} onSelect={onOpen} onTilesFailed={onTilesFailed} />

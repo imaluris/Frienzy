@@ -24,8 +24,8 @@ export function EventListScreen({ onOpen }: Props) {
       <FiltersBar filters={filters} onChange={setFilters} position={position} onAskPosition={ask} />
       {loading && <p className="loading">Caricamento…</p>}
       {failed && <p role="alert" className="error">Non riesco a caricare gli eventi.</p>}
-      {!loading && !failed && list.length === 0 && <EmptyState emoji="🗓️" text="Nessun evento in programma." />}
-      {!loading && !failed && list.length > 0 && shown.length === 0 && <EmptyState emoji="🔍" text="Nessun evento con questi filtri." />}
+      {!loading && !failed && list.length === 0 && <EmptyState icon="calendar-empty" text="Nessun evento in programma." />}
+      {!loading && !failed && list.length > 0 && shown.length === 0 && <EmptyState icon="search-empty" text="Nessun evento con questi filtri." />}
       <ul className="event-list">
         {shown.map((event) => (
           <li key={event.id}><EventCard event={event} onOpen={() => onOpen(event.id)} /></li>

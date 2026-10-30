@@ -3,7 +3,7 @@
 .event-card.is-cancelled { opacity: 0.75; }
 .event-card-main {
   display: flex; gap: var(--space-3); align-items: flex-start; width: 100%; text-align: left;
-  background: none; border-radius: 0; padding: var(--space-4); font-weight: 400; min-height: 0;
+  justify-content: flex-start; background: none; border-radius: 0; padding: var(--space-4); font-weight: 400; min-height: 0; box-shadow: none;
 }
 .event-card-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .event-card-title { font-weight: 800; font-size: 1.1rem; line-height: 1.25; }
@@ -24,8 +24,15 @@
 .event-hero h2 { margin: 0; font-size: 1.6rem; }
 .info-rows { list-style: none; padding: 0; margin: 0 0 var(--space-4); display: grid; gap: var(--space-3); }
 .info-row { display: flex; gap: var(--space-3); align-items: flex-start; }
-.info-icon { font-size: 1.3rem; width: 28px; text-align: center; }
+.info-icon {
+  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: 12px; background: var(--color-secondary-soft); color: var(--color-secondary);
+}
+.info-text { display: flex; flex-direction: column; min-width: 0; font-weight: var(--weight-bold); overflow-wrap: anywhere; }
 .event-description { font-size: 1.05rem; }
 .empty-state { text-align: center; color: var(--color-muted); padding: var(--space-6) var(--space-4); }
-.empty-emoji { display: block; font-size: 3rem; margin-bottom: var(--space-2); }
+.empty-icon {
+  display: inline-flex; align-items: center; justify-content: center; width: 72px; height: 72px;
+  margin-bottom: var(--space-3); border-radius: 50%; background: var(--color-primary-soft); color: #a8452f;
+}
 .empty-state p { margin: 0; font-weight: 700; }

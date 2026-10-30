@@ -30,12 +30,12 @@ export function ParticipationActions({ view, eventId, uid, onChanged }: Props) {
     <section aria-label="Partecipazione">
       {INFO[view] && <p>{INFO[view]}</p>}
       {canJoin && (
-        <button type="button" disabled={busy} onClick={() => run(() => joinEvent(participations, eventId, uid))}>
+        <button type="button" disabled={busy} aria-busy={busy} onClick={() => run(() => joinEvent(participations, eventId, uid))}>
           {view === 'chiedi' ? 'Chiedi di partecipare' : 'Partecipa'}
         </button>
       )}
       {canWithdraw && (
-        <button type="button" className="secondary" disabled={busy} onClick={() => run(() => withdrawFromEvent(participations, eventId, uid))}>
+        <button type="button" className="secondary" disabled={busy} aria-busy={busy} onClick={() => run(() => withdrawFromEvent(participations, eventId, uid))}>
           {view === 'richiesta' ? 'Ritira la richiesta' : 'Ritirati'}
         </button>
       )}

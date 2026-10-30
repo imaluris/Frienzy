@@ -31,7 +31,7 @@ export function MyEventsScreen({ uid, onOpen }: { uid: string; onOpen: (eventId:
       {loading && <p className="loading">Caricamento…</p>}
       {failed && <p role="alert" className="error">Non riesco a caricare i tuoi eventi.</p>}
       {error && <p role="alert" className="error">{error}</p>}
-      {!loading && !failed && mine.organized.length === 0 && <EmptyState emoji="🎈" text="Non organizzi ancora nessun evento." />}
+      {!loading && !failed && mine.organized.length === 0 && <EmptyState icon="party" text="Non organizzi ancora nessun evento." />}
       <ul className="event-list">
         {mine.organized.map((event) => (
           <li key={event.id}>
@@ -48,7 +48,7 @@ export function MyEventsScreen({ uid, onOpen }: { uid: string; onOpen: (eventId:
         ))}
       </ul>
       <h2>Le mie iscrizioni</h2>
-      {!loading && !failed && mine.joined.length === 0 && <EmptyState emoji="👋" text="Non sei iscritto a nessun evento." />}
+      {!loading && !failed && mine.joined.length === 0 && <EmptyState icon="ticket" text="Non sei iscritto a nessun evento." />}
       <ul className="event-list">
         {mine.joined.map(({ event, participation }) => (
           <li key={event.id}>

@@ -29,3 +29,4 @@ MVP completato
 - Task 26 fatto: Mappa rifinita
 - Task 27 fatto: Verifica finale
 Fase 2 completata
+- Task 28 fatto: Sistema grafico e icone

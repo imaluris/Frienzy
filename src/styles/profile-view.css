@@ -13,4 +13,3 @@
 .profile-about p { margin: 0 0 var(--space-4); font-size: 1.05rem; }
 .profile-about .chip-row { margin-bottom: var(--space-6); }
 .profile-account { display: grid; gap: var(--space-2); justify-items: center; }
-button.wide { width: 100%; }
