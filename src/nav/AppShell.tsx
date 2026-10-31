@@ -9,7 +9,7 @@ import { MyEventsScreen } from '../screens/MyEventsScreen'
 import { ProfileScreen } from '../screens/ProfileScreen'
 import { ProfileView } from '../screens/ProfileView'
 import { AppHeader } from './AppHeader'
-import { canGoBack, goBack, openDebug, openEdit, openEvent, selectTab, showsAppHeader, START, titleOf, type Nav } from './navState'
+import { canGoBack, goBack, openDebug, openEdit, openEvent, selectTab, showsAppHeader, showsTabBar, START, titleOf, type Nav } from './navState'
 import { TabBar } from './TabBar'
 
 interface Props {
@@ -25,7 +25,7 @@ export function AppShell({ uid, profile, onProfileSaved }: Props) {
 
   function content(): ReactNode {
     switch (nav.overlay.kind) {
-      case 'event': return <EventDetailScreen eventId={nav.overlay.id} />
+      case 'event': return <EventDetailScreen eventId={nav.overlay.id} onBack={() => setNav((n) => goBack(n))} />
       case 'debug': return <DebugScreen />
       case 'edit': return <ProfileScreen uid={uid} current={profile} onSaved={(saved) => { onProfileSaved(saved); setNav((n) => goBack(n)) }} />
     }
@@ -42,7 +42,7 @@ export function AppShell({ uid, profile, onProfileSaved }: Props) {
     <div className="shell">
       {showsAppHeader(nav) && <AppHeader title={titleOf(nav)} onBack={canGoBack(nav) ? () => setNav((n) => goBack(n)) : null} />}
       <main className="shell-content">{content()}</main>
-      <TabBar active={nav.tab} onSelect={(tab) => setNav(selectTab(tab))} />
+      {showsTabBar(nav) && <TabBar active={nav.tab} onSelect={(tab) => setNav(selectTab(tab))} />}
     </div>
   )
 }

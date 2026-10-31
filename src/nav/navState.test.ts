@@ -1,4 +1,4 @@
-import { canGoBack, goBack, openDebug, openEdit, openEvent, selectTab, showsAppHeader, START, titleOf } from './navState'
+import { canGoBack, goBack, openDebug, openEdit, openEvent, selectTab, showsAppHeader, showsTabBar, START, titleOf } from './navState'
 
 describe('navState', () => {
   it('parte dalla scheda Eventi, senza schermate aperte', () => {
@@ -29,7 +29,14 @@ describe('navState', () => {
 describe('barra del titolo', () => {
   it('la schermata Eventi ha la sua testata, le altre usano la barra', () => {
     expect(showsAppHeader(START)).toBe(false)
-    expect(showsAppHeader(openEvent(START, 'e1'))).toBe(true)
+    expect(showsAppHeader(openEvent(START, 'e1'))).toBe(false) // il dettaglio ha la barra sulla copertina
+    expect(showsAppHeader(openDebug(START))).toBe(true)
     expect(showsAppHeader(selectTab('mappa'))).toBe(true)
+  })
+
+  it('il dettaglio evento nasconde la barra a schede, il resto la mostra', () => {
+    expect(showsTabBar(openEvent(START, 'e1'))).toBe(false)
+    expect(showsTabBar(START)).toBe(true)
+    expect(showsTabBar(openEdit(START))).toBe(true)
   })
 })

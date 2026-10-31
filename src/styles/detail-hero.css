@@ -1,0 +1,24 @@
+/* Copertina del dettaglio: titolo sopra una sfumatura scura, barra fissa con indietro/condividi, parallasse. */
+.detail-hero { position: relative; height: calc(296px + var(--safe-top)); overflow: hidden; background: var(--color-secondary); }
+.detail-hero-art { position: absolute; inset: -80px 0 0; will-change: transform; }
+.detail-hero .cover { height: 100%; }
+.detail-hero .cover-emoji { right: var(--space-6); top: calc(var(--safe-top) + 152px); bottom: auto; font-size: 4rem; } /* 80px = quanto la copertina sporge sopra (parallasse) */
+.detail-hero-scrim { position: absolute; inset: 0; background: linear-gradient(to top, rgba(43, 33, 24, 0.85) 0%, rgba(43, 33, 24, 0.6) 38%, rgba(43, 33, 24, 0.25) 65%, rgba(43, 33, 24, 0) 92%); }
+.detail-hero-text { position: absolute; left: 0; right: 0; bottom: var(--space-8); padding: 0 var(--space-4); color: #fff; }
+.detail-title { margin: var(--space-2) 0 var(--space-1); font-size: var(--text-display); line-height: 1.15; color: #fff; overflow-wrap: anywhere; text-shadow: 0 1px 8px rgba(43, 33, 24, 0.4); }
+.detail-when { display: flex; align-items: center; gap: var(--space-2); margin: 0; font-weight: var(--weight-bold); }
+.badge-hero { background: rgba(255, 255, 255, 0.92); color: var(--color-text); }
+.detail-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000; display: flex; align-items: center; gap: var(--space-3);
+  padding: calc(var(--space-2) + var(--safe-top)) var(--space-3) var(--space-2); min-height: calc(64px + var(--safe-top));
+  border-bottom: 1px solid rgba(234, 223, 210, var(--p));
+  box-shadow: 0 2px 8px rgba(43, 33, 24, calc(var(--p) * 0.1));
+}
+.detail-bar-title { flex: 1; min-width: 0; margin: 0; font-size: var(--text-subtitle); font-weight: var(--weight-heavy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: var(--p); }
+.round-btn, .round-spacer { flex: none; width: var(--tap); height: var(--tap); }
+.round-btn { padding: 0; min-height: var(--tap); border-radius: 50%; background: rgba(255, 255, 255, 0.94); color: var(--color-text); box-shadow: var(--shadow-2); }
+.toast {
+  position: fixed; left: var(--space-4); right: var(--space-4); bottom: calc(96px + var(--safe-bottom)); z-index: 3000; margin: 0;
+  padding: var(--space-3) var(--space-4); border-radius: var(--radius); background: var(--color-text); color: #fff; font-weight: var(--weight-bold);
+  box-shadow: var(--shadow-3); text-align: center; animation: fade-in var(--motion-base) ease;
+}

@@ -10,6 +10,9 @@
 @import './styles/event-card.css';
 @import './styles/event-detail.css';
 @import './styles/cover.css';
+@import './styles/detail-hero.css';
+@import './styles/action-bar.css';
+@import './styles/sheet.css';
 @import './styles/social.css';
 @import './styles/skeleton.css';
 @import './styles/home.css';

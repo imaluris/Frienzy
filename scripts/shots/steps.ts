@@ -26,6 +26,8 @@ export const STEPS: Step[] = [
   { name: '15-dopo-partecipa', go: async (p) => { await fromHome(p, /Aperitivo sul Naviglio/, 'Partecipa'); await p.getByText(/confermata/).waitFor() } },
   { name: '16-richiesta-inviata', go: async (p) => { await fromHome(p, /pasta fatta/, 'Chiedi di partecipare'); await p.getByText(/Richiesta inviata/).waitFor() } },
   { name: '17-organizzatore-richieste', go: (p) => fromHome(p, 'I miei eventi', /Brunch/) },
+  { name: '24-organizzatore-gestisci', go: async (p) => { await fromHome(p, 'I miei eventi', /Brunch/, /Gestisci evento/); await p.getByRole('dialog').waitFor() } },
+  { name: '25-conferma-ritiro', go: async (p) => { await fromHome(p, /Aperitivo sul Naviglio/, 'Partecipa'); await p.getByText(/confermata/).waitFor(); await click(p, 'Ritirati'); await p.getByRole('dialog').waitFor() } },
   { name: '08-miei-eventi', go: (p) => fromHome(p, 'I miei eventi') },
   { name: '09-mappa', go: (p) => fromHome(p, 'Mappa') },
   {

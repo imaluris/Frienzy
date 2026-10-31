@@ -34,8 +34,11 @@ export const goBack = (nav: Nav): Nav => ({ ...nav, overlay: { kind: 'none' } })
 
 export const canGoBack = (nav: Nav): boolean => nav.overlay.kind !== 'none'
 
-// La schermata Eventi ha una testata tutta sua (logo e saluto): niente barra del titolo.
-export const showsAppHeader = (nav: Nav): boolean => !(nav.tab === 'eventi' && nav.overlay.kind === 'none')
+// Eventi (logo e saluto) e dettaglio evento (copertina) hanno una testata tutta loro: niente barra del titolo.
+export const showsAppHeader = (nav: Nav): boolean => nav.overlay.kind !== 'event' && !(nav.tab === 'eventi' && nav.overlay.kind === 'none')
+
+// Il dettaglio evento ha la sua barra azione in basso (e una barra in alto sulla copertina): niente barra a schede.
+export const showsTabBar = (nav: Nav): boolean => nav.overlay.kind !== 'event'
 
 // Titolo mostrato nell'intestazione.
 export function titleOf(nav: Nav): string {

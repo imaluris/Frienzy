@@ -1,0 +1,25 @@
+/* Barra azione fissa in basso nel dettaglio: posti a sinistra, pulsante grande a destra. */
+.action-bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 1000; margin: 0; background: var(--color-surface);
+  border-top: 1px solid var(--color-border-soft); box-shadow: 0 -4px 16px rgba(43, 33, 24, 0.1);
+  padding: var(--space-3) var(--space-4) calc(var(--space-3) + var(--safe-bottom));
+}
+.action-bar-row { display: flex; align-items: center; gap: var(--space-4); }
+.action-bar .seats { flex: 1 1 0; }
+.action-main { flex: none; max-width: 62%; min-height: 52px; padding: 0 var(--space-6); text-align: center; line-height: 1.2; }
+.action-main:disabled { opacity: 1; background: var(--color-border-soft); border-color: transparent; color: var(--color-muted); }
+.action-count {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; padding: 0 6px;
+  border-radius: 999px; background: var(--color-secondary); color: #fff; font-size: var(--text-caption);
+}
+.action-error { margin: 0 0 var(--space-2); font-size: var(--text-caption); }
+.request-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+.request-who { display: flex; flex-direction: column; flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.request-row .row-actions { width: 100%; margin: 0; }
+.request-row .row-actions button { flex: 1; }
+button.danger-outline { color: var(--color-error); border-color: var(--color-error); margin: var(--space-2) 0; }
+.area-map { position: relative; height: 168px; overflow: hidden; border-radius: var(--radius); border: 1px solid var(--color-border-soft); box-shadow: var(--shadow-1);
+  background: #efe6d9 repeating-linear-gradient(0deg, transparent 0 31px, rgba(47, 93, 80, 0.07) 31px 32px), repeating-linear-gradient(90deg, transparent 0 31px, rgba(47, 93, 80, 0.07) 31px 32px); }
+.area-map-canvas { position: absolute; inset: 0; background: transparent; }
+.area-map-credit { position: absolute; right: var(--space-2); bottom: var(--space-1); z-index: 500; font-size: 0.625rem; color: var(--color-muted); background: rgba(255, 255, 255, 0.8); padding: 0 4px; border-radius: 4px; }
+.area-map-note { margin: var(--space-2) 0 0; }

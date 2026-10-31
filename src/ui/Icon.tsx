@@ -1,5 +1,5 @@
 import {
-  ArrowLeft, CalendarDays, CalendarX, Check, Clock, Heart, House, LocateFixed, Map, MapPin, PartyPopper,
+  ArrowLeft, Ban, CalendarDays, CalendarX, Check, CircleCheck, Clock, Hourglass, Info, Settings2, ShieldCheck, Heart, House, LocateFixed, Map, MapPin, PartyPopper,
   Plus, Search, SearchX, Share2, SlidersHorizontal, Ticket, UserRound, UsersRound, X, type LucideIcon,
 } from 'lucide-react'
 
@@ -25,6 +25,12 @@ export const ICONS = {
   locate: LocateFixed,
   filters: SlidersHorizontal,
   party: PartyPopper,
+  shield: ShieldCheck,
+  info: Info,
+  'check-circle': CircleCheck,
+  hourglass: Hourglass,
+  ban: Ban,
+  manage: Settings2,
 } satisfies Record<string, LucideIcon>
 
 export type IconName = keyof typeof ICONS

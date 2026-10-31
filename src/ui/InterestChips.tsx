@@ -7,7 +7,8 @@ export function InterestChips({ interests }: { interests: string[] }) {
     <ul className="chip-row" aria-label="Interessi">
       {interests.map((id) => (
         <li key={id} className="chip">
-          <span aria-hidden="true">{isEventTypeId(id) ? EVENT_TYPE_EMOJI[id] : '✨'}</span>&nbsp;{id}
+          <span aria-hidden="true">{isEventTypeId(id) ? EVENT_TYPE_EMOJI[id] : '✨'}</span>
+          {id}
         </li>
       ))}
     </ul>

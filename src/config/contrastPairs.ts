@@ -27,6 +27,12 @@ export const PAIRS = [
   { name: 'ultimi posti (ocra scuro su bianco)', fg: '#7a5200', bg: WHITE, min: 4.5 },
   { name: 'cuore salvato (rosso su bianco)', fg: '#c0432c', bg: WHITE, min: 3 },
   { name: 'bordo marker (primario su bianco)', fg: primary, bg: WHITE, min: 3 },
+  { name: 'titolo bianco sulla copertina (sfumatura scura su giallo chiaro)', fg: WHITE, bg: '#7b5e2c', min: 4.5 },
+  { name: 'bianco sul pulsante pericolo', fg: WHITE, bg: '#b3261e', min: 4.5 },
+  { name: 'stato confermato (verde scuro su verde chiaro)', fg: '#1f4136', bg: '#dcebe3', min: 4.5 },
+  { name: 'stato in attesa (ocra scuro su giallo chiaro)', fg: '#5c3f00', bg: '#fbefc9', min: 4.5 },
+  { name: 'stato negativo (rosso scuro su rosa chiaro)', fg: '#7a1913', bg: '#f6d5d1', min: 4.5 },
+  { name: 'pulsante spento nella barra azione', fg: '#6b5a4c', bg: '#eadfd2', min: 4.5 },
   ...AVATAR_COLORS.map((c) => ({ name: `iniziali su avatar ${c}`, fg: text, bg: c, min: 4.5 })),
 ] as const
 

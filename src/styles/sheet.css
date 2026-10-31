@@ -1,0 +1,22 @@
+/* Finestra a scorrimento dal basso (bottom sheet) e pulsante "pericolo". */
+.sheet-layer { position: fixed; inset: 0; z-index: 2000; display: flex; flex-direction: column; justify-content: flex-end; }
+.sheet-backdrop {
+  position: absolute; inset: 0; width: 100%; min-height: 0; padding: 0; border: 0; border-radius: 0;
+  background: rgba(43, 33, 24, 0.5); box-shadow: none; animation: fade-in var(--motion-base) ease;
+}
+.sheet-backdrop:active:not(:disabled) { transform: none; filter: none; }
+.sheet {
+  position: relative; max-height: 85dvh; overflow-y: auto; outline: none; background: var(--color-surface);
+  border-radius: 24px 24px 0 0; box-shadow: var(--shadow-3); padding: var(--space-3) var(--space-4) calc(var(--space-6) + var(--safe-bottom));
+  animation: sheet-up 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.sheet-handle { display: block; width: 40px; height: 4px; margin: 0 auto var(--space-4); border-radius: 999px; background: var(--color-border); }
+.sheet-title { margin: 0 0 var(--space-2); font-size: var(--text-title); }
+.sheet-text { color: var(--color-muted); margin: 0 0 var(--space-6); }
+.sheet-actions { display: grid; gap: var(--space-3); }
+.sheet-actions button { width: 100%; }
+button.danger { background: var(--color-error); color: #fff; }
+button.danger[aria-busy='true']::after { border-color: #fff transparent #fff transparent; }
+@keyframes sheet-up { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .sheet, .sheet-backdrop { animation: none; } }

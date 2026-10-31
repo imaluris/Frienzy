@@ -36,6 +36,9 @@ describe('pulsanti di partecipazione', () => {
     expect(await screen.findByText(/partecipazione è confermata/)).toBeInTheDocument()
     expect((await services.participations.listConfirmed(event.id)).length).toBe(1)
     fireEvent.click(screen.getByRole('button', { name: 'Ritirati' }))
+    expect(screen.getByRole('dialog', { name: 'Vuoi ritirarti?' })).toBeInTheDocument() // prima la conferma
+    expect((await services.participations.listConfirmed(event.id)).length).toBe(1)
+    fireEvent.click(screen.getByRole('button', { name: 'Sì, ritirati' }))
     expect(await screen.findByRole('button', { name: 'Partecipa' })).toBeInTheDocument()
     expect((await services.participations.listConfirmed(event.id)).length).toBe(0)
   })
@@ -47,6 +50,7 @@ describe('pulsanti di partecipazione', () => {
     expect(await screen.findByText(/Richiesta inviata/)).toBeInTheDocument()
     expect((await services.participations.get(event.id, me))?.stato).toBe('richiesta')
     fireEvent.click(screen.getByRole('button', { name: 'Ritira la richiesta' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Sì, ritira' }))
     expect(await screen.findByRole('button', { name: 'Chiedi di partecipare' })).toBeInTheDocument()
   })
 
@@ -79,12 +83,14 @@ describe('pannello organizzatore', () => {
     }
     expect(event.id).not.toBe(mine.id)
     await openDetail(services, /Mia cena/)
+    fireEvent.click(await screen.findByRole('button', { name: /Gestisci evento/ }))
     fireEvent.click(await screen.findByRole('button', { name: 'Accetta Bruno' }))
     fireEvent.click(await screen.findByRole('button', { name: 'Rifiuta Carla' }))
     expect(await screen.findByText('Nessuna richiesta in attesa.')).toBeInTheDocument()
     expect((await services.participations.get(mine.id, 'bruno'))?.stato).toBe('confermato')
     expect((await services.participations.get(mine.id, 'carla'))?.stato).toBe('rifiutato')
     fireEvent.click(screen.getByRole('button', { name: 'Annulla evento' }))
+    fireEvent.click(screen.getByRole('button', { name: "Sì, annulla l'evento" }))
     expect(await screen.findByText('Questo evento è stato annullato.')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Annulla evento' })).toBeNull()
   })
