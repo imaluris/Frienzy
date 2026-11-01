@@ -33,3 +33,4 @@ Fase 2 completata
 - Task 29 fatto: Elenco eventi
 - Task 30 fatto: Dettaglio evento
 - Task 31 fatto: Accesso, registrazione e profilo
+- Task 32 fatto: Mappa e creazione evento

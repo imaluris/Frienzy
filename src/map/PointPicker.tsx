@@ -1,6 +1,7 @@
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useEffect, useRef } from 'react'
+import { pinHtml } from './pinHtml'
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from './viewport'
 
 export interface Point {
@@ -11,17 +12,18 @@ export interface Point {
 interface Props {
   value: Point | null
   emoji: string
+  color: string
   onPick: (point: Point) => void
 }
 
 // Segnaposto del punto scelto: stesso stile dei marker della mappa.
-function pinIcon(emoji: string): L.DivIcon {
-  return L.divIcon({ className: 'emoji-marker', html: `<span>${emoji}</span>`, iconSize: [36, 36] })
+function pinIcon(emoji: string, color: string): L.DivIcon {
+  return L.divIcon({ className: 'event-pin', html: pinHtml({ emoji, color }, true), iconSize: [44, 52], iconAnchor: [22, 50] })
 }
 
 // Mappa in cui si tocca per scegliere il punto dell'evento.
 // La mappa nasce una volta sola; il segnaposto si sposta quando cambia il valore.
-export function PointPicker({ value, emoji, onPick }: Props) {
+export function PointPicker({ value, emoji, color, onPick }: Props) {
   const container = useRef<HTMLDivElement>(null)
   const mapRef = useRef<L.Map | null>(null)
   const pinRef = useRef<L.Marker | null>(null)
@@ -52,8 +54,8 @@ export function PointPicker({ value, emoji, onPick }: Props) {
     if (!map) return
     pinRef.current?.remove()
     pinRef.current = null
-    if (value) pinRef.current = L.marker([value.lat, value.lng], { icon: pinIcon(emoji), interactive: false }).addTo(map)
-  }, [value, emoji])
+    if (value) pinRef.current = L.marker([value.lat, value.lng], { icon: pinIcon(emoji, color), interactive: false }).addTo(map)
+  }, [value, emoji, color])
 
   return <div ref={container} className="point-picker" role="application" aria-label="Mappa per scegliere il punto dell'evento" />
 }

@@ -19,6 +19,7 @@
   --shadow-3: 0 12px 32px rgba(43, 33, 24, 0.18), 0 4px 8px rgba(43, 33, 24, 0.08);
   --shadow-card: var(--shadow-1);
   --tap: 48px;
+  --tabbar-h: 64px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --motion-fast: 150ms; --motion-base: 200ms;

@@ -1,5 +1,5 @@
 import {
-  ArrowLeft, ArrowRight, Ban, CalendarDays, CalendarX, Check, CircleCheck, Clock, Hourglass, Info, LogIn, LogOut, Navigation, Pencil, Settings2, Sparkles, ShieldCheck, Heart, House, LocateFixed, Map, MapPin, PartyPopper,
+  ArrowLeft, ArrowRight, Ban, CalendarDays, CalendarX, Check, CircleCheck, Clock, Hourglass, Info, LogIn, LogOut, Minus, Navigation, Pencil, Settings2, Sparkles, ShieldCheck, Heart, House, LocateFixed, Map, MapPin, PartyPopper,
   Plus, Search, SearchX, Share2, SlidersHorizontal, Ticket, UserRound, UsersRound, X, type LucideIcon,
 } from 'lucide-react'
 
@@ -32,6 +32,7 @@ export const ICONS = {
   ban: Ban,
   manage: Settings2,
   next: ArrowRight,
+  minus: Minus,
   login: LogIn,
   logout: LogOut,
   navigation: Navigation,

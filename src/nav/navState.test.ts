@@ -31,7 +31,8 @@ describe('barra del titolo', () => {
     expect(showsAppHeader(START)).toBe(false)
     expect(showsAppHeader(openEvent(START, 'e1'))).toBe(false) // il dettaglio ha la barra sulla copertina
     expect(showsAppHeader(openDebug(START))).toBe(true)
-    expect(showsAppHeader(selectTab('mappa'))).toBe(true)
+    expect(showsAppHeader(selectTab('mappa'))).toBe(false) // la mappa va a tutto schermo
+    expect(showsAppHeader(selectTab('profilo'))).toBe(true)
   })
 
   it('il dettaglio evento nasconde la barra a schede, il resto la mostra', () => {

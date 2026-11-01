@@ -24,6 +24,26 @@ async function onboarding(page: Page) {
   await click(page, 'Continua')
 }
 
+// Compila i passi di Crea evento fino a quello indicato (0 = tipo, 3 = dove, 4 = posti, 5 = riepilogo).
+async function toStep(page: Page, target: number) {
+  await fromHome(page, 'Crea')
+  await page.getByRole('radio', { name: /cena/ }).click()
+  await click(page, 'Continua')
+  await page.getByLabel(/^Titolo/).fill('Cena in terrazza')
+  await click(page, 'Continua')
+  const d = new Date(Date.now() + 5 * 24 * 3600 * 1000)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  await page.getByLabel(/^Data e ora/).fill(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T20:00`)
+  await click(page, 'Continua')
+  if (target <= 3) return
+  await page.locator('.point-picker').click({ position: { x: 190, y: 110 } })
+  await page.getByLabel(/^Zona/).fill('Navigli')
+  await page.getByLabel(/^Indirizzo esatto/).fill('Via Roma 1')
+  await click(page, 'Continua')
+  if (target <= 4) return
+  await click(page, 'Continua')
+}
+
 export const STEPS: Step[] = [
   { name: '02-eventi', go: (p) => fromHome(p) },
   { name: '22-filtri-aperti', go: async (p) => { await fromHome(p); await p.getByText('Data e distanza').click() } },
@@ -43,9 +63,9 @@ export const STEPS: Step[] = [
     name: '21-mappa-popup',
     go: async (p) => {
       await fromHome(p, 'Mappa')
-      await p.locator('.emoji-marker').first().waitFor()
-      await p.locator('.emoji-marker', { hasText: '🥾' }).click()
-      await p.getByRole('button', { name: 'Apri evento' }).waitFor()
+      await p.locator('.event-pin').first().waitFor()
+      await p.locator('.event-pin', { hasText: '🥾' }).click()
+      await p.getByRole('button', { name: 'Vedi evento' }).waitFor()
     },
   },
   {
@@ -57,19 +77,21 @@ export const STEPS: Step[] = [
       await p.waitForTimeout(800)
     },
   },
-  { name: '10-crea-evento', go: (p) => fromHome(p, 'Crea') },
-  { name: '19-crea-errori', go: async (p) => { await fromHome(p, 'Crea', 'Crea evento'); await p.getByText(/almeno 3 caratteri/).waitFor() } },
   {
-    name: '20-crea-compilato',
+    name: '30-mappa-scheda-estesa',
     go: async (p) => {
-      await fromHome(p, 'Crea')
-      await p.getByRole('radio', { name: /cena/ }).click()
-      await p.getByLabel(/^Titolo/).fill('Cena in terrazza')
-      await p.locator('.point-picker').click({ position: { x: 190, y: 110 } })
-      await p.getByLabel(/^Zona/).fill('Navigli')
-      await p.getByText(/Punto scelto/).waitFor()
+      await fromHome(p, 'Mappa')
+      await p.getByRole('button', { name: /Apri o chiudi/ }).click()
+      await p.getByRole('button', { name: /Apri o chiudi/ }).click()
+      await p.locator('.event-row').first().waitFor()
     },
   },
+  { name: '10-crea-evento', go: (p) => fromHome(p, 'Crea') },
+  { name: '19-crea-errori', go: async (p) => { await fromHome(p, 'Crea', 'Continua', 'Continua', 'Continua'); await p.getByText(/almeno 3 caratteri/).waitFor() } },
+  { name: '20-crea-testo', go: async (p) => { await fromHome(p, 'Crea'); await p.getByRole('radio', { name: /cena/ }).click(); await click(p, 'Continua'); await p.getByLabel(/^Titolo/).fill('Cena in terrazza con vista sui tetti di Milano') } },
+  { name: '31-crea-dove', go: async (p) => { await toStep(p, 3); await p.locator('.point-picker').click({ position: { x: 190, y: 110 } }); await p.getByLabel(/^Zona/).fill('Navigli'); await p.getByText(/Punto scelto/).waitFor() } },
+  { name: '32-crea-posti', go: async (p) => { await toStep(p, 4); await click(p, 'Un posto in più') } },
+  { name: '33-crea-riepilogo', go: async (p) => { await toStep(p, 5); await p.getByRole('heading', { name: 'Tutto pronto?' }).waitFor() } },
   { name: '18-profilo-scheda', go: (p) => fromHome(p, 'Profilo') },
   { name: '11-profilo', go: (p) => fromHome(p, 'Profilo', 'Modifica profilo') },
   { name: '12-debug', go: (p) => fromHome(p, 'Profilo', 'Debug') },

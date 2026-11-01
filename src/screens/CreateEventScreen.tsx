@@ -1,24 +1,17 @@
-import { useState, type FormEvent } from 'react'
+import { useState } from 'react'
 import { useServices } from '../app/ServicesContext'
-import { EVENT_TYPE_EMOJI, isEventTypeId } from '../domain/eventTypes'
-import { createEvent } from '../events/eventService'
-import { validateEventFields, type EventField, type EventFieldErrors } from '../events/fieldErrors'
-import { DESCRIPTION_MAX, type EventInput } from '../events/validation'
-import { Field } from './Field'
-import { LocationField } from './LocationField'
-import { TypeSelector } from './TypeSelector'
+import { CREATE_STEPS, createStepNumber, firstInvalidStep, nextCreateStep, previousCreateStep, stepErrors, STEP_TITLE, type CreateStep } from '../create/createSteps'
+import type { FrienzyEvent } from '../domain/event'
+import { buildEvent, createEvent } from '../events/eventService'
+import type { EventField, EventFieldErrors } from '../events/fieldErrors'
+import type { EventInput } from '../events/validation'
+import { ProgressBars } from '../ui/ProgressBars'
+import { CreateStepBody } from './CreateStepBody'
+import { CreateSummary } from './CreateSummary'
 
 const EMPTY: EventInput = {
-  tipo: 'aperitivo',
-  titolo: '',
-  descrizione: '',
-  dataOra: '',
-  zonaNome: '',
-  indirizzo: '',
-  lat: '',
-  lng: '',
-  maxPartecipanti: '10',
-  richiedeApprovazione: false,
+  tipo: 'aperitivo', titolo: '', descrizione: '', dataOra: '', zonaNome: '', indirizzo: '', lat: '', lng: '',
+  maxPartecipanti: '10', richiedeApprovazione: false,
 }
 
 interface Props {
@@ -26,9 +19,10 @@ interface Props {
   onDone: () => void
 }
 
-// Form per creare un evento. Gli errori compaiono accanto a ogni campo, dopo il primo tentativo di invio.
+// Crea evento a passi: tipo, titolo, quando, dove, posti, riepilogo. Si va avanti solo se i campi del passo sono giusti.
 export function CreateEventScreen({ uid, onDone }: Props) {
   const { events } = useServices()
+  const [step, setStep] = useState<CreateStep>('tipo')
   const [input, setInput] = useState<EventInput>(EMPTY)
   const [errors, setErrors] = useState<EventFieldErrors>({})
   const [error, setError] = useState<string | null>(null)
@@ -40,11 +34,20 @@ export function CreateEventScreen({ uid, onDone }: Props) {
     setErrors((old) => ({ ...old, [field]: undefined }))
   }
 
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault()
-    const found = validateEventFields(input)
+  function goNext() {
+    const found = stepErrors(step, input)
     setErrors(found)
     if (Object.keys(found).length > 0) return
+    const next = nextCreateStep(step)
+    if (next) setStep(next)
+  }
+
+  async function publish() {
+    const invalid = firstInvalidStep(input)
+    if (invalid) {
+      setErrors(stepErrors(invalid, input))
+      return setStep(invalid)
+    }
     setBusy(true)
     try {
       setError(null)
@@ -52,55 +55,31 @@ export function CreateEventScreen({ uid, onDone }: Props) {
       onDone()
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Qualcosa è andato storto.')
-    } finally {
       setBusy(false)
     }
   }
 
-  const emoji = isEventTypeId(input.tipo) ? EVENT_TYPE_EMOJI[input.tipo] : '✨'
-  const bad = (field: EventField) => (errors[field] ? true : undefined)
-
+  const back = previousCreateStep(step)
+  const last = step === 'riepilogo'
   return (
-    <form className="card create-form" onSubmit={handleSubmit} noValidate>
-      <div className="field">
-        <span className="field-label">Che tipo di evento è?</span>
-        <TypeSelector value={input.tipo} onChange={(tipo) => change('tipo', { tipo })} />
+    <section className="create-wizard" aria-label="Crea evento">
+      <ProgressBars current={createStepNumber(step)} total={CREATE_STEPS.length} label={`Passo ${createStepNumber(step)} di ${CREATE_STEPS.length}`} />
+      <h2 className="step-title">{STEP_TITLE[step]}</h2>
+      <div className="create-body">
+        {last ? <Summary input={input} uid={uid} /> : <CreateStepBody step={step} input={input} errors={errors} change={change} />}
+        {error && <p role="alert" className="error">{error}</p>}
       </div>
-      <Field label="Titolo" error={errors.titolo}>
-        <input value={input.titolo} aria-invalid={bad('titolo')} onChange={(e) => change('titolo', { titolo: e.target.value })} />
-      </Field>
-      <Field label={`Descrizione (${input.descrizione.length}/${DESCRIPTION_MAX})`} error={errors.descrizione}>
-        <textarea value={input.descrizione} aria-invalid={bad('descrizione')} onChange={(e) => change('descrizione', { descrizione: e.target.value })} />
-      </Field>
-      <Field label="Data e ora" error={errors.dataOra}>
-        <input type="datetime-local" value={input.dataOra} aria-invalid={bad('dataOra')} onChange={(e) => change('dataOra', { dataOra: e.target.value })} />
-      </Field>
-      <LocationField
-        lat={input.lat}
-        lng={input.lng}
-        emoji={emoji}
-        error={errors.punto}
-        onPick={(p) => change('punto', { lat: p.lat.toFixed(6), lng: p.lng.toFixed(6) })}
-      />
-      <Field label="Zona" hint="Visibile a tutti, ad esempio il quartiere." error={errors.zonaNome}>
-        <input value={input.zonaNome} aria-invalid={bad('zonaNome')} onChange={(e) => change('zonaNome', { zonaNome: e.target.value })} />
-      </Field>
-      <Field label="Indirizzo esatto" hint="Lo vedono solo tu e chi è confermato." error={errors.indirizzo}>
-        <input value={input.indirizzo} aria-invalid={bad('indirizzo')} onChange={(e) => change('indirizzo', { indirizzo: e.target.value })} />
-      </Field>
-      <Field label="Massimo partecipanti" error={errors.maxPartecipanti}>
-        <input inputMode="numeric" value={input.maxPartecipanti} aria-invalid={bad('maxPartecipanti')} onChange={(e) => change('maxPartecipanti', { maxPartecipanti: e.target.value })} />
-      </Field>
-      <label className="inline approval">
-        <input
-          type="checkbox"
-          checked={input.richiedeApprovazione}
-          onChange={(e) => setInput((old) => ({ ...old, richiedeApprovazione: e.target.checked }))}
-        />
-        Le richieste vanno approvate da me
-      </label>
-      {error && <p role="alert" className="error">{error}</p>}
-      <button type="submit" disabled={busy}>Crea evento</button>
-    </form>
+      <footer className="wizard-actions">
+        {back && <button type="button" className="secondary" disabled={busy} onClick={() => { setErrors({}); setStep(back) }}>Indietro</button>}
+        <button type="button" className="grow" aria-busy={busy} onClick={last ? () => void publish() : goNext}>{last ? 'Crea evento' : 'Continua'}</button>
+      </footer>
+    </section>
   )
+}
+
+// Il riepilogo costruisce l'anteprima dai dati già controllati.
+function Summary({ input, uid }: { input: EventInput; uid: string }) {
+  const { event } = buildEvent(uid, input)
+  const preview: FrienzyEvent = { ...event, id: 'anteprima', stato: 'aperto', creatoIl: new Date() }
+  return <CreateSummary preview={preview} address={input.indirizzo.trim()} approval={input.richiedeApprovazione} />
 }

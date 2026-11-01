@@ -16,6 +16,7 @@ describe('eventsToMarkers', () => {
     const markers = eventsToMarkers(EVENT_TYPE_IDS.map((tipo) => makeEvent(tipo, tipo)))
     expect(markers.map((m) => m.emoji)).toEqual(EVENT_TYPE_IDS.map((t) => EVENT_TYPE_EMOJI[t]))
     expect(markers[0].emoji).toBe('🍹')
+    expect(markers[0].color).toMatch(/^#/)
   })
 
   it('copia id, titolo e posizione approssimata', () => {
@@ -35,8 +36,8 @@ describe('centerOf', () => {
   })
 
   it('con più marker fa la media', () => {
-    const a = { eventId: 'a', lat: 10, lng: 20, emoji: '✨', title: 'a', when: '', zone: '' }
-    const b = { eventId: 'b', lat: 20, lng: 40, emoji: '✨', title: 'b', when: '', zone: '' }
+    const a = { eventId: 'a', lat: 10, lng: 20, emoji: '✨', color: '#000000', title: 'a', when: '', zone: '' }
+    const b = { eventId: 'b', lat: 20, lng: 40, emoji: '✨', color: '#000000', title: 'b', when: '', zone: '' }
     expect(centerOf([a, b])).toEqual([15, 30])
   })
 })
