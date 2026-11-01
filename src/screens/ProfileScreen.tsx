@@ -6,19 +6,17 @@ import { BIO_MAX, type ProfileInput } from '../profile/validation'
 import { InterestPicker } from './InterestPicker'
 import { Avatar } from '../ui/Avatar'
 
-const EMPTY: ProfileInput = { nome: '', dataNascita: '', bio: '', interessi: [], fotoUrl: '' }
-
 interface Props {
   uid: string
-  /** Profilo da modificare; assente la prima volta. */
-  current: UserProfile | null
+  /** Profilo da modificare. */
+  current: UserProfile
   onSaved: (profile: UserProfile) => void
 }
 
-// Form per creare o modificare il profilo.
+// Form per modificare il profilo (la creazione è nei passi della registrazione).
 export function ProfileScreen({ uid, current, onSaved }: Props) {
-  const { users, auth } = useServices()
-  const [input, setInput] = useState<ProfileInput>(current ? toProfileInput(current) : EMPTY)
+  const { users } = useServices()
+  const [input, setInput] = useState<ProfileInput>(toProfileInput(current))
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const set = (patch: Partial<ProfileInput>) => setInput((old) => ({ ...old, ...patch }))
@@ -38,7 +36,6 @@ export function ProfileScreen({ uid, current, onSaved }: Props) {
 
   return (
     <form className="card" onSubmit={handleSubmit} noValidate>
-      {!current && <h2>Completa il tuo profilo</h2>}
       <div className="avatar-edit"><Avatar name={input.nome} size="lg" /></div>
       <label>
         Nome
@@ -55,7 +52,6 @@ export function ProfileScreen({ uid, current, onSaved }: Props) {
       <InterestPicker selected={input.interessi} onChange={(interessi) => set({ interessi })} />
       {error && <p role="alert" className="error">{error}</p>}
       <button type="submit" disabled={busy}>Salva</button>
-      {!current && <button type="button" className="link" onClick={() => void auth.logout()}>Esci</button>}
     </form>
   )
 }

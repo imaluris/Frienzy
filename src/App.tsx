@@ -6,19 +6,21 @@ import { AuthBrand } from './screens/AuthBrand'
 import { LoginScreen } from './screens/LoginScreen'
 import { ProfileGate } from './screens/ProfileGate'
 import { RegisterScreen } from './screens/RegisterScreen'
+import { WelcomeScreen } from './screens/WelcomeScreen'
+import { Icon } from './ui/Icon'
 
-// Schermate per chi non è collegato. Lo stato "sto registrando" vive qui:
-// quando l'utente entra questo componente sparisce, e al prossimo logout si riparte dal login.
+// Schermate per chi non è collegato: benvenuto, poi accesso o registrazione (con freccia per tornare al benvenuto).
+// Lo stato vive qui: quando l'utente entra questo componente sparisce, e al prossimo logout si riparte dal benvenuto.
+type Mode = 'welcome' | 'login' | 'register'
+
 function LoggedOut() {
-  const [registering, setRegistering] = useState(false)
+  const [mode, setMode] = useState<Mode>('welcome')
+  if (mode === 'welcome') return <WelcomeScreen onRegister={() => setMode('register')} onLogin={() => setMode('login')} />
   return (
     <main className="auth">
+      <button type="button" className="icon-button auth-back" aria-label="Indietro" onClick={() => setMode('welcome')}><Icon name="back" /></button>
       <AuthBrand />
-      {registering ? (
-        <RegisterScreen onGoLogin={() => setRegistering(false)} />
-      ) : (
-        <LoginScreen onGoRegister={() => setRegistering(true)} />
-      )}
+      {mode === 'register' ? <RegisterScreen onGoLogin={() => setMode('login')} /> : <LoginScreen onGoRegister={() => setMode('register')} />}
     </main>
   )
 }

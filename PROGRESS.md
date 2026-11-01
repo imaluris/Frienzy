@@ -32,3 +32,4 @@ Fase 2 completata
 - Task 28 fatto: Sistema grafico e icone
 - Task 29 fatto: Elenco eventi
 - Task 30 fatto: Dettaglio evento
+- Task 31 fatto: Accesso, registrazione e profilo

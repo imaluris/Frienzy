@@ -15,6 +15,15 @@ async function fromHome(page: Page, ...clicks: (string | RegExp)[]) {
   for (const name of clicks) await click(page, name)
 }
 
+// Registra un nuovo account e arriva al passo 2 (il profilo).
+async function onboarding(page: Page) {
+  await fromHome(page, 'Profilo', 'Esci', 'Crea il tuo account')
+  await page.getByLabel('Email').fill('nuova@example.com')
+  await page.getByLabel('Password', { exact: true }).fill('segreta12')
+  await page.getByLabel('Ripeti la password').fill('segreta12')
+  await click(page, 'Continua')
+}
+
 export const STEPS: Step[] = [
   { name: '02-eventi', go: (p) => fromHome(p) },
   { name: '22-filtri-aperti', go: async (p) => { await fromHome(p); await p.getByText('Data e distanza').click() } },
@@ -64,6 +73,10 @@ export const STEPS: Step[] = [
   { name: '18-profilo-scheda', go: (p) => fromHome(p, 'Profilo') },
   { name: '11-profilo', go: (p) => fromHome(p, 'Profilo', 'Modifica profilo') },
   { name: '12-debug', go: (p) => fromHome(p, 'Profilo', 'Debug') },
-  { name: '13-accesso', go: (p) => fromHome(p, 'Profilo', 'Esci') },
-  { name: '14-registrazione', go: (p) => fromHome(p, 'Profilo', 'Esci', 'Registrati') },
+  { name: '26-benvenuto', go: (p) => fromHome(p, 'Profilo', 'Esci') },
+  { name: '13-accesso', go: (p) => fromHome(p, 'Profilo', 'Esci', 'Accedi') },
+  { name: '27-registrazione-passo2', go: async (p) => { await onboarding(p); await p.getByRole('heading', { name: 'Come ti chiami?' }).waitFor() } },
+  { name: '28-registrazione-passo3', go: async (p) => { await onboarding(p); await p.getByLabel('Nome').fill('Marta Rossi'); await p.getByLabel('Data di nascita').fill('1994-03-12'); await click(p, 'Continua'); await click(p, /aperitivo/); await click(p, /passeggiata/) } },
+  { name: '29-registrazione-passo4', go: async (p) => { await onboarding(p); await p.getByLabel('Nome').fill('Marta Rossi'); await p.getByLabel('Data di nascita').fill('1994-03-12'); await click(p, 'Continua'); await click(p, 'Salta per ora') } },
+  { name: '14-registrazione', go: (p) => fromHome(p, 'Profilo', 'Esci', 'Crea il tuo account') },
 ]

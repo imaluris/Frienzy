@@ -1,15 +1,17 @@
 import { authErrorMessage } from '../auth/errorMessages'
 import { validateRegistration } from '../auth/validation'
 import { useServices } from '../app/ServicesContext'
+import { StepProgress } from '../onboarding/StepProgress'
 import { AuthForm } from './AuthForm'
 
 export function RegisterScreen({ onGoLogin }: { onGoLogin: () => void }) {
   const { auth } = useServices()
   return (
     <>
+      <StepProgress step="account" />
       <AuthForm
         title="Crea il tuo account"
-        submitLabel="Registrati"
+        submitLabel="Continua"
         askConfirm
         validate={validateRegistration}
         onSubmit={async (email, password) => void (await auth.register(email, password))}

@@ -10,7 +10,9 @@ export const DEMO_PASSWORD = 'demo1234'
 // Servizi in memoria con persone ed eventi d'esempio e un utente già collegato.
 // Serve a guardare l'app senza Firebase (anteprima e screenshot).
 export async function createDemoServices(): Promise<Services> {
-  const services = createMemoryServices(new MemoryAuthService(() => DEMO_UID))
+  // Il primo account è quello della demo; chi si registra dopo (anche negli screenshot) è una persona nuova, senza profilo.
+  let registered = 0
+  const services = createMemoryServices(new MemoryAuthService(() => (registered++ === 0 ? DEMO_UID : `nuovo-${registered}`)))
   for (const profile of DEMO_PROFILES) await services.users.save(profile)
   for (const spec of DEMO_EVENT_SPECS) {
     const event = await services.events.create(toNewEvent(spec), { indirizzo: spec.indirizzo, lat: spec.lat, lng: spec.lng })
