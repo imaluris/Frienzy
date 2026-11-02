@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ServicesProvider, useServices } from './app/ServicesContext'
 import { useSession } from './auth/useSession'
 import type { Services } from './firebase/createServices'
+import { BrandSplash } from './brand/BrandSplash'
 import { AuthBrand } from './screens/AuthBrand'
 import { LoginScreen } from './screens/LoginScreen'
 import { ProfileGate } from './screens/ProfileGate'
@@ -29,7 +30,7 @@ function LoggedOut() {
 function Router() {
   const { auth } = useServices()
   const session = useSession(auth)
-  if (!session.ready) return <p className="card">Caricamento…</p>
+  if (!session.ready) return <BrandSplash />
   return session.uid ? <ProfileGate uid={session.uid} /> : <LoggedOut />
 }
 

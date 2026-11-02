@@ -1,0 +1,11 @@
+/* Messaggio breve (toast) sopra la barra a schede o la barra azione. */
+.toast {
+  position: fixed; left: var(--space-4); right: var(--space-4); bottom: calc(96px + var(--safe-bottom)); z-index: 3000; margin: 0;
+  display: flex; align-items: center; justify-content: center; gap: var(--space-2);
+  padding: var(--space-3) var(--space-4); border-radius: var(--radius); background: var(--color-text); color: #fff; font-weight: var(--weight-bold);
+  box-shadow: var(--shadow-3); text-align: center; animation: toast-in var(--motion-base) cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.toast-success svg { color: var(--color-accent); flex: none; }
+.toast-warning svg { color: #ffb4a8; flex: none; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .toast { animation: none; } }

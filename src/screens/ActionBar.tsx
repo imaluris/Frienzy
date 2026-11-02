@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useServices } from '../app/ServicesContext'
 import type { FrienzyEvent } from '../domain/event'
+import { useToast } from '../feedback/ToastContext'
 import { barModel, WITHDRAW_COPY } from '../participation/actionBar'
 import { joinEvent } from '../participation/joinEvent'
 import type { ParticipationView } from '../participation/participationView'
@@ -23,18 +24,25 @@ interface Props {
 export function ActionBar({ view, event, uid, confirmedCount, pendingCount, onManage, onChanged }: Props) {
   const { participations } = useServices()
   const { busy, error, run } = useRunAction(onChanged)
+  const { show } = useToast()
   const [confirming, setConfirming] = useState(false)
   const model = barModel(view)
 
   function press() {
     if (model.action === 'manage') onManage()
     else if (model.confirm) setConfirming(true)
-    else if (model.action === 'join') void run(() => joinEvent(participations, event.id, uid))
+    else if (model.action === 'join') void join()
+  }
+
+  async function join() {
+    const ok = await run(() => joinEvent(participations, event.id, uid))
+    if (ok) show(event.richiedeApprovazione ? 'Ti avvisiamo appena chi organizza risponde' : 'Sei dei nostri! Posto confermato', 'success')
   }
 
   async function confirmWithdraw() {
-    await run(() => withdrawFromEvent(participations, event.id, uid))
+    const ok = await run(() => withdrawFromEvent(participations, event.id, uid))
     setConfirming(false)
+    if (ok) show(view === 'richiesta' ? 'Hai ritirato la richiesta' : 'Hai lasciato l\'evento')
   }
 
   const copy = view === 'confermato' || view === 'richiesta' ? WITHDRAW_COPY[view] : null

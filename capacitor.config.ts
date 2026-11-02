@@ -6,6 +6,10 @@ const config: CapacitorConfig = {
   appId: appConfig.appId,
   appName: appConfig.name,
   webDir: 'dist',
+  plugins: {
+    // Barra di stato color crema (come la testata dell'app) con icone scure.
+    StatusBar: { style: 'LIGHT', backgroundColor: appConfig.colors.background },
+  },
 }
 
 export default config

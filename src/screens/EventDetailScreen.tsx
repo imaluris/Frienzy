@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useServices } from '../app/ServicesContext'
 import type { FrienzyEvent } from '../domain/event'
+import { useToast } from '../feedback/ToastContext'
 import { headerProgress } from '../events/detailScroll'
 import { shareEvent } from '../events/share'
 import { useEventPeople } from '../people/useEventPeople'
@@ -20,16 +21,15 @@ import { OrganizerSheet } from './OrganizerSheet'
 import { StatusNote } from './StatusNote'
 
 const COVER_HEIGHT = 296
-const TOAST_MS = 2600
 
 // Dettaglio di un evento: la zona per tutti; l'indirizzo esatto solo a organizzatore e confermati.
 export function EventDetailScreen({ eventId, onBack }: { eventId: string; onBack: () => void }) {
   const services = useServices()
+  const { show } = useToast()
   const { events } = services
   const [version, setVersion] = useState(0) // sale a ogni azione: fa ricaricare evento, persone e luogo
   const [state, setState] = useState<{ loading: boolean; event: FrienzyEvent | null }>({ loading: true, event: null })
   const [managing, setManaging] = useState(false)
-  const [toast, setToast] = useState('')
   const scrollY = useScrollY()
 
   useEffect(() => {
@@ -47,12 +47,6 @@ export function EventDetailScreen({ eventId, onBack }: { eventId: string; onBack
     window.scrollTo(0, 0) // si arriva dalla lista già scorsa: il dettaglio parte sempre dalla copertina
   }, [eventId])
 
-  useEffect(() => {
-    if (!toast) return
-    const timer = setTimeout(() => setToast(''), TOAST_MS)
-    return () => clearTimeout(timer)
-  }, [toast])
-
   const people = useEventPeople(services, state.event)
   const place = useExactPlace(services, state.event?.id ?? null, version)
   const uid = services.auth.currentUid()
@@ -63,8 +57,8 @@ export function EventDetailScreen({ eventId, onBack }: { eventId: string; onBack
   async function share() {
     if (!event) return
     const result = await shareEvent(event)
-    if (result === 'copied') setToast('Testo copiato: incollalo dove vuoi')
-    if (result === 'unavailable') setToast('Condivisione non disponibile su questo dispositivo')
+    if (result === 'copied') show('Testo copiato: incollalo dove vuoi')
+    if (result === 'unavailable') show('Condivisione non disponibile su questo dispositivo')
   }
 
   const view = event && uid ? effectiveView(event.stato, decideView({ event, uid, mine: participation.mine, confirmedCount: participation.confirmedCount })) : null
@@ -94,7 +88,6 @@ export function EventDetailScreen({ eventId, onBack }: { eventId: string; onBack
           )}
         </>
       )}
-      {toast && <p className="toast" role="status">{toast}</p>}
     </div>
   )
 }

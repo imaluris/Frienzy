@@ -1,0 +1,22 @@
+/* Transizioni tra schermate: 200 ms. Si anima la posizione relativa (non transform) per non spostare i
+   pannelli fissi (barra azione, toast) che stanno dentro la schermata durante l'animazione. */
+.shell { overflow-x: clip; }
+.screen { position: relative; }
+.screen-tab { animation: screen-tab var(--motion-base) ease-out; }
+.screen-push { animation: screen-push 220ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+@keyframes screen-tab { from { opacity: 0; top: 8px; } to { opacity: 1; top: 0; } }
+@keyframes screen-push { from { opacity: 0; left: 28px; } to { opacity: 1; left: 0; } }
+/* Cuore: piccolo "pop" quando si salva. */
+.save-button.is-saved svg { animation: pop 260ms cubic-bezier(0.3, 1.6, 0.5, 1); }
+@keyframes pop { 0% { transform: scale(0.6); } 100% { transform: scale(1); } }
+/* Schermata di avvio dell'app web (mentre si controlla se l'utente è già collegato). */
+.brand-splash {
+  min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-3);
+  background: var(--color-primary); color: var(--color-text);
+}
+.brand-splash h1 { margin: 0; font-size: var(--text-display); font-weight: var(--weight-heavy); }
+.brand-splash svg { animation: breathe 1.6s ease-in-out infinite; }
+@keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+@media (prefers-reduced-motion: reduce) {
+  .screen-tab, .screen-push, .save-button.is-saved svg, .brand-splash svg { animation: none; }
+}

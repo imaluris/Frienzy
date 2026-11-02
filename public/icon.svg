@@ -1,8 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Frienzy">
-  <!-- fumetto terracotta con la coda in basso a sinistra -->
-  <path fill="#E2725B" d="M112 64h288a48 48 0 0 1 48 48v208a48 48 0 0 1-48 48H264l-96 80v-80h-56a48 48 0 0 1-48-48V112a48 48 0 0 1 48-48z"/>
-  <!-- lettera F bianca disegnata a tratti -->
-  <path fill="#fff" d="M172 128h160v48H228v32h88v48h-88v72h-56z"/>
-  <!-- scintilla senape a quattro punte -->
-  <path fill="#F2B94B" d="M368 96l10 34 34 10-34 10-10 34-10-34-34-10 34-10z"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512"><rect width="512" height="512" rx="112" fill="#E2725B"/><g transform="translate(256 256) scale(1.12) translate(-256 -256) translate(-4 6)"><path d="M322 210H368a52 52 0 0 1 52 52V298a52 52 0 0 1-52 52H388L408 394 350 350H322a52 52 0 0 1-52-52V262a52 52 0 0 1 52-52z" fill="#2F5D50"/><circle cx="322" cy="326" r="9" fill="#FFF8F0"/><circle cx="352" cy="326" r="9" fill="#FFF8F0"/><circle cx="382" cy="326" r="9" fill="#FFF8F0"/><path d="M164 92H286a64 64 0 0 1 64 64V238a64 64 0 0 1-64 64H236L184 350V302H164a64 64 0 0 1-64-64V156a64 64 0 0 1 64-64z" fill="#FFF8F0" stroke="#E2725B" stroke-width="14" stroke-linejoin="round"/><path d="M168 140H292V178H212V204H276V240H212V266H168Z" fill="#E2725B"/><path d="M372 92L382 118L408 128L382 138L372 164L362 138L336 128L362 118Z" fill="#F2B94B"/></g></svg>

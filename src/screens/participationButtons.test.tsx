@@ -34,6 +34,7 @@ describe('pulsanti di partecipazione', () => {
     await openDetail(services)
     fireEvent.click(await screen.findByRole('button', { name: 'Partecipa' }))
     expect(await screen.findByText(/partecipazione è confermata/)).toBeInTheDocument()
+    expect(screen.getByText('Sei dei nostri! Posto confermato')).toBeInTheDocument() // toast di conferma
     expect((await services.participations.listConfirmed(event.id)).length).toBe(1)
     fireEvent.click(screen.getByRole('button', { name: 'Ritirati' }))
     expect(screen.getByRole('dialog', { name: 'Vuoi ritirarti?' })).toBeInTheDocument() // prima la conferma

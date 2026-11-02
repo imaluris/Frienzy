@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { haptic } from '../feedback/haptics'
 import { Icon } from './Icon'
 
 // Cuore per salvare l'evento. Per ora lo stato vive solo qui (non si ricorda): la memoria vera arriva dopo.
@@ -10,7 +11,7 @@ export function SaveButton() {
       className={`save-button${saved ? ' is-saved' : ''}`}
       aria-pressed={saved}
       aria-label={saved ? 'Rimuovi dai salvati' : 'Salva evento'}
-      onClick={() => setSaved((s) => !s)}
+      onClick={() => { setSaved((s) => !s); void haptic('tap') }}
     >
       <Icon name="heart" size={20} solid={saved} />
     </button>
