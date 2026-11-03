@@ -7,6 +7,7 @@ import { useUpcomingEvents } from '../events/useUpcomingEvents'
 import { filterEvents, NO_FILTERS, type EventFilters } from '../filters/eventFilters'
 import { useMyPosition } from '../filters/useMyPosition'
 import { EmptyState } from '../ui/EmptyState'
+import { LoadFailed } from '../ui/LoadFailed'
 import { EventListSkeleton } from '../ui/EventCardSkeleton'
 import { EventPeriods } from './EventPeriods'
 import { FiltersBar } from './FiltersBar'
@@ -38,14 +39,14 @@ export function EventListScreen({ name, onOpen, onCreate }: Props) {
         <SearchField value={query} onChange={setQuery} />
         <FiltersBar filters={filters} onChange={setFilters} position={position} onAskPosition={ask} />
         {loading && <EventListSkeleton />}
-        {failed && <p role="alert" className="error">Non riesco a caricare gli eventi.</p>}
+        {failed && <LoadFailed text="Non riesco a caricare gli eventi." />}
         {ready && list.length === 0 && (
-          <EmptyState icon="calendar-empty" text="Nessun evento in programma.">
+          <EmptyState art="no-events" text="Nessun evento in programma.">
             <button type="button" onClick={onCreate}>Organizza il primo</button>
           </EmptyState>
         )}
         {ready && list.length > 0 && shown.length === 0 && (
-          <EmptyState icon="search-empty" text={query.trim() ? `Nessun risultato per “${query.trim()}”.` : 'Nessun evento con questi filtri.'} />
+          <EmptyState art="no-results" text={query.trim() ? `Nessun risultato per “${query.trim()}”.` : 'Nessun evento con questi filtri.'} />
         )}
         <EventPeriods groups={groups} attendance={attendance} onOpen={onOpen} />
       </section>

@@ -44,7 +44,7 @@ function Shell({ uid, profile, onProfileSaved }: Props) {
   return (
     <div className="shell">
       {showsAppHeader(nav) && <AppHeader title={titleOf(nav)} onBack={canGoBack(nav) ? () => setNav((n) => goBack(n)) : null} />}
-      <main className="shell-content"><div key={screenKey(nav)} className={`screen screen-${transitionKind(nav)}`}>{content()}</div></main>
+      <main className="shell-content"><div key={screenKey(nav)} className={`screen screen-${transitionKind(nav)}${nav.overlay.kind === 'event' ? ' screen-bleed' : ''}`}>{content()}</div></main>
       {showsTabBar(nav) && <TabBar active={nav.tab} onSelect={(tab) => setNav(selectTab(tab))} />}
     </div>
   )

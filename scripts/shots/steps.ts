@@ -46,6 +46,8 @@ async function toStep(page: Page, target: number) {
 
 export const STEPS: Step[] = [
   { name: '02-eventi', go: (p) => fromHome(p) },
+  { name: '34-eventi-nessun-risultato', go: async (p) => { await fromHome(p); await p.getByRole('searchbox').fill('zzzzqq'); await p.getByText(/Nessun risultato/).waitFor() } },
+  { name: '35-coriandoli', go: async (p) => { await fromHome(p, /Aperitivo sul Naviglio/, 'Partecipa'); await p.getByText(/confermata/).waitFor(); await p.waitForTimeout(450) } },
   { name: '22-filtri-aperti', go: async (p) => { await fromHome(p); await p.getByText('Data e distanza').click() } },
   { name: '03-dettaglio-libero', go: (p) => fromHome(p, /Aperitivo sul Naviglio/) },
   { name: '04-dettaglio-approvazione', go: (p) => fromHome(p, /pasta fatta/) },

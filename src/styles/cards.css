@@ -6,4 +6,5 @@
   margin: var(--space-4);
 }
 .screen { padding: var(--space-4); }
+.screen-bleed { padding: 0; } /* il dettaglio evento ha la copertina a tutta larghezza */
 .screen > h2 { margin-top: var(--space-2); }

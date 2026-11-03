@@ -1,49 +1,58 @@
-// Illustrazione di benvenuto (SVG originale): tre amici attorno a un tavolino sotto una fila di lucine.
-// Solo forme semplici e i colori del progetto. (Le illustrazioni definitive arrivano con il set delle copertine.)
-const SKIN = ['#F0C7A0', '#C98D63', '#8A5A3C']
+import { Sparkle } from '../art/shapes'
+import { WelcomeFriend } from './WelcomeFriend'
 
-function Friend({ x, body, skin, hair }: { x: number; body: string; skin: string; hair: string }) {
-  return (
-    <g transform={`translate(${x} 0)`}>
-      <rect x="-26" y="132" width="52" height="58" rx="26" fill={body} />
-      <circle cx="0" cy="112" r="20" fill={skin} />
-      <path d="M-20 108a20 20 0 0 1 40 0c-8-8-26-10-40 0z" fill={hair} />
-      <circle cx="-7" cy="114" r="2.2" fill="#2B2118" />
-      <circle cx="7" cy="114" r="2.2" fill="#2B2118" />
-      <path d="M-6 122q6 5 12 0" fill="none" stroke="#2B2118" strokeWidth="2" strokeLinecap="round" />
-    </g>
-  )
-}
+// Illustrazione di benvenuto (SVG originale): tre amici brindano a un tavolo all'aperto, al tramonto,
+// sotto una fila di lucine, con colline e una casetta sullo sfondo. Solo i colori del progetto.
+const LIGHTS = [28, 72, 118, 166, 214, 260, 300]
 
 export function WelcomeArt() {
   return (
-    <svg className="welcome-art" viewBox="0 0 320 220" role="img" aria-label="Tre amici che brindano a un tavolino">
+    <svg className="welcome-art" viewBox="0 0 320 260" role="img" aria-label="Tre amici che brindano a un tavolo all'aperto, al tramonto">
       <defs>
-        <linearGradient id="wa-sky" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#FBE3DC" />
-          <stop offset="1" stopColor="#FFE9B8" />
+        <linearGradient id="wa-sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#F7B7A3" />
+          <stop offset="0.6" stopColor="#FFD9A0" />
+          <stop offset="1" stopColor="#FFF0CF" />
         </linearGradient>
       </defs>
-      <rect width="320" height="220" rx="28" fill="url(#wa-sky)" />
-      <circle cx="262" cy="52" r="30" fill="#F2B94B" />
-      <circle cx="262" cy="52" r="42" fill="#F2B94B" opacity="0.25" />
-      <path d="M-10 190c60-36 120-36 190-8s110 14 150-8V230H-10z" fill="#2F5D50" opacity="0.18" />
-      <path d="M12 26q74 30 148 8t148 8" fill="none" stroke="#2B2118" strokeWidth="2" opacity="0.5" />
-      {[34, 80, 128, 176, 224, 272].map((cx, i) => (
-        <circle key={cx} cx={cx} cy={[40, 51, 46, 36, 40, 44][i]} r="6" fill={i % 2 ? '#F2B94B' : '#E2725B'} />
-      ))}
-      <Friend x={92} body="#2F5D50" skin={SKIN[0]} hair="#2B2118" />
-      <Friend x={160} body="#E2725B" skin={SKIN[1]} hair="#5A3A22" />
-      <Friend x={228} body="#F2B94B" skin={SKIN[2]} hair="#2B2118" />
-      <rect x="64" y="186" width="192" height="12" rx="6" fill="#2B2118" />
-      <rect x="152" y="196" width="16" height="24" rx="4" fill="#2B2118" />
-      <g fill="#FFFFFF" stroke="#2B2118" strokeWidth="2">
-        <path d="M118 162h20l-2 22h-16z" />
-        <path d="M150 158h20l-2 26h-16z" />
-        <path d="M182 162h20l-2 22h-16z" />
+      <rect width="320" height="260" rx="28" fill="url(#wa-sky)" />
+      <circle cx="250" cy="96" r="56" fill="#FFF3C4" opacity="0.4" />
+      <circle cx="250" cy="96" r="38" fill="#FFF3C4" opacity="0.7" />
+      <circle cx="250" cy="96" r="26" fill="#FFFBE6" />
+      <path d="M-10 150C50 110 110 130 170 120S280 100 330 130V270H-10Z" fill="#7FAE8F" opacity="0.7" />
+      <path d="M-10 176C60 146 120 170 190 158S290 150 330 168V270H-10Z" fill="#2F5D50" opacity="0.85" />
+      <g transform="translate(34 138)">
+        <rect width="46" height="34" rx="4" fill="#FFF8F0" />
+        <path d="M-5 2L23-18L51 2Z" fill="#E2725B" />
+        <rect x="9" y="12" width="9" height="9" rx="2" fill="#F2B94B" />
+        <rect x="28" y="14" width="9" height="20" rx="2" fill="#5A3A22" />
       </g>
-      <path d="M120 168h16l-1 8h-14z M184 168h16l-1 8h-14z" fill="#E2725B" />
-      <path d="M152 164h16l-1 10h-14z" fill="#F2B94B" />
+      <path d="M12 26Q160 74 308 24" fill="none" stroke="#2B2118" strokeWidth="1.8" opacity="0.5" />
+      {LIGHTS.map((cx, i) => {
+        const cy = 26 + 48 * (cx / 320) * (1 - cx / 320) * 1.9 + 4
+        const c = ['#FFF3C4', '#F2B94B', '#FFFFFF'][i % 3]
+        return (
+          <g key={cx}>
+            <circle cx={cx} cy={cy + 4} r="11" fill={c} opacity="0.3" />
+            <circle cx={cx} cy={cy + 4} r="5" fill={c} />
+          </g>
+        )
+      })}
+      <WelcomeFriend x={92} body="#2F5D50" skin="#F0C7A0" hair="#2B2118" lean={-4} />
+      <WelcomeFriend x={160} body="#E2725B" skin="#C98D63" hair="#5A3A22" lean={0} />
+      <WelcomeFriend x={228} body="#F2B94B" skin="#8A5A3C" hair="#2B2118" lean={4} />
+      <rect x="52" y="196" width="216" height="14" rx="7" fill="#5A3A22" />
+      <rect x="150" y="208" width="20" height="40" rx="5" fill="#5A3A22" />
+      <ellipse cx="160" cy="250" rx="60" ry="6" fill="#2B2118" opacity="0.18" />
+      <g stroke="#2B2118" strokeWidth="2">
+        <ellipse cx="116" cy="193" rx="20" ry="5" fill="#FFFFFF" />
+        <ellipse cx="204" cy="193" rx="20" ry="5" fill="#FFFFFF" />
+      </g>
+      <ellipse cx="116" cy="191" rx="12" ry="3" fill="#E2725B" />
+      <ellipse cx="204" cy="191" rx="12" ry="3" fill="#F2B94B" />
+      <Sparkle x={288} y={176} size={9} fill="#FFFFFF" />
+      <Sparkle x={30} y={104} size={7} fill="#FFFFFF" />
+      <Sparkle x={196} y={68} size={6} fill="#FFFFFF" />
     </svg>
   )
 }

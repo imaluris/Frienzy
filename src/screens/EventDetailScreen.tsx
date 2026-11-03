@@ -68,7 +68,7 @@ export function EventDetailScreen({ eventId, onBack }: { eventId: string; onBack
       {state.loading && <p className="loading detail-loading">Caricamento…</p>}
       {!state.loading && !event && (
         <div className="detail-missing">
-          <EmptyState icon="calendar-empty" text="Evento non trovato."><p role="alert" className="error">Questo evento non esiste più.</p></EmptyState>
+          <EmptyState art="no-results" text="Evento non trovato."><p role="alert" className="error">Questo evento non esiste più.</p></EmptyState>
         </div>
       )}
       {event && (

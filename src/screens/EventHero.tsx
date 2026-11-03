@@ -15,7 +15,7 @@ export function EventHero({ event, scrollY }: { event: FrienzyEvent; scrollY: nu
   return (
     <div className="detail-hero">
       <div className="detail-hero-art" style={{ transform: `translateY(${shift}px)` }}>
-        <EventCover tipo={event.tipo} />
+        <EventCover tipo={event.tipo} seedId={event.id} />
       </div>
       <div className="detail-hero-scrim" />
       <div className="detail-hero-text">

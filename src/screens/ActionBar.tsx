@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useServices } from '../app/ServicesContext'
 import type { FrienzyEvent } from '../domain/event'
+import { Confetti } from '../art/Confetti'
 import { useToast } from '../feedback/ToastContext'
 import { barModel, WITHDRAW_COPY } from '../participation/actionBar'
 import { joinEvent } from '../participation/joinEvent'
@@ -26,6 +27,7 @@ export function ActionBar({ view, event, uid, confirmedCount, pendingCount, onMa
   const { busy, error, run } = useRunAction(onChanged)
   const { show } = useToast()
   const [confirming, setConfirming] = useState(false)
+  const [celebrating, setCelebrating] = useState(false)
   const model = barModel(view)
 
   function press() {
@@ -36,7 +38,9 @@ export function ActionBar({ view, event, uid, confirmedCount, pendingCount, onMa
 
   async function join() {
     const ok = await run(() => joinEvent(participations, event.id, uid))
-    if (ok) show(event.richiedeApprovazione ? 'Ti avvisiamo appena chi organizza risponde' : 'Sei dei nostri! Posto confermato', 'success')
+    if (!ok) return
+    show(event.richiedeApprovazione ? 'Ti avvisiamo appena chi organizza risponde' : 'Sei dei nostri! Posto confermato', 'success')
+    if (!event.richiedeApprovazione) setCelebrating(true) // coriandoli solo quando il posto è davvero confermato
   }
 
   async function confirmWithdraw() {
@@ -58,6 +62,7 @@ export function ActionBar({ view, event, uid, confirmedCount, pendingCount, onMa
           </button>
         </div>
       </section>
+      {celebrating && <Confetti onDone={() => setCelebrating(false)} />}
       {confirming && copy && (
         <ConfirmSheet title={copy.title} text={copy.text} confirmLabel={copy.yes} busy={busy} onConfirm={confirmWithdraw} onClose={() => setConfirming(false)} />
       )}

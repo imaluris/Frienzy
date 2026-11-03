@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react'
-import { Icon, type IconName } from './Icon'
+import { EmptyArt, type EmptyArtKind } from '../art/EmptyArt'
 
-// Stato vuoto: icona in un cerchio morbido, frase e (se serve) un pulsante per andare avanti.
-export function EmptyState({ icon, text, children }: { icon: IconName; text: string; children?: ReactNode }) {
+// Stato vuoto: illustrazione originale, frase e (se serve) un pulsante per andare avanti.
+export function EmptyState({ art, text, children }: { art: EmptyArtKind; text: string; children?: ReactNode }) {
   return (
     <div className="empty-state">
-      <span className="empty-icon"><Icon name={icon} size={32} /></span>
+      <EmptyArt kind={art} label="" />
       <p>{text}</p>
       {children}
     </div>

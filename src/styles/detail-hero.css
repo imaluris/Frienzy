@@ -2,7 +2,6 @@
 .detail-hero { position: relative; height: calc(296px + var(--safe-top)); overflow: hidden; background: var(--color-secondary); }
 .detail-hero-art { position: absolute; inset: -80px 0 0; will-change: transform; }
 .detail-hero .cover { height: 100%; }
-.detail-hero .cover-emoji { right: var(--space-6); top: calc(var(--safe-top) + 152px); bottom: auto; font-size: 4rem; } /* 80px = quanto la copertina sporge sopra (parallasse) */
 .detail-hero-scrim { position: absolute; inset: 0; background: linear-gradient(to top, rgba(43, 33, 24, 0.85) 0%, rgba(43, 33, 24, 0.6) 38%, rgba(43, 33, 24, 0.25) 65%, rgba(43, 33, 24, 0) 92%); }
 .detail-hero-text { position: absolute; left: 0; right: 0; bottom: var(--space-8); padding: 0 var(--space-4); color: #fff; }
 .detail-title { margin: var(--space-2) 0 var(--space-1); font-size: var(--text-display); line-height: 1.15; color: #fff; overflow-wrap: anywhere; text-shadow: 0 1px 8px rgba(43, 33, 24, 0.4); }

@@ -1,0 +1,9 @@
+/* Coriandoli: cadono dall'alto con una leggera deriva e rotazione. Non intercettano i tocchi. */
+.confetti { position: fixed; inset: 0; z-index: 1500; overflow: hidden; pointer-events: none; }
+.confetti-piece { position: absolute; top: -16px; border-radius: 2px; opacity: 0; animation: confetti-fall ease-in forwards; }
+@keyframes confetti-fall {
+  0% { opacity: 1; transform: translate3d(0, 0, 0) rotate(0deg); }
+  85% { opacity: 1; }
+  100% { opacity: 0; transform: translate3d(var(--drift), 100dvh, 0) rotate(var(--spin)); }
+}
+@media (prefers-reduced-motion: reduce) { .confetti { display: none; } }

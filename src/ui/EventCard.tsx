@@ -25,7 +25,7 @@ export function EventCard({ event, onOpen, attendance, note, footer }: Props) {
   return (
     <article className={`event-card${cancelled ? ' is-cancelled' : ''}`}>
       <button type="button" className="event-card-main" onClick={onOpen}>
-        <EventCover tipo={event.tipo} date={event.dataOra} />
+        <EventCover tipo={event.tipo} seedId={event.id} date={event.dataOra} />
         <span className="event-card-body">
           <span className="event-card-title">{event.titolo}</span>
           <span className="event-card-meta"><Icon name="clock" size={16} />{friendlyWhen(event.dataOra)}</span>

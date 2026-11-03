@@ -1,5 +1,7 @@
-/* Copertina provvisoria (gradiente per tipo, cerchi, emoji) e badge data a calendario. */
+/* Copertina illustrata (SVG che riempie il riquadro) e badge data a calendario. Il gradiente per tipo resta come sfondo
+   di riserva e per le miniature della lista nella mappa. */
 .cover { position: relative; display: block; width: 100%; height: 148px; overflow: hidden; background: linear-gradient(135deg, #f3a58f, #f6c667); }
+.cover-art { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .cover-lg { height: 224px; }
 .cover-aperitivo { background: linear-gradient(135deg, #e2725b, #f2b94b); }
 .cover-cena { background: linear-gradient(135deg, #b9533f, #e2725b); }
@@ -8,10 +10,6 @@
 .cover-passeggiata { background: linear-gradient(135deg, #4f8a73, #b7d39a); }
 .cover-sport { background: linear-gradient(135deg, #2f6f9a, #8fc7d9); }
 .cover-altro { background: linear-gradient(135deg, #d79a22, #f2d27a); }
-.cover-blob { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.18); }
-.cover-blob-a { width: 180px; height: 180px; right: -48px; top: -64px; }
-.cover-blob-b { width: 110px; height: 110px; left: -30px; bottom: -48px; background: rgba(255, 255, 255, 0.12); }
-.cover-emoji { position: absolute; right: 20px; bottom: 12px; font-size: 4.25rem; line-height: 1; filter: drop-shadow(0 4px 6px rgba(43, 33, 24, 0.25)); }
 .date-badge {
   position: absolute; left: var(--space-3); top: var(--space-3); display: flex; flex-direction: column; align-items: center;
   min-width: 52px; padding: var(--space-1) var(--space-2); background: var(--color-surface); color: var(--color-text);
