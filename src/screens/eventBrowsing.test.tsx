@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { App } from '../App'
+import { useFixedMonday } from '../test/fixedMonday'
 import { createMemoryServices } from '../data/memory/createMemoryServices'
 import type { NewEvent } from '../domain/event'
 
@@ -24,6 +25,7 @@ async function loggedInServices() {
 }
 
 describe('elenco e dettaglio eventi', () => {
+  useFixedMonday()
   it('mostra solo i futuri in ordine e apre il dettaglio senza indirizzo esatto', async () => {
     const services = await loggedInServices()
     const now = Date.now()

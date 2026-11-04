@@ -89,6 +89,17 @@ service cloud.firestore {
         && request.resource.data.creatoIl == resource.data.creatoIl;
 
       allow delete: if false;
+
+      // Eventi salvati col cuore: privati, li vede e li scrive solo il proprietario.
+      match /salvati/{eventId} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid)
+          && hasOnly(request.resource.data, ['eventId', 'creatoIl'])
+          && request.resource.data.eventId == eventId
+          && request.resource.data.creatoIl == request.time;
+        allow update: if false;
+        allow delete: if isOwner(uid);
+      }
     }
 
     function validProfile(d) {

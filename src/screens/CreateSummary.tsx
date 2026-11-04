@@ -14,7 +14,7 @@ export function CreateSummary({ preview, address, approval }: Props) {
   return (
     <>
       <p className="step-hint">Così apparirà nell'elenco. Controlla e pubblica.</p>
-      <EventCard event={preview} onOpen={() => undefined} attendance={{ names: [], confirmed: 0 }} />
+      <EventCard event={preview} onOpen={() => undefined} attendance={{ names: [], confirmed: 0 }} saveable={false} />
       <ul className="summary-list">
         <li><Icon name="clock" size={20} /> {formatEventDate(preview.dataOra)}</li>
         <li><Icon name="pin" size={20} /> Indirizzo esatto (solo per te e i confermati): {address}</li>

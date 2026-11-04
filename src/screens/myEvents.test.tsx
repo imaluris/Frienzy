@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { App } from '../App'
+import { useFixedMonday } from '../test/fixedMonday'
 import { createMemoryServices } from '../data/memory/createMemoryServices'
 import type { NewEvent } from '../domain/event'
 import { joinEvent } from '../participation/joinEvent'
@@ -20,6 +21,7 @@ async function setup() {
 }
 
 describe('I miei eventi', () => {
+  useFixedMonday()
   it('mostra gli eventi organizzati e permette di annullarli', async () => {
     const { services, me } = await setup()
     await services.events.create({ ...base, organizzatoreId: me, titolo: 'Mio aperitivo' }, place)
@@ -37,6 +39,7 @@ describe('I miei eventi', () => {
     await joinEvent(services.participations, event.id, me)
     render(<App services={services} />)
     fireEvent.click(await screen.findByRole('button', { name: 'I miei eventi' }))
+    fireEvent.click(await screen.findByRole('tab', { name: /Iscrizioni/ }))
     expect(await screen.findByText(/Confermato/)).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Ritirati' }))
     expect(await screen.findByText('Non sei iscritto a nessun evento.')).toBeInTheDocument()

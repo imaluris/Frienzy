@@ -17,10 +17,12 @@ interface Props {
   /** Riga in più, es. lo stato della mia iscrizione. */
   note?: string
   footer?: ReactNode
+  /** Mostra il cuore per salvare (spento nell'anteprima di Crea evento). */
+  saveable?: boolean
 }
 
 // Scheda grande: copertina con badge data e cuore, titolo, quando, dove, avatar e posti. Tutta la scheda apre il dettaglio.
-export function EventCard({ event, onOpen, attendance, note, footer }: Props) {
+export function EventCard({ event, onOpen, attendance, note, footer, saveable = true }: Props) {
   const cancelled = event.stato === 'annullato'
   return (
     <article className={`event-card${cancelled ? ' is-cancelled' : ''}`}>
@@ -42,7 +44,7 @@ export function EventCard({ event, onOpen, attendance, note, footer }: Props) {
           </span>
         </span>
       </button>
-      {!cancelled && <SaveButton />}
+      {!cancelled && saveable && <SaveButton eventId={event.id} />}
       {footer}
     </article>
   )

@@ -46,6 +46,34 @@ async function toStep(page: Page, target: number) {
 
 export const STEPS: Step[] = [
   { name: '02-eventi', go: (p) => fromHome(p) },
+  { name: '36-scoperta', go: async (p) => { await fromHome(p); await p.getByRole('region', { name: 'Vicino a te' }).waitFor() } },
+  { name: '40-scoperta-weekend', go: async (p) => { await fromHome(p); const r = p.getByRole('region', { name: 'Questo weekend' }); await r.scrollIntoViewIfNeeded(); await p.evaluate(() => window.scrollBy(0, -120)) } },
+  {
+    name: '37-salvati',
+    go: async (p) => {
+      await fromHome(p)
+      const perTe = p.getByRole('region', { name: 'Per te' })
+      await perTe.getByRole('button', { name: 'Salva evento' }).first().click()
+      await perTe.getByRole('button', { name: 'Salva evento' }).first().click()
+      await click(p, 'I miei eventi')
+      await p.getByRole('tab', { name: /Salvati/ }).click()
+      await p.getByRole('heading').first().waitFor()
+    },
+  },
+  { name: '38-salvati-vuoto', go: async (p) => { await fromHome(p, 'I miei eventi'); await p.getByRole('tab', { name: /Salvati/ }).click(); await p.getByText(/Non hai ancora salvato/).waitFor() } },
+  {
+    name: '39-tira-per-aggiornare',
+    go: async (p) => {
+      await fromHome(p)
+      // Simula un dito che tira verso il basso a metà strada (senza rilasciare).
+      await p.evaluate(() => {
+        const target = document.querySelector('.pull') as HTMLElement
+        const t = (y: number) => new Touch({ identifier: 1, target, clientX: 100, clientY: y })
+        target.dispatchEvent(new TouchEvent('touchstart', { bubbles: true, touches: [t(200)] }))
+        target.dispatchEvent(new TouchEvent('touchmove', { bubbles: true, touches: [t(330)] }))
+      })
+    },
+  },
   { name: '34-eventi-nessun-risultato', go: async (p) => { await fromHome(p); await p.getByRole('searchbox').fill('zzzzqq'); await p.getByText(/Nessun risultato/).waitFor() } },
   { name: '35-coriandoli', go: async (p) => { await fromHome(p, /Aperitivo sul Naviglio/, 'Partecipa'); await p.getByText(/confermata/).waitFor(); await p.waitForTimeout(450) } },
   { name: '22-filtri-aperti', go: async (p) => { await fromHome(p); await p.getByText('Data e distanza').click() } },

@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { App } from '../App'
+import { useFixedMonday } from '../test/fixedMonday'
 import { createMemoryServices } from '../data/memory/createMemoryServices'
 import type { NewEvent } from '../domain/event'
 import { encodeGeohash } from '../events/geohash'
@@ -25,6 +26,7 @@ async function setup() {
 }
 
 describe('filtri nell\'elenco eventi', () => {
+  useFixedMonday()
   afterEach(() => vi.unstubAllGlobals())
 
   it('per tipo: seleziona e deseleziona', async () => {
@@ -58,6 +60,6 @@ describe('filtri nell\'elenco eventi', () => {
     await setup()
     fireEvent.click(screen.getByRole('button', { name: 'Filtra per distanza' }))
     expect(await screen.findByText('Posizione non concessa.')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Trek Roma/ })).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: /Trek Roma/ }).length).toBeGreaterThan(0)
   })
 })

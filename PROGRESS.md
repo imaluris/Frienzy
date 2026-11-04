@@ -36,3 +36,4 @@ Fase 2 completata
 - Task 32 fatto: Mappa e creazione evento
 - Task 33 fatto: Movimento, identità e rifinitura
 - Task 33a fatto: Illustrazioni e copertine
+- Task 33b fatto: Scoperta e salvati

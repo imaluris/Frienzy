@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { App } from '../App'
+import { useFixedMonday } from '../test/fixedMonday'
 import { createMemoryServices } from '../data/memory/createMemoryServices'
 import type { NewEvent } from '../domain/event'
 import { greeting } from './HomeHeader'
@@ -25,6 +26,7 @@ async function setup(events: NewEvent[]) {
 }
 
 describe('schermata Eventi', () => {
+  useFixedMonday()
   it('saluta per nome e raggruppa gli eventi in sezioni per periodo', async () => {
     await setup([event('Tra poco', 'Navigli', 2), event('Lontano lontano', 'Roma', 24 * 20)])
     expect(await screen.findByRole('heading', { level: 1, name: /Ada/ })).toBeInTheDocument()

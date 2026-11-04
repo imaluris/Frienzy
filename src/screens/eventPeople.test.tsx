@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { App } from '../App'
+import { useFixedMonday } from '../test/fixedMonday'
 import { createMemoryServices } from '../data/memory/createMemoryServices'
 import { joinEvent } from '../participation/joinEvent'
 import { respondToRequest } from '../participation/respondToRequest'
@@ -11,6 +12,7 @@ const user = (uid: string, nome: string) => ({
 })
 
 describe('persone nel dettaglio evento', () => {
+  useFixedMonday()
   it("mostra organizzatore e confermati con l'età, mai la data di nascita", async () => {
     const services = createMemoryServices()
     const me = await services.auth.register('ada@example.com', 'segreta1')
@@ -28,7 +30,7 @@ describe('persone nel dettaglio evento', () => {
 
     render(<App services={services} />)
     fireEvent.click(await screen.findByRole('button', { name: 'Eventi' }))
-    fireEvent.click(await screen.findByRole('button', { name: /Cena di prova/ }))
+    fireEvent.click((await screen.findAllByRole('button', { name: /Cena di prova/ }))[0])
 
     expect(await screen.findByText('Olga')).toBeInTheDocument()
     expect(screen.getByText('Bruno')).toBeInTheDocument()

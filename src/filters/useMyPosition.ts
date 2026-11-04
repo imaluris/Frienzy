@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { LatLng } from '../events/geohashDecode'
 
 export type PositionState = { status: 'idle' | 'asking' | 'denied' | 'unsupported' } | { status: 'ok'; point: LatLng }
@@ -14,5 +14,16 @@ export function useMyPosition() {
       () => setState({ status: 'denied' }),
     )
   }, [])
+
+  // Se il permesso è già stato dato in passato la posizione si legge da sola (nessuna finestra di richiesta);
+  // altrimenti si aspetta che l'utente la chieda.
+  useEffect(() => {
+    if (!('permissions' in navigator)) return
+    navigator.permissions
+      .query({ name: 'geolocation' })
+      .then((status) => status.state === 'granted' && ask())
+      .catch(() => undefined)
+  }, [ask])
+
   return { state, ask }
 }

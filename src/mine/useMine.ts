@@ -5,7 +5,7 @@ import type { Mine } from './buildMine'
 
 const EMPTY: Mine = { organized: [], joined: [] }
 
-/** Carica le mie liste; `reload` le rilegge dopo un annullamento o un ritiro. */
+/** Carica le mie liste; `reload` le rilegge dopo un annullamento o un ritiro, `refresh` lo fa e aspetta (tira per aggiornare). */
 export function useMine(services: Services, uid: string) {
   const [state, setState] = useState<{ loading: boolean; failed: boolean; mine: Mine }>({ loading: true, failed: false, mine: EMPTY })
   const [version, setVersion] = useState(0)
@@ -21,5 +21,13 @@ export function useMine(services: Services, uid: string) {
   }, [services, uid, version])
 
   const reload = useCallback(() => setVersion((v) => v + 1), [])
-  return { ...state, reload }
+  const refresh = useCallback(async () => {
+    try {
+      const mine = await loadMine(services.events, services.participations, uid)
+      setState({ loading: false, failed: false, mine })
+    } catch {
+      setState((s) => ({ ...s, loading: false, failed: true }))
+    }
+  }, [services, uid])
+  return { ...state, reload, refresh }
 }

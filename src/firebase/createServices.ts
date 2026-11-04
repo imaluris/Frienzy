@@ -5,10 +5,12 @@ import type { PhotoStorage } from '../data/photoStorage'
 import type { UserRepository } from '../data/userRepository'
 import { CapacitorPushService } from '../push/capacitorPushService'
 import type { PushService } from '../push/pushService'
+import type { SavedRepository } from '../saved/savedRepository'
 import { FirebaseAuthService } from './firebaseAuthService'
 import { FirebasePhotoStorage } from './firebasePhotoStorage'
 import { FirestoreEventRepository } from './firestoreEventRepository'
 import { FirestoreParticipationRepository } from './firestoreParticipationRepository'
+import { FirestoreSavedRepository } from './firestoreSavedRepository'
 import { FirestoreUserRepository } from './firestoreUserRepository'
 
 // L'unico punto che sa che si usa Firebase: il resto dell'app riceve solo le interfacce.
@@ -19,6 +21,7 @@ export interface Services {
   participations: ParticipationRepository
   photos: PhotoStorage
   push: PushService
+  saved: SavedRepository
 }
 
 export function createFirebaseServices(): Services {
@@ -29,5 +32,6 @@ export function createFirebaseServices(): Services {
     participations: new FirestoreParticipationRepository(),
     photos: new FirebasePhotoStorage(),
     push: new CapacitorPushService(),
+    saved: new FirestoreSavedRepository(),
   }
 }

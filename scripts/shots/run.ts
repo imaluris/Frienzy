@@ -23,7 +23,11 @@ const OUT = 'docs/screenshots'
 const server = await startDemoServer(PORT)
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH ?? '/opt/pw-browsers/chromium', args: ['--no-sandbox'] })
 try {
-  const page = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 })
+  // Posizione finta a Milano con permesso già dato: serve alla fila "Vicino a te".
+  const page = await browser.newPage({
+    viewport: { width: 390, height: 844 }, deviceScaleFactor: 2,
+    permissions: ['geolocation'], geolocation: { latitude: 45.4642, longitude: 9.19 },
+  })
   page.setDefaultTimeout(8000)
   await page.goto(`http://localhost:${PORT}/`)
   await page.getByRole('heading').first().waitFor()

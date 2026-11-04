@@ -9,6 +9,7 @@ import { MapScreen } from '../screens/MapScreen'
 import { MyEventsScreen } from '../screens/MyEventsScreen'
 import { ProfileScreen } from '../screens/ProfileScreen'
 import { ProfileView } from '../screens/ProfileView'
+import { SavedProvider } from '../saved/SavedContext'
 import { AppHeader } from './AppHeader'
 import { canGoBack, goBack, openDebug, openEdit, openEvent, selectTab, showsAppHeader, showsTabBar, START, titleOf, type Nav } from './navState'
 import { screenKey, transitionKind } from './screenTransition'
@@ -33,7 +34,7 @@ function Shell({ uid, profile, onProfileSaved }: Props) {
       case 'edit': return <ProfileScreen uid={uid} current={profile} onSaved={(saved) => { onProfileSaved(saved); setNav((n) => goBack(n)); show('Profilo aggiornato', 'success') }} />
     }
     switch (nav.tab) {
-      case 'eventi': return <EventListScreen name={profile.nome} onOpen={open} onCreate={() => setNav(selectTab('crea'))} />
+      case 'eventi': return <EventListScreen uid={uid} name={profile.nome} interessi={profile.interessi} onOpen={open} onCreate={() => setNav(selectTab('crea'))} />
       case 'mappa': return <MapScreen onOpen={open} />
       case 'crea': return <CreateEventScreen uid={uid} onDone={() => { setNav(selectTab('miei')); show('Evento pubblicato!', 'success') }} />
       case 'miei': return <MyEventsScreen uid={uid} onOpen={open} />
@@ -54,7 +55,9 @@ function Shell({ uid, profile, onProfileSaved }: Props) {
 export function AppShell(props: Props) {
   return (
     <ToastProvider>
-      <Shell {...props} />
+      <SavedProvider uid={props.uid}>
+        <Shell {...props} />
+      </SavedProvider>
     </ToastProvider>
   )
 }

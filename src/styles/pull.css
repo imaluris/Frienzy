@@ -1,0 +1,16 @@
+/* Tira per aggiornare. */
+.pull { position: relative; overscroll-behavior-y: contain; }
+.pull-content { transition: transform var(--motion-fast, 150ms) ease-out; }
+.pull-indicator {
+  position: absolute; top: 0; left: 50%; margin-left: -20px; width: 40px; height: 40px; z-index: 5;
+  display: grid; place-items: center; border-radius: 50%; background: var(--color-surface); color: #a8452f;
+  box-shadow: var(--shadow-2); pointer-events: none;
+}
+.pull-indicator svg { transition: transform 150ms ease-out; }
+.pull-indicator.is-ready svg { transform: rotate(180deg); }
+.pull-indicator.is-refreshing svg { animation: pull-spin 800ms linear infinite; }
+@keyframes pull-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .pull-content, .pull-indicator svg { transition: none; }
+  .pull-indicator.is-refreshing svg { animation: none; }
+}

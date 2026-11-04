@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { App } from '../App'
+import { useFixedMonday } from '../test/fixedMonday'
 import { createMemoryServices } from '../data/memory/createMemoryServices'
 import type { NewEvent } from '../domain/event'
 import { joinEvent } from '../participation/joinEvent'
@@ -25,10 +26,12 @@ async function setup(over: Partial<NewEvent> = {}) {
 async function openDetail(services: ReturnType<typeof createMemoryServices>, titolo = /Cena di prova/) {
   render(<App services={services} />)
   fireEvent.click(await screen.findByRole('button', { name: 'Eventi' }))
-  fireEvent.click(await screen.findByRole('button', { name: titolo }))
+  // Lo stesso evento può comparire anche nelle file "Per te" / "weekend": apro la prima scheda trovata.
+  fireEvent.click((await screen.findAllByRole('button', { name: titolo }))[0])
 }
 
 describe('pulsanti di partecipazione', () => {
+  useFixedMonday()
   it('evento libero: Partecipa conferma subito, Ritirati toglie il posto', async () => {
     const { services, event } = await setup()
     await openDetail(services)
