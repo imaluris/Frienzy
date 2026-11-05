@@ -1,6 +1,7 @@
 import { MemoryAuthService } from '../auth/memoryAuthService'
 import { createMemoryServices } from '../data/memory/createMemoryServices'
 import type { Services } from '../firebase/createServices'
+import { EXTREME_PROFILES, EXTREME_SPEC } from './demoExtreme'
 import { DEMO_EVENT_SPECS, toNewEvent } from './demoEvents'
 import { DEMO_PROFILES, DEMO_UID } from './demoPeople'
 
@@ -13,8 +14,11 @@ export async function createDemoServices(): Promise<Services> {
   // Il primo account è quello della demo; chi si registra dopo (anche negli screenshot) è una persona nuova, senza profilo.
   let registered = 0
   const services = createMemoryServices(new MemoryAuthService(() => (registered++ === 0 ? DEMO_UID : `nuovo-${registered}`)))
-  for (const profile of DEMO_PROFILES) await services.users.save(profile)
-  for (const spec of DEMO_EVENT_SPECS) {
+  const extreme = import.meta.env.VITE_DEMO_EXTREME === '1' // solo per la revisione grafica
+  const profiles = extreme ? [...DEMO_PROFILES, ...EXTREME_PROFILES] : DEMO_PROFILES
+  const specs = extreme ? [EXTREME_SPEC, ...DEMO_EVENT_SPECS] : DEMO_EVENT_SPECS
+  for (const profile of profiles) await services.users.save(profile)
+  for (const spec of specs) {
     const event = await services.events.create(toNewEvent(spec), { indirizzo: spec.indirizzo, lat: spec.lat, lng: spec.lng })
     for (const uid of spec.confermati) await services.participations.add(event.id, uid, 'confermato')
     for (const uid of spec.richieste ?? []) await services.participations.add(event.id, uid, 'richiesta')

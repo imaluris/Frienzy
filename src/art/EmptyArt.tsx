@@ -1,13 +1,15 @@
 import { NoEventsArt, NoResultsArt } from './empty/calendarArt'
+import { NoSavedArt } from './empty/heartArt'
 import { FailureArt, OfflineArt } from './empty/failureArt'
 import { NoJoinedArt, NoOrganizedArt } from './empty/ticketArt'
 
-// Le sei illustrazioni per gli stati vuoti, di errore e senza connessione.
+// Le sette illustrazioni per gli stati vuoti, di errore e senza connessione.
 export const EMPTY_ART = {
   'no-events': NoEventsArt,
   'no-results': NoResultsArt,
   'no-joined': NoJoinedArt,
   'no-organized': NoOrganizedArt,
+  'no-saved': NoSavedArt,
   failure: FailureArt,
   offline: OfflineArt,
 } as const

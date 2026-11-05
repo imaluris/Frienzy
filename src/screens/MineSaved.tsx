@@ -19,7 +19,7 @@ export function MineSaved({ onOpen }: { onOpen: (eventId: string) => void }) {
     <>
       {failed && <LoadFailed text="Non riesco a caricare gli eventi salvati." />}
       {!loading && !failed && shown.length === 0 && (
-        <EmptyState art="no-events" text="Non hai ancora salvato nessun evento. Tocca il cuore su una scheda per ritrovarla qui." />
+        <EmptyState art="no-saved" text="Non hai ancora salvato nessun evento. Tocca il cuore su una scheda per ritrovarla qui." />
       )}
       <ul className="event-list">
         {shown.map((event) => <li key={event.id}><EventCard event={event} attendance={attendance[event.id]} onOpen={() => onOpen(event.id)} /></li>)}

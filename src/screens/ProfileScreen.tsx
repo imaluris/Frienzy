@@ -51,7 +51,7 @@ export function ProfileScreen({ uid, current, onSaved }: Props) {
       </label>
       <InterestPicker selected={input.interessi} onChange={(interessi) => set({ interessi })} />
       {error && <p role="alert" className="error">{error}</p>}
-      <button type="submit" disabled={busy}>Salva</button>
+      <button type="submit" className="wide" disabled={busy} aria-busy={busy}>Salva</button>
     </form>
   )
 }

@@ -6,6 +6,7 @@ import { buildEvent, createEvent } from '../events/eventService'
 import type { EventField, EventFieldErrors } from '../events/fieldErrors'
 import type { EventInput } from '../events/validation'
 import { ProgressBars } from '../ui/ProgressBars'
+import { useScrollTop } from '../ui/useScrollTop'
 import { CreateStepBody } from './CreateStepBody'
 import { CreateSummary } from './CreateSummary'
 
@@ -27,6 +28,7 @@ export function CreateEventScreen({ uid, onDone }: Props) {
   const [errors, setErrors] = useState<EventFieldErrors>({})
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  useScrollTop(step)
 
   // Modifica un campo e toglie il suo errore: l'utente vede subito che sta correggendo.
   function change(field: EventField, patch: Partial<EventInput>) {

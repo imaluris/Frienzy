@@ -6,11 +6,11 @@
 .welcome-brand { display: flex; align-items: center; justify-content: center; gap: var(--space-3); }
 .welcome-brand h1 { margin: 0; font-size: 2.25rem; }
 .welcome-logo { width: 64px; height: 64px; border-radius: 18px; box-shadow: var(--shadow-2); }
-.welcome-art { width: 100%; height: auto; display: block; border-radius: 28px; box-shadow: var(--shadow-2); }
-.welcome-copy { text-align: center; padding: 0 var(--space-2); }
+.welcome-art { margin-top: auto; width: 100%; height: auto; display: block; border-radius: 28px; box-shadow: var(--shadow-2); }
+.welcome-copy { margin-bottom: auto; text-align: center; padding: 0 var(--space-2); } /* il vuoto avanzato si divide sopra l'illustrazione e sotto il testo */
 .welcome-copy h2 { font-size: var(--text-title); margin-bottom: var(--space-2); }
 .welcome-copy p { margin: 0; color: var(--color-muted); }
-.welcome-actions { margin-top: auto; display: grid; gap: var(--space-3); }
+.welcome-actions { display: grid; gap: var(--space-3); }
 .welcome-actions button { min-height: 56px; font-size: var(--text-subtitle); }
 .welcome-note {
   display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0;

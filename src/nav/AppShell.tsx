@@ -14,6 +14,7 @@ import { AppHeader } from './AppHeader'
 import { canGoBack, goBack, openDebug, openEdit, openEvent, selectTab, showsAppHeader, showsTabBar, START, titleOf, type Nav } from './navState'
 import { screenKey, transitionKind } from './screenTransition'
 import { TabBar } from './TabBar'
+import { useScrollTop } from '../ui/useScrollTop'
 
 interface Props {
   uid: string
@@ -25,6 +26,7 @@ interface Props {
 function Shell({ uid, profile, onProfileSaved }: Props) {
   const { show } = useToast()
   const [nav, setNav] = useState<Nav>(START)
+  useScrollTop(screenKey(nav))
   const open = (id: string) => setNav((n) => openEvent(n, id))
 
   function content(): ReactNode {

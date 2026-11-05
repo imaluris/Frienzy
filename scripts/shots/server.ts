@@ -1,9 +1,9 @@
 import { spawn, type ChildProcess } from 'node:child_process'
 
 // Avvia Vite in modalità demo (servizi in memoria, nessun Firebase) e aspetta che risponda.
-export async function startDemoServer(port: number): Promise<ChildProcess> {
+export async function startDemoServer(port: number, extra: Record<string, string> = {}): Promise<ChildProcess> {
   const child = spawn(process.execPath, ['node_modules/vite/bin/vite.js', '--port', String(port), '--strictPort'], {
-    env: { ...process.env, VITE_DEMO: '1' },
+    env: { ...process.env, VITE_DEMO: '1', ...extra },
     stdio: 'ignore',
   })
   const url = `http://localhost:${port}/`

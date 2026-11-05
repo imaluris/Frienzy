@@ -16,7 +16,7 @@
 }
 .map-top { position: absolute; z-index: 10; top: 0; left: 0; right: 0; padding: calc(var(--safe-top) + var(--space-3)) var(--space-3) 0; pointer-events: none; }
 .map-top > * { pointer-events: auto; }
-.map-chips { display: flex; gap: var(--space-2); margin-top: var(--space-2); overflow-x: auto; padding: 2px 2px var(--space-2); scrollbar-width: none; }
+.map-chips { display: flex; gap: var(--space-2); margin: var(--space-2) calc(-1 * var(--space-3)) 0; overflow-x: auto; padding: 2px var(--space-3) var(--space-2); scrollbar-width: none; } /* esce fino al bordo: l'ultimo chip si vede tagliato e invita a scorrere */
 .map-chips button {
   flex: none; min-height: 40px; padding: 0 var(--space-3); background: var(--color-surface); color: var(--color-text);
   border: 1px solid var(--color-border-soft); border-radius: 999px; box-shadow: var(--shadow-1); text-transform: capitalize;
