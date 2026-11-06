@@ -1,6 +1,6 @@
 import {
   ArrowLeft, ArrowRight, Ban, CalendarDays, CalendarX, Check, CircleCheck, Clock, Hourglass, Info, LogIn, LogOut, Minus, Navigation, Pencil, Settings2, Sparkles, ShieldCheck, Heart, House, LocateFixed, Map, MapPin, PartyPopper,
-  Plus, RefreshCw, Search, SearchX, Share2, SlidersHorizontal, Ticket, UserRound, UsersRound, X, type LucideIcon,
+  MessageCircle, Plus, RefreshCw, SendHorizontal, Trash2, Search, SearchX, Share2, SlidersHorizontal, Ticket, UserRound, UsersRound, X, type LucideIcon,
 } from 'lucide-react'
 
 // Set unico di icone vettoriali (libreria lucide-react, licenza ISC): stesso tratto e stessa griglia ovunque.
@@ -39,6 +39,9 @@ export const ICONS = {
   edit: Pencil,
   sparkles: Sparkles,
   refresh: RefreshCw,
+  chat: MessageCircle,
+  send: SendHorizontal,
+  trash: Trash2,
 } satisfies Record<string, LucideIcon>
 
 export type IconName = keyof typeof ICONS

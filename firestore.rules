@@ -166,6 +166,22 @@ service cloud.firestore {
         allow delete: if false;
       }
 
+      // Chat dell'evento: la leggono e ci scrivono solo l'organizzatore e i confermati (chi lascia l'evento perde l'accesso).
+      // Il messaggio è di chi lo scrive, 1-500 caratteri, con data del server; non si modifica; lo cancella solo l'organizzatore.
+      match /messaggi/{messageId} {
+        allow read: if isOrganizer(eventId) || isConfirmed(eventId);
+        allow create: if (isOrganizer(eventId) || isConfirmed(eventId))
+          && eventNow(eventId).stato != 'annullato'
+          && hasOnly(request.resource.data, ['authorUid', 'testo', 'creatoIl'])
+          && request.resource.data.authorUid == request.auth.uid
+          && request.resource.data.testo is string
+          && request.resource.data.testo.size() >= 1
+          && request.resource.data.testo.size() <= 500
+          && request.resource.data.creatoIl == request.time;
+        allow update: if false;
+        allow delete: if isOrganizer(eventId);
+      }
+
       // Partecipazioni: events/{id}/partecipanti/{uid}
       match /partecipanti/{uid} {
         // Si vedono: la propria, quelle di un evento che organizzi, e quelle già confermate.

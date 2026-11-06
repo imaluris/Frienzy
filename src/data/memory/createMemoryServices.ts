@@ -1,3 +1,5 @@
+import { chatRoleOf } from '../../chat/chatRole'
+import { MemoryChatRepository } from '../../chat/memoryChatRepository'
 import { MemoryPushService } from '../../push/memoryPushService'
 import type { AuthService } from '../../auth/authService'
 import { MemorySavedRepository } from '../../saved/memorySavedRepository'
@@ -22,5 +24,6 @@ export function createMemoryServices(auth: AuthService = new MemoryAuthService()
     photos: new MemoryPhotoStorage(),
     push: new MemoryPushService(),
     saved: new MemorySavedRepository(),
+    chat: new MemoryChatRepository((eventId, uid) => chatRoleOf(events, participations, eventId, uid)),
   }
 }

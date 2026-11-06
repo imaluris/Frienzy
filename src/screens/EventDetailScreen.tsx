@@ -11,6 +11,7 @@ import { decideView } from '../participation/participationView'
 import { useEventParticipation } from '../participation/useEventParticipation'
 import { EmptyState } from '../ui/EmptyState'
 import { useScrollY } from '../ui/useScrollY'
+import { ChatLink } from './ChatLink'
 import { ActionBar } from './ActionBar'
 import { DetailTopBar } from './DetailTopBar'
 import { EventAreaMap } from './EventAreaMap'
@@ -23,7 +24,7 @@ import { StatusNote } from './StatusNote'
 const COVER_HEIGHT = 296
 
 // Dettaglio di un evento: la zona per tutti; l'indirizzo esatto solo a organizzatore e confermati.
-export function EventDetailScreen({ eventId, onBack }: { eventId: string; onBack: () => void }) {
+export function EventDetailScreen({ eventId, onBack, onOpenChat }: { eventId: string; onBack: () => void; onOpenChat: () => void }) {
   const services = useServices()
   const { show } = useToast()
   const { events } = services
@@ -77,6 +78,7 @@ export function EventDetailScreen({ eventId, onBack }: { eventId: string; onBack
           <div className="detail-body">
             {view && <StatusNote view={view} />}
             <EventInfo event={event} place={place} />
+            {view && <ChatLink open={view === 'organizzatore' || view === 'confermato'} onOpen={onOpenChat} />}
             <EventPeople people={people} />
             <EventAreaMap lat={event.latApprossimata} lng={event.lngApprossimata} />
           </div>

@@ -130,5 +130,11 @@ export const STEPS: Step[] = [
   { name: '27-registrazione-passo2', go: async (p) => { await onboarding(p); await p.getByRole('heading', { name: 'Come ti chiami?' }).waitFor() } },
   { name: '28-registrazione-passo3', go: async (p) => { await onboarding(p); await p.getByLabel('Nome').fill('Marta Rossi'); await p.getByLabel('Data di nascita').fill('1994-03-12'); await click(p, 'Continua'); await click(p, /aperitivo/); await click(p, /passeggiata/) } },
   { name: '29-registrazione-passo4', go: async (p) => { await onboarding(p); await p.getByLabel('Nome').fill('Marta Rossi'); await p.getByLabel('Data di nascita').fill('1994-03-12'); await click(p, 'Continua'); await click(p, 'Salta per ora') } },
+  { name: '41-chat-confermato', go: async (p) => { await fromHome(p, /Trekking al lago/, /Chat dell'evento/); await p.getByText(/parcheggio di Onno/).waitFor() } },
+  { name: '42-chat-organizzatore', go: async (p) => { await fromHome(p, 'I miei eventi', /Passeggiata/, /Chat dell'evento/); await p.getByText(/più siamo meglio/).waitFor() } },
+  { name: '43-chat-segnaposto', go: async (p) => { await fromHome(p, /pasta fatta/); await p.getByText('La chat si apre quando sei confermato.').waitFor() } },
+  { name: '44-chat-cancella', go: async (p) => { await fromHome(p, 'I miei eventi', /Passeggiata/, /Chat dell'evento/); await click(p, /Cancella il messaggio di Giulia/); await p.getByRole('dialog').waitFor() } },
+  { name: '45-chat-vuota', go: async (p) => { await fromHome(p, 'I miei eventi', /Brunch/, /Chat dell'evento/); await p.getByText(/Ancora nessun messaggio/).waitFor() } },
+  { name: '46-chat-scrittura', go: async (p) => { await fromHome(p, /Trekking al lago/, /Chat dell'evento/); await p.getByLabel('Scrivi un messaggio').fill('Ci sono anch\'io, porto i panini per tutti! Qualcuno vuole qualcosa di particolare?') } },
   { name: '14-registrazione', go: (p) => fromHome(p, 'Profilo', 'Esci', 'Crea il tuo account') },
 ]

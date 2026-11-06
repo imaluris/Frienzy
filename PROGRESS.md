@@ -38,3 +38,4 @@ Fase 2 completata
 - Task 33a fatto: Illustrazioni e copertine
 - Task 33b fatto: Scoperta e salvati
 - Task 33c fatto: Revisione grafica complessiva
+- Task 34 fatto: Chat dell'evento

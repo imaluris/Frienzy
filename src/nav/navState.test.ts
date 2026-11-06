@@ -41,3 +41,15 @@ describe('barra del titolo', () => {
     expect(showsTabBar(openEdit(START))).toBe(true)
   })
 })
+
+describe('chat', () => {
+  it("si apre dall'evento e indietro torna all'evento", async () => {
+    const { openChat, openEvent, goBack, showsTabBar, showsAppHeader, titleOf, START } = await import('./navState')
+    const chat = openChat(openEvent(START, 'e1'), 'e1')
+    expect(chat.overlay).toEqual({ kind: 'chat', id: 'e1' })
+    expect(goBack(chat).overlay).toEqual({ kind: 'event', id: 'e1' })
+    expect(showsTabBar(chat)).toBe(false)
+    expect(showsAppHeader(chat)).toBe(false)
+    expect(titleOf(chat)).toBe('Chat')
+  })
+})

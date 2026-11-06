@@ -1,3 +1,4 @@
+import type { ChatRepository } from '../chat/chatRepository'
 import type { AuthService } from '../auth/authService'
 import type { EventRepository } from '../data/eventRepository'
 import type { ParticipationRepository } from '../data/participationRepository'
@@ -6,6 +7,7 @@ import type { UserRepository } from '../data/userRepository'
 import { CapacitorPushService } from '../push/capacitorPushService'
 import type { PushService } from '../push/pushService'
 import type { SavedRepository } from '../saved/savedRepository'
+import { FirestoreChatRepository } from './firestoreChatRepository'
 import { FirebaseAuthService } from './firebaseAuthService'
 import { FirebasePhotoStorage } from './firebasePhotoStorage'
 import { FirestoreEventRepository } from './firestoreEventRepository'
@@ -22,6 +24,7 @@ export interface Services {
   photos: PhotoStorage
   push: PushService
   saved: SavedRepository
+  chat: ChatRepository
 }
 
 export function createFirebaseServices(): Services {
@@ -33,5 +36,6 @@ export function createFirebaseServices(): Services {
     photos: new FirebasePhotoStorage(),
     push: new CapacitorPushService(),
     saved: new FirestoreSavedRepository(),
+    chat: new FirestoreChatRepository(),
   }
 }

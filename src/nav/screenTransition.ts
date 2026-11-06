@@ -4,7 +4,7 @@ import type { Nav } from './navState'
 export function screenKey(nav: Nav): string {
   const o = nav.overlay
   if (o.kind === 'none') return `tab:${nav.tab}`
-  return o.kind === 'event' ? `event:${o.id}` : o.kind
+  return o.kind === 'event' || o.kind === 'chat' ? `${o.kind}:${o.id}` : o.kind
 }
 
 // Una schermata aperta sopra (dettaglio, modifica) entra scorrendo da destra; il cambio di scheda è una dissolvenza.

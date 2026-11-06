@@ -1,0 +1,38 @@
+/* Chat dell'evento: schermata a colonna (testata, messaggi che scorrono, campo fisso in basso). */
+.chat-page { position: fixed; inset: 0; z-index: 900; display: flex; flex-direction: column; background: var(--color-background); }
+.chat-top {
+  display: flex; align-items: center; gap: var(--space-2); flex: none;
+  padding: calc(var(--space-2) + var(--safe-top)) var(--space-4) var(--space-2) var(--space-2);
+  background: var(--color-surface); border-bottom: 1px solid var(--color-border-soft); box-shadow: var(--shadow-1);
+}
+.chat-top-text { min-width: 0; }
+.chat-top h1 { margin: 0; font-size: var(--text-subtitle); font-weight: var(--weight-heavy); }
+.chat-top p { margin: 0; font-size: var(--text-caption); color: var(--color-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chat-state { padding: var(--space-8) var(--space-4); }
+.chat-scroll { flex: 1 1 auto; overflow-y: auto; padding: var(--space-3) var(--space-4); overscroll-behavior: contain; }
+.chat-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-1); }
+.chat-day { align-self: center; margin: var(--space-3) 0 var(--space-2); padding: 2px var(--space-3); border-radius: 999px; background: var(--color-border-soft); color: var(--color-muted); font-size: var(--text-caption); font-weight: var(--weight-bold); }
+.chat-row { display: flex; align-items: flex-end; gap: var(--space-2); max-width: 100%; }
+.chat-row.mine { flex-direction: row-reverse; }
+.chat-avatar { flex: none; width: 32px; }
+.chat-bubble-wrap { display: flex; flex-direction: column; min-width: 0; max-width: 78%; }
+.chat-row.mine .chat-bubble-wrap { align-items: flex-end; }
+.chat-author { margin: var(--space-2) 0 2px var(--space-3); font-size: var(--text-caption); font-weight: var(--weight-bold); color: var(--color-secondary); }
+.chat-bubble { padding: var(--space-2) var(--space-3); border-radius: var(--radius) var(--radius) var(--radius) 4px; background: var(--color-surface); border: 1px solid var(--color-border-soft); box-shadow: var(--shadow-1); }
+.chat-row.mine .chat-bubble { border-radius: var(--radius) var(--radius) 4px var(--radius); background: var(--color-primary); border-color: transparent; color: var(--color-text); }
+.chat-bubble p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.4; }
+.chat-meta { display: block; margin-top: 2px; text-align: right; font-size: 0.6875rem; opacity: 0.75; }
+.chat-row .chat-delete { flex: none; width: 40px; height: var(--tap); min-height: var(--tap); padding: 0; border: 0; box-shadow: none; background: transparent; color: var(--color-muted); border-radius: 999px; }
+.chat-composer { flex: none; padding: var(--space-2) var(--space-3) calc(var(--space-2) + var(--safe-bottom)); background: var(--color-surface); border-top: 1px solid var(--color-border-soft); }
+.chat-composer-row { display: flex; align-items: flex-end; gap: var(--space-2); }
+.chat-composer textarea { flex: 1; min-height: var(--tap); max-height: 120px; resize: none; margin: 0; border-radius: 24px; padding: 12px var(--space-4); field-sizing: content; }
+.chat-send { flex: none; width: var(--tap); height: var(--tap); padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; }
+.chat-count { display: block; text-align: right; color: var(--color-muted); font-size: var(--text-caption); margin-top: 2px; }
+.chat-error { margin: 0 0 var(--space-2); font-size: var(--text-caption); }
+/* Riga nel dettaglio che porta alla chat. */
+.chat-link { display: flex; align-items: center; gap: var(--space-3); width: 100%; margin: var(--space-4) 0; padding: var(--space-3) var(--space-4); text-align: left; border-radius: var(--radius); border: 1px solid var(--color-border-soft); background: var(--color-surface); color: var(--color-text); box-shadow: var(--shadow-1); min-height: var(--tap); }
+.chat-link.locked { background: transparent; box-shadow: none; border-style: dashed; color: var(--color-muted); }
+.chat-link-icon { flex: none; display: inline-flex; width: 40px; height: 40px; align-items: center; justify-content: center; border-radius: 999px; background: var(--color-secondary-soft); color: var(--color-secondary); }
+.chat-link.locked .chat-link-icon { background: var(--color-border-soft); color: var(--color-muted); }
+.chat-link-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.chat-link-text small { color: var(--color-muted); }

@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { ToastProvider, useToast } from '../feedback/ToastContext'
 import type { UserProfile } from '../domain/user'
+import { ChatScreen } from '../screens/ChatScreen'
 import { CreateEventScreen } from '../screens/CreateEventScreen'
 import { DebugScreen } from '../screens/DebugScreen'
 import { EventDetailScreen } from '../screens/EventDetailScreen'
@@ -11,7 +12,7 @@ import { ProfileScreen } from '../screens/ProfileScreen'
 import { ProfileView } from '../screens/ProfileView'
 import { SavedProvider } from '../saved/SavedContext'
 import { AppHeader } from './AppHeader'
-import { canGoBack, goBack, openDebug, openEdit, openEvent, selectTab, showsAppHeader, showsTabBar, START, titleOf, type Nav } from './navState'
+import { canGoBack, goBack, openChat, openDebug, openEdit, openEvent, selectTab, showsAppHeader, showsTabBar, START, titleOf, type Nav } from './navState'
 import { screenKey, transitionKind } from './screenTransition'
 import { TabBar } from './TabBar'
 import { useScrollTop } from '../ui/useScrollTop'
@@ -31,7 +32,8 @@ function Shell({ uid, profile, onProfileSaved }: Props) {
 
   function content(): ReactNode {
     switch (nav.overlay.kind) {
-      case 'event': return <EventDetailScreen eventId={nav.overlay.id} onBack={() => setNav((n) => goBack(n))} />
+      case 'event': return <EventDetailScreen eventId={nav.overlay.id} onBack={() => setNav((n) => goBack(n))} onOpenChat={() => nav.overlay.kind === 'event' && setNav((n) => openChat(n, (nav.overlay as { id: string }).id))} />
+      case 'chat': return <ChatScreen eventId={nav.overlay.id} uid={uid} onBack={() => setNav((n) => goBack(n))} />
       case 'debug': return <DebugScreen />
       case 'edit': return <ProfileScreen uid={uid} current={profile} onSaved={(saved) => { onProfileSaved(saved); setNav((n) => goBack(n)); show('Profilo aggiornato', 'success') }} />
     }
