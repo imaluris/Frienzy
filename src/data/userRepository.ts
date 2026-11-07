@@ -6,4 +6,6 @@ export interface UserRepository {
   save(profile: UserProfile): Promise<void>
   /** Restituisce il profilo, oppure null se non esiste. */
   getById(uid: string): Promise<UserProfile | null>
+  /** Cancella il profilo; se non esiste non è un errore. */
+  delete(uid: string): Promise<void>
 }

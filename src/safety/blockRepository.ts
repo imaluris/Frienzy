@@ -4,6 +4,8 @@ export interface BlockRepository {
   block(uid: string, otherUid: string): Promise<void>
   /** Toglie il blocco; se non c'era non è un errore. */
   unblock(uid: string, otherUid: string): Promise<void>
+  /** Toglie tutti i blocchi fatti da `uid` (eliminazione account). */
+  unblockAll(uid: string): Promise<void>
   /** Le persone che `uid` ha bloccato. */
   listBlockedBy(uid: string): Promise<string[]>
   /** Le persone che hanno bloccato `uid`. */

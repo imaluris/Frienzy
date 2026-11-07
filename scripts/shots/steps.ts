@@ -142,5 +142,7 @@ export const STEPS: Step[] = [
   { name: '50-blocca-conferma', go: async (p) => { await fromHome(p, /pasta fatta/, 'Altre azioni', /Blocca /); await p.getByRole('dialog', { name: /Bloccare/ }).waitFor() } },
   { name: '51-persone-menu', go: async (p) => { await fromHome(p, /Trekking al lago/); await p.getByRole('button', { name: /Altre azioni per/ }).first().click(); await p.getByRole('dialog').waitFor() } },
   { name: '52-profilo-bloccati', go: async (p) => { await fromHome(p, /pasta fatta/, 'Altre azioni', /Blocca /, 'Blocca'); await p.getByRole('dialog').waitFor({ state: 'detached' }); await p.getByText(/Hai bloccato/).waitFor({ state: 'detached' }); await click(p, 'Profilo'); await click(p, /Utenti bloccati/); await p.getByRole('dialog').waitFor() } },
+  { name: '53-elimina-account-avviso', go: async (p) => { await fromHome(p, 'Profilo', 'Elimina account'); await p.getByRole('dialog').waitFor(); await p.getByText(/Verranno annullati/).waitFor() } },
+  { name: '54-elimina-account-password', go: async (p) => { await fromHome(p, 'Profilo', 'Elimina account', 'Continua'); await p.getByLabel('Password', { exact: true }).fill('sbagliata1'); await click(p, 'Elimina definitivamente'); await p.getByRole('alert').waitFor() } },
   { name: '14-registrazione', go: (p) => fromHome(p, 'Profilo', 'Esci', 'Crea il tuo account') },
 ]

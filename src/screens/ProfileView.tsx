@@ -9,6 +9,7 @@ import { Avatar } from '../ui/Avatar'
 import { Icon } from '../ui/Icon'
 import { InterestChips } from '../ui/InterestChips'
 import { BlockedSheet } from './BlockedSheet'
+import { DeleteAccountSheet } from './DeleteAccountSheet'
 import { ProfileStats } from './ProfileStats'
 
 interface Props {
@@ -24,6 +25,7 @@ export function ProfileView({ profile, onEdit, onDebug }: Props) {
   const { loading, mine } = useMine(services, profile.uid)
   const { blockedByMe } = useBlocks()
   const [showBlocked, setShowBlocked] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   return (
     <div className="profile-page">
       <section className="card profile-hero">
@@ -49,8 +51,10 @@ export function ProfileView({ profile, onEdit, onDebug }: Props) {
           <button type="button" className="secondary wide" onClick={() => setShowBlocked(true)}><Icon name="user-x" size={20} /> Utenti bloccati ({blockedByMe.length})</button>
         )}
         <button type="button" className="secondary wide" onClick={() => void services.auth.logout()}><Icon name="logout" size={20} /> Esci</button>
+        <button type="button" className="link danger-link" onClick={() => setDeleting(true)}>Elimina account</button>
         <button type="button" className="link" onClick={onDebug}>Debug</button>
       </section>
+      {deleting && <DeleteAccountSheet onClose={() => setDeleting(false)} />}
       {showBlocked && <BlockedSheet onClose={() => setShowBlocked(false)} />}
     </div>
   )

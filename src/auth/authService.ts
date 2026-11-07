@@ -5,6 +5,10 @@ export interface AuthService {
   /** Entra con email e password; restituisce l'uid. */
   login(email: string, password: string): Promise<string>
   logout(): Promise<void>
+  /** Chiede di nuovo la password dell'utente collegato (serve prima di operazioni delicate). Errore 'auth/invalid-credential' se è sbagliata. */
+  reauthenticate(password: string): Promise<void>
+  /** Elimina per sempre l'account di accesso dell'utente collegato, che resta scollegato. */
+  deleteAccount(): Promise<void>
   /** Uid dell'utente collegato, oppure null. */
   currentUid(): string | null
   /** Avvisa quando l'utente entra o esce; restituisce la funzione per smettere di ascoltare. */

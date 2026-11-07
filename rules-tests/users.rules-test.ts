@@ -1,5 +1,5 @@
 import { assertFails, assertSucceeds, type RulesTestEnvironment } from '@firebase/rules-unit-testing'
-import { Timestamp, doc, getDoc, setDoc } from 'firebase/firestore'
+import { Timestamp, deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore'
 import { ANNA, BRUNO, createEnv, profile } from './env'
 
 let env: RulesTestEnvironment
@@ -37,5 +37,11 @@ describe('regole: profili', () => {
   it('un utente collegato legge i profili', async () => {
     await assertSucceeds(setDoc(doc(as(ANNA), 'users', ANNA), profile()))
     await assertSucceeds(getDoc(doc(as(BRUNO), 'users', ANNA)))
+  })
+
+  it('ognuno cancella solo il proprio profilo', async () => {
+    await assertSucceeds(setDoc(doc(as(ANNA), 'users', ANNA), profile()))
+    await assertFails(deleteDoc(doc(as(BRUNO), 'users', ANNA)))
+    await assertSucceeds(deleteDoc(doc(as(ANNA), 'users', ANNA)))
   })
 })

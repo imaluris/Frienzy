@@ -1,5 +1,6 @@
 import { collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, where } from 'firebase/firestore'
 import type { BlockRepository } from '../safety/blockRepository'
+import { deleteInBatches } from './batchDelete'
 import { db } from './app'
 
 // blocchi/{chi blocca}_{chi è bloccato}: l'id contiene entrambe le persone, così le regole possono controllarlo.
@@ -14,6 +15,11 @@ export class FirestoreBlockRepository implements BlockRepository {
 
   async unblock(uid: string, otherUid: string): Promise<void> {
     await deleteDoc(ref(uid, otherUid))
+  }
+
+  async unblockAll(uid: string): Promise<void> {
+    const snap = await getDocs(query(collection(db(), 'blocchi'), where('blockerId', '==', uid)))
+    await deleteInBatches(snap.docs.map((d) => d.ref))
   }
 
   async listBlockedBy(uid: string): Promise<string[]> {

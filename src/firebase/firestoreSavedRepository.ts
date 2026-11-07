@@ -1,4 +1,5 @@
 import { collection, deleteDoc, doc, getDocs, orderBy, query, serverTimestamp, setDoc } from 'firebase/firestore'
+import { deleteInBatches } from './batchDelete'
 import type { SavedRepository } from '../saved/savedRepository'
 import { db } from './app'
 
@@ -13,6 +14,11 @@ export class FirestoreSavedRepository implements SavedRepository {
 
   async add(uid: string, eventId: string): Promise<void> {
     await setDoc(ref(uid, eventId), { eventId, creatoIl: serverTimestamp() })
+  }
+
+  async clear(uid: string): Promise<void> {
+    const snap = await getDocs(collection(db(), 'users', uid, 'salvati'))
+    await deleteInBatches(snap.docs.map((d) => d.ref))
   }
 
   async remove(uid: string, eventId: string): Promise<void> {

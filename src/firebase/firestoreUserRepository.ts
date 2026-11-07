@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore'
 import type { UserRepository } from '../data/userRepository'
 import type { UserProfile } from '../domain/user'
 import { db } from './app'
@@ -7,6 +7,10 @@ import { userFromData, userToData } from './converters'
 export class FirestoreUserRepository implements UserRepository {
   async save(profile: UserProfile): Promise<void> {
     await setDoc(doc(db(), 'users', profile.uid), userToData(profile))
+  }
+
+  async delete(uid: string): Promise<void> {
+    await deleteDoc(doc(db(), 'users', uid))
   }
 
   async getById(uid: string): Promise<UserProfile | null> {

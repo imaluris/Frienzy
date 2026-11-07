@@ -45,6 +45,11 @@ export class MemoryChatRepository implements ChatRepository {
     await this.notify(eventId)
   }
 
+  async removeOwn(eventId: string, uid: string): Promise<void> {
+    this.messages.set(eventId, this.list(eventId).filter((m) => m.authorUid !== uid))
+    await this.notify(eventId)
+  }
+
   private list(eventId: string): ChatMessage[] {
     return this.messages.get(eventId) ?? []
   }

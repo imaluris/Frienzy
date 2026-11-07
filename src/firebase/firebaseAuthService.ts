@@ -1,5 +1,8 @@
 import {
   createUserWithEmailAndPassword,
+  deleteUser,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
@@ -20,6 +23,19 @@ export class FirebaseAuthService implements AuthService {
 
   logout(): Promise<void> {
     return signOut(auth())
+  }
+
+  // Firebase chiede un accesso recente prima di cancellare l'account: si rifà con la password.
+  async reauthenticate(password: string): Promise<void> {
+    const user = auth().currentUser
+    if (!user?.email) throw Object.assign(new Error('auth/requires-recent-login'), { code: 'auth/requires-recent-login' })
+    await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, password))
+  }
+
+  async deleteAccount(): Promise<void> {
+    const user = auth().currentUser
+    if (!user) throw Object.assign(new Error('auth/requires-recent-login'), { code: 'auth/requires-recent-login' })
+    await deleteUser(user)
   }
 
   currentUid(): string | null {

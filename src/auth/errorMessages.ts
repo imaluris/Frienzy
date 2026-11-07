@@ -9,6 +9,7 @@ const MESSAGES: Record<string, string> = {
   'auth/invalid-credential': 'Email o password errate.',
   'auth/user-not-found': 'Email o password errate.',
   'auth/wrong-password': 'Email o password errate.',
+  'auth/requires-recent-login': 'Per sicurezza accedi di nuovo e riprova.',
   'auth/too-many-requests': 'Troppi tentativi. Riprova tra qualche minuto.',
   'auth/network-request-failed': 'Problema di connessione. Riprova.',
 }

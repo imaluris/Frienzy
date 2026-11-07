@@ -23,3 +23,5 @@
 .report-details textarea { min-height: 4.25rem; }
 .report-reasons { gap: var(--space-2); }
 .report-details { margin-bottom: var(--space-2); }
+button.link.danger-link { color: var(--color-error); }
+.delete-warning { margin-top: calc(var(--space-3) * -1); color: var(--color-text); font-weight: var(--weight-bold); }

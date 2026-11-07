@@ -17,6 +17,10 @@ export class MemorySavedRepository implements SavedRepository {
     this.byUser.set(uid, saved)
   }
 
+  async clear(uid: string): Promise<void> {
+    this.byUser.delete(uid)
+  }
+
   async remove(uid: string, eventId: string): Promise<void> {
     this.byUser.get(uid)?.delete(eventId)
   }

@@ -9,6 +9,10 @@ export class MemoryUserRepository implements UserRepository {
     this.users.set(profile.uid, { ...profile, interessi: [...profile.interessi] })
   }
 
+  async delete(uid: string): Promise<void> {
+    this.users.delete(uid)
+  }
+
   async getById(uid: string): Promise<UserProfile | null> {
     const found = this.users.get(uid)
     return found ? { ...found, interessi: [...found.interessi] } : null

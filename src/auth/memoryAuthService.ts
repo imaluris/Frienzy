@@ -43,6 +43,22 @@ export class MemoryAuthService implements AuthService {
     this.setUid(null)
   }
 
+  async reauthenticate(password: string): Promise<void> {
+    const account = this.current()
+    if (!account || account.password !== password) throw authError('auth/invalid-credential')
+  }
+
+  async deleteAccount(): Promise<void> {
+    const entry = [...this.accounts.entries()].find(([, a]) => a.uid === this.uid)
+    if (!entry) throw authError('auth/requires-recent-login')
+    this.accounts.delete(entry[0])
+    this.setUid(null)
+  }
+
+  private current(): Account | undefined {
+    return [...this.accounts.values()].find((a) => a.uid === this.uid)
+  }
+
   currentUid(): string | null {
     return this.uid
   }

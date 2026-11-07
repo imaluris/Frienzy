@@ -12,4 +12,6 @@ export interface ChatRepository {
   send(eventId: string, uid: string, testo: string): Promise<void>
   /** Cancella un messaggio come `uid`; errore se non è l'organizzatore dell'evento. */
   remove(eventId: string, uid: string, messageId: string): Promise<void>
+  /** Cancella tutti i messaggi scritti da `uid` in questo evento (eliminazione account). Nessun messaggio = nessun errore. */
+  removeOwn(eventId: string, uid: string): Promise<void>
 }

@@ -1,7 +1,8 @@
-import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp, Timestamp } from 'firebase/firestore'
+import { addDoc, collection, deleteDoc, doc, getDocs, onSnapshot, orderBy, query, serverTimestamp, Timestamp, where } from 'firebase/firestore'
 import { checkMessageText } from '../chat/chatRules'
 import type { ChatRepository } from '../chat/chatRepository'
 import type { ChatMessage } from '../chat/message'
+import { deleteInBatches } from './batchDelete'
 import { db } from './app'
 
 // events/{eventId}/messaggi/{id}: le regole Firestore lasciano leggere e scrivere solo organizzatore e confermati.
@@ -28,5 +29,11 @@ export class FirestoreChatRepository implements ChatRepository {
 
   async remove(eventId: string, _uid: string, messageId: string): Promise<void> {
     await deleteDoc(doc(db(), 'events', eventId, 'messaggi', messageId))
+  }
+
+  // Chi scrive è confermato o organizzatore, quindi può leggere la raccolta; le regole lasciano cancellare i propri messaggi.
+  async removeOwn(eventId: string, uid: string): Promise<void> {
+    const snap = await getDocs(query(messages(eventId), where('authorUid', '==', uid)))
+    await deleteInBatches(snap.docs.map((d) => d.ref))
   }
 }

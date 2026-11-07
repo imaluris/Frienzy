@@ -68,11 +68,12 @@ describe('regole: chat dell\'evento', () => {
     await assertFails(updateDoc(doc(as(ORG), 'events', 'e1', 'messaggi', 'm1'), { testo: 'cambiato' }))
   })
 
-  it('li cancella solo l\'organizzatore', async () => {
-    await seedMessage('m1')
-    await assertFails(deleteDoc(doc(as(ANNA), 'events', 'e1', 'messaggi', 'm1')))
+  it('li cancella l\'organizzatore, e ognuno cancella solo i propri', async () => {
+    await seedMessage('m1') // scritto da ANNA
     await assertFails(deleteDoc(doc(as(BRUNO), 'events', 'e1', 'messaggi', 'm1')))
-    await assertSucceeds(deleteDoc(doc(as(ORG), 'events', 'e1', 'messaggi', 'm1')))
+    await assertSucceeds(deleteDoc(doc(as(ANNA), 'events', 'e1', 'messaggi', 'm1')))
+    await seedMessage('m2')
+    await assertSucceeds(deleteDoc(doc(as(ORG), 'events', 'e1', 'messaggi', 'm2')))
   })
 
   it('chi non è collegato non può nulla', async () => {

@@ -6,4 +6,6 @@ export interface SavedRepository {
   add(uid: string, eventId: string): Promise<void>
   /** Toglie dai salvati; se non c'era non è un errore. */
   remove(uid: string, eventId: string): Promise<void>
+  /** Toglie tutti i salvati di `uid` (eliminazione account). */
+  clear(uid: string): Promise<void>
 }

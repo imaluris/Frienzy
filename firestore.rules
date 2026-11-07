@@ -94,7 +94,8 @@ service cloud.firestore {
         && validProfile(request.resource.data)
         && request.resource.data.creatoIl == resource.data.creatoIl;
 
-      allow delete: if false;
+      // Eliminazione account: ognuno cancella solo il proprio profilo.
+      allow delete: if isOwner(uid);
 
       // Eventi salvati col cuore: privati, li vede e li scrive solo il proprietario.
       match /salvati/{eventId} {
@@ -185,7 +186,8 @@ service cloud.firestore {
           && request.resource.data.testo.size() <= 500
           && request.resource.data.creatoIl == request.time;
         allow update: if false;
-        allow delete: if isOrganizer(eventId);
+        // Anche chi l'ha scritto può cancellare il proprio messaggio (serve all'eliminazione dell'account).
+        allow delete: if isOrganizer(eventId) || (signedIn() && resource.data.authorUid == request.auth.uid);
       }
 
       // Partecipazioni: events/{id}/partecipanti/{uid}

@@ -40,3 +40,4 @@ Fase 2 completata
 - Task 33c fatto: Revisione grafica complessiva
 - Task 34 fatto: Chat dell'evento
 - Task 35 fatto: Segnala e blocca
+- Task 36 fatto: Eliminazione account

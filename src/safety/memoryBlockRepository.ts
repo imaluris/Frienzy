@@ -15,6 +15,10 @@ export class MemoryBlockRepository implements BlockRepository {
     this.blocks.get(uid)?.delete(otherUid)
   }
 
+  async unblockAll(uid: string): Promise<void> {
+    this.blocks.delete(uid)
+  }
+
   async listBlockedBy(uid: string): Promise<string[]> {
     return [...(this.blocks.get(uid) ?? [])]
   }
