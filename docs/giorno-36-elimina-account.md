@@ -28,4 +28,4 @@ Avviso a finestra dal basso con pulsante rosso "Continua" e frase evidenziata su
 Firebase Auth reale (nuova autenticazione e cancellazione dell'account) e `npm run test:rules` (regole su profilo e messaggi): vanno provati con Firebase e con l'emulatore. I segnalazioni/blocchi fatti da altri verso l'utente restano (lo dice la pagina web).
 
 ## Esercizio per Andrea
-In `deleteAccount.ts` sposta la fase `'account'` prima di `'profilo'` e lancia i test: quale test diventa rosso e perché è un ordine pericoloso?
+In `deleteAccount.ts` sposta la riga `await run('account', …)` prima di quella `'profilo'` e lancia i test: quale test diventa rosso, e perché nella realtà (con Firebase vero) sarebbe un ordine pericoloso?
