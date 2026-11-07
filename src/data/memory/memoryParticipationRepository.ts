@@ -11,6 +11,7 @@ export class MemoryParticipationRepository implements ParticipationRepository {
   constructor(
     private events: Pick<EventRepository, 'getById'> | null = null,
     private now: () => Date = () => new Date(),
+    private isBlocked: (a: string, b: string) => Promise<boolean> = async () => false,
   ) {}
 
   // Stessa forma del percorso Firestore: evento + utente identificano la partecipazione.
@@ -56,8 +57,9 @@ export class MemoryParticipationRepository implements ParticipationRepository {
   async join(eventId: string, uid: string): Promise<Participation> {
     if (!this.events) throw new Error('Repository degli eventi non collegato')
     const event = await this.events.getById(eventId)
+    const blocked = event ? await this.isBlocked(event.organizzatoreId, uid) : false // ultimo await: da qui in poi tutto è sincrono
     const confermati = [...this.items.values()].filter((p) => p.eventId === eventId && p.stato === 'confermato').length
-    const decision = decideJoin({ event, uid, existing: this.items.get(this.key(eventId, uid)) ?? null, confermati })
+    const decision = decideJoin({ event, uid, existing: this.items.get(this.key(eventId, uid)) ?? null, confermati, blocked })
     if (!decision.ok) throw new Error(decision.motivo)
     return this.add(eventId, uid, decision.stato)
   }

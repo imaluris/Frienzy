@@ -10,6 +10,7 @@ import { MapScreen } from '../screens/MapScreen'
 import { MyEventsScreen } from '../screens/MyEventsScreen'
 import { ProfileScreen } from '../screens/ProfileScreen'
 import { ProfileView } from '../screens/ProfileView'
+import { BlocksProvider } from '../safety/BlocksContext'
 import { SavedProvider } from '../saved/SavedContext'
 import { AppHeader } from './AppHeader'
 import { canGoBack, goBack, openChat, openDebug, openEdit, openEvent, selectTab, showsAppHeader, showsTabBar, START, titleOf, type Nav } from './navState'
@@ -59,9 +60,11 @@ function Shell({ uid, profile, onProfileSaved }: Props) {
 export function AppShell(props: Props) {
   return (
     <ToastProvider>
-      <SavedProvider uid={props.uid}>
-        <Shell {...props} />
-      </SavedProvider>
+      <BlocksProvider uid={props.uid}>
+        <SavedProvider uid={props.uid}>
+          <Shell {...props} />
+        </SavedProvider>
+      </BlocksProvider>
     </ToastProvider>
   )
 }

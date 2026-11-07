@@ -7,6 +7,10 @@ import type { UserRepository } from '../data/userRepository'
 import { CapacitorPushService } from '../push/capacitorPushService'
 import type { PushService } from '../push/pushService'
 import type { SavedRepository } from '../saved/savedRepository'
+import type { BlockRepository } from '../safety/blockRepository'
+import type { ReportRepository } from '../safety/reportRepository'
+import { FirestoreBlockRepository } from './firestoreBlockRepository'
+import { FirestoreReportRepository } from './firestoreReportRepository'
 import { FirestoreChatRepository } from './firestoreChatRepository'
 import { FirebaseAuthService } from './firebaseAuthService'
 import { FirebasePhotoStorage } from './firebasePhotoStorage'
@@ -25,6 +29,8 @@ export interface Services {
   push: PushService
   saved: SavedRepository
   chat: ChatRepository
+  reports: ReportRepository
+  blocks: BlockRepository
 }
 
 export function createFirebaseServices(): Services {
@@ -37,5 +43,7 @@ export function createFirebaseServices(): Services {
     push: new CapacitorPushService(),
     saved: new FirestoreSavedRepository(),
     chat: new FirestoreChatRepository(),
+    reports: new FirestoreReportRepository(),
+    blocks: new FirestoreBlockRepository(),
   }
 }

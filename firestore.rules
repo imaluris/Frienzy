@@ -67,6 +67,12 @@ service cloud.firestore {
       return exists(p) && get(p).data.stato == 'confermato' && !existsAfter(p);
     }
 
+    // C'è un blocco tra le due persone (in un senso qualunque)? I documenti sono blocchi/{chi}_{chi}.
+    function blockedBetween(a, b) {
+      return exists(/databases/$(database)/documents/blocchi/$(a + '_' + b))
+        || exists(/databases/$(database)/documents/blocchi/$(b + '_' + a));
+    }
+
     function hasOnly(data, keys) {
       return data.keys().hasOnly(keys) && data.keys().hasAll(keys);
     }
@@ -196,6 +202,7 @@ service cloud.firestore {
           && request.resource.data.uid == uid
           && request.resource.data.creatoIl is timestamp
           && eventNow(eventId).stato == 'aperto'
+          && !blockedBetween(eventNow(eventId).organizzatoreId, uid)
           && request.resource.data.stato ==
                (eventNow(eventId).richiedeApprovazione ? 'richiesta' : 'confermato')
           // Un posto occupato = contatore +1 nello stesso batch/transazione, mai oltre il massimo.
@@ -227,6 +234,39 @@ service cloud.firestore {
     // Ognuno trova solo le proprie (il campo uid del documento deve essere il suo).
     match /{path=**}/partecipanti/{uid} {
       allow read: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    // Blocchi: blocchi/{chi blocca}_{chi è bloccato}. Li legge solo chi è coinvolto (anche il bloccato: serve
+    // all'app per nascondere gli eventi dell'altro). Li crea e li toglie solo chi blocca.
+    match /blocchi/{id} {
+      allow get: if signedIn() && (id.split('_')[0] == request.auth.uid || id.split('_')[1] == request.auth.uid);
+      allow list: if signedIn()
+        && (resource.data.blockerId == request.auth.uid || resource.data.blockedId == request.auth.uid);
+      allow create: if signedIn()
+        && hasOnly(request.resource.data, ['blockerId', 'blockedId', 'creatoIl'])
+        && request.resource.data.blockerId == request.auth.uid
+        && request.resource.data.blockedId is string
+        && request.resource.data.blockedId != request.auth.uid
+        && id == request.auth.uid + '_' + request.resource.data.blockedId
+        && request.resource.data.creatoIl == request.time;
+      allow update: if false;
+      allow delete: if signedIn() && resource.data.blockerId == request.auth.uid;
+    }
+
+    // Segnalazioni: chiunque sia collegato ne crea, nessun utente le rilegge, modifica o cancella.
+    match /segnalazioni/{id} {
+      allow create: if signedIn()
+        && hasOnly(request.resource.data, ['reporterUid', 'tipo', 'targetId', 'motivo', 'dettagli', 'creatoIl'])
+        && request.resource.data.reporterUid == request.auth.uid
+        && request.resource.data.tipo in ['evento', 'utente']
+        && request.resource.data.targetId is string
+        && request.resource.data.targetId.size() > 0 && request.resource.data.targetId.size() <= 128
+        && request.resource.data.targetId != request.auth.uid
+        && request.resource.data.motivo in ['spam', 'inappropriato', 'molestie', 'truffa', 'falso', 'altro']
+        && request.resource.data.dettagli is string
+        && request.resource.data.dettagli.size() <= 300
+        && request.resource.data.creatoIl == request.time;
+      allow read, update, delete: if false;
     }
 
     function validEventFields(d) {

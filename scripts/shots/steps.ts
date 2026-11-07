@@ -136,5 +136,11 @@ export const STEPS: Step[] = [
   { name: '44-chat-cancella', go: async (p) => { await fromHome(p, 'I miei eventi', /Passeggiata/, /Chat dell'evento/); await click(p, /Cancella il messaggio di Giulia/); await p.getByRole('dialog').waitFor() } },
   { name: '45-chat-vuota', go: async (p) => { await fromHome(p, 'I miei eventi', /Brunch/, /Chat dell'evento/); await p.getByText(/Ancora nessun messaggio/).waitFor() } },
   { name: '46-chat-scrittura', go: async (p) => { await fromHome(p, /Trekking al lago/, /Chat dell'evento/); await p.getByLabel('Scrivi un messaggio').fill('Ci sono anch\'io, porto i panini per tutti! Qualcuno vuole qualcosa di particolare?') } },
+  { name: '47-menu-azioni', go: async (p) => { await fromHome(p, /pasta fatta/, 'Altre azioni'); await p.getByRole('dialog').waitFor() } },
+  { name: '48-segnala-evento', go: async (p) => { await fromHome(p, /pasta fatta/, 'Altre azioni', 'Segnala questo evento'); await p.getByLabel('Truffa o richiesta di soldi').check() } },
+  { name: '49-segnala-altro', go: async (p) => { await fromHome(p, /pasta fatta/, 'Altre azioni', /Segnala /); await p.getByLabel('Altro', { exact: true }).check(); await p.getByLabel('Racconta cosa è successo').fill('Mi ha scritto più volte fuori dall\'evento anche dopo che avevo detto di no.') } },
+  { name: '50-blocca-conferma', go: async (p) => { await fromHome(p, /pasta fatta/, 'Altre azioni', /Blocca /); await p.getByRole('dialog', { name: /Bloccare/ }).waitFor() } },
+  { name: '51-persone-menu', go: async (p) => { await fromHome(p, /Trekking al lago/); await p.getByRole('button', { name: /Altre azioni per/ }).first().click(); await p.getByRole('dialog').waitFor() } },
+  { name: '52-profilo-bloccati', go: async (p) => { await fromHome(p, /pasta fatta/, 'Altre azioni', /Blocca /, 'Blocca'); await p.getByRole('dialog').waitFor({ state: 'detached' }); await p.getByText(/Hai bloccato/).waitFor({ state: 'detached' }); await click(p, 'Profilo'); await click(p, /Utenti bloccati/); await p.getByRole('dialog').waitFor() } },
   { name: '14-registrazione', go: (p) => fromHome(p, 'Profilo', 'Esci', 'Crea il tuo account') },
 ]

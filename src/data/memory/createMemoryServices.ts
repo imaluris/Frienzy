@@ -2,6 +2,8 @@ import { chatRoleOf } from '../../chat/chatRole'
 import { MemoryChatRepository } from '../../chat/memoryChatRepository'
 import { MemoryPushService } from '../../push/memoryPushService'
 import type { AuthService } from '../../auth/authService'
+import { MemoryBlockRepository } from '../../safety/memoryBlockRepository'
+import { MemoryReportRepository } from '../../safety/memoryReportRepository'
 import { MemorySavedRepository } from '../../saved/memorySavedRepository'
 import { MemoryAuthService } from '../../auth/memoryAuthService'
 import type { Services } from '../../firebase/createServices'
@@ -15,7 +17,8 @@ export function createMemoryServices(auth: AuthService = new MemoryAuthService()
   // L'archivio degli eventi ha bisogno di leggere le iscrizioni (per il luogo esatto), e viceversa:
   // il collegamento è una funzione che guarda `participations` solo quando serve.
   const events: MemoryEventRepository = new MemoryEventRepository(undefined, undefined, (eventId, uid) => participations.get(eventId, uid))
-  const participations: MemoryParticipationRepository = new MemoryParticipationRepository(events)
+  const blocks = new MemoryBlockRepository()
+  const participations: MemoryParticipationRepository = new MemoryParticipationRepository(events, undefined, (a, b) => blocks.isBlockedBetween(a, b))
   return {
     auth,
     users: new MemoryUserRepository(),
@@ -25,5 +28,7 @@ export function createMemoryServices(auth: AuthService = new MemoryAuthService()
     push: new MemoryPushService(),
     saved: new MemorySavedRepository(),
     chat: new MemoryChatRepository((eventId, uid) => chatRoleOf(events, participations, eventId, uid)),
+    reports: new MemoryReportRepository(),
+    blocks,
   }
 }

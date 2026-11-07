@@ -1,21 +1,23 @@
 import { useEffect, useState } from 'react'
 import type { Services } from '../firebase/createServices'
 import type { FrienzyEvent } from '../domain/event'
+import { useBlocks } from '../safety/BlocksContext'
 import { loadEventPeople } from './loadEventPeople'
 import type { PublicProfile } from './publicProfile'
 
 /** Carica le persone visibili di un evento; se fallisce restituisce un elenco vuoto. */
 export function useEventPeople(services: Services, event: FrienzyEvent | null) {
   const [people, setPeople] = useState<PublicProfile[]>([])
+  const { hidden } = useBlocks()
   useEffect(() => {
     if (!event) return
     let active = true
-    loadEventPeople(services.users, services.participations, event)
+    loadEventPeople(services.users, services.participations, event, new Date(), hidden)
       .then((list) => active && setPeople(list))
       .catch(() => active && setPeople([]))
     return () => {
       active = false
     }
-  }, [services, event])
+  }, [services, event, hidden])
   return people
 }

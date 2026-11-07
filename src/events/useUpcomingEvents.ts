@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { EventRepository } from '../data/eventRepository'
 import type { FrienzyEvent } from '../domain/event'
+import { withoutBlockedEvents } from '../safety/blocking'
+import { useBlocks } from '../safety/BlocksContext'
 import { upcomingEvents } from './listing'
 
 interface State {
@@ -9,9 +11,12 @@ interface State {
   failed: boolean
 }
 
-/** Carica gli eventi dal repository e li restituisce già filtrati e ordinati. `refresh` li rilegge (tira per aggiornare). */
+/** Carica gli eventi dal repository e li restituisce già filtrati (futuri, senza persone bloccate) e ordinati. `refresh` li rilegge (tira per aggiornare). */
 export function useUpcomingEvents(events: EventRepository) {
   const [state, setState] = useState<State>({ loading: true, list: [], failed: false })
+  const { hidden } = useBlocks()
+  // Gli eventi di chi ho bloccato (o di chi ha bloccato me) non compaiono mai, in nessuna schermata.
+  const list = useMemo(() => withoutBlockedEvents(state.list, hidden), [state.list, hidden])
 
   useEffect(() => {
     let active = true
@@ -34,5 +39,5 @@ export function useUpcomingEvents(events: EventRepository) {
     }
   }, [events])
 
-  return { ...state, refresh }
+  return { ...state, list, refresh }
 }

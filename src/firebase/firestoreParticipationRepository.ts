@@ -5,6 +5,7 @@ import { db } from './app'
 import { decideJoin } from '../participation/joinDecision'
 import { decideWithdraw } from '../participation/withdrawDecision'
 import { decideResponse, type ResponseAction } from '../participation/responseDecision'
+import { blockId } from './firestoreBlockRepository'
 import { eventFromData, participationFromData, participationToData } from './converters'
 
 const ref = (eventId: string, uid: string) => doc(db(), 'events', eventId, 'partecipanti', uid)
@@ -58,11 +59,18 @@ export class FirestoreParticipationRepository implements ParticipationRepository
         tx.get(seatsRef),
         tx.get(ref(eventId, uid)),
       ])
+      // Blocco tra chi si iscrive e chi organizza, in un senso qualunque (blocchi/{chi}_{chi}).
+      const organizer = eventSnap.exists() ? String(eventSnap.data().organizzatoreId) : ''
+      const [blockOne, blockTwo] = await Promise.all([
+        tx.get(doc(db(), 'blocchi', blockId(organizer, uid))),
+        tx.get(doc(db(), 'blocchi', blockId(uid, organizer))),
+      ])
       const decision = decideJoin({
         event: eventSnap.exists() ? eventFromData(eventId, eventSnap.data()) : null,
         uid,
         existing: existingSnap.exists() ? participationFromData(existingSnap.data()) : null,
         confermati: seatsSnap.exists() ? (seatsSnap.data().confermati as number) : 0,
+        blocked: blockOne.exists() || blockTwo.exists(),
       })
       if (!decision.ok) throw new Error(decision.motivo)
       const created: Participation = { eventId, uid, stato: decision.stato, creatoIl: new Date() }

@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import { useBlocks } from '../safety/BlocksContext'
 import { useServices } from '../app/ServicesContext'
 import type { UserProfile } from '../domain/user'
 import { useMine } from '../mine/useMine'
@@ -6,6 +8,7 @@ import { profileStats } from '../profile/stats'
 import { Avatar } from '../ui/Avatar'
 import { Icon } from '../ui/Icon'
 import { InterestChips } from '../ui/InterestChips'
+import { BlockedSheet } from './BlockedSheet'
 import { ProfileStats } from './ProfileStats'
 
 interface Props {
@@ -19,6 +22,8 @@ interface Props {
 export function ProfileView({ profile, onEdit, onDebug }: Props) {
   const services = useServices()
   const { loading, mine } = useMine(services, profile.uid)
+  const { blockedByMe } = useBlocks()
+  const [showBlocked, setShowBlocked] = useState(false)
   return (
     <div className="profile-page">
       <section className="card profile-hero">
@@ -40,9 +45,13 @@ export function ProfileView({ profile, onEdit, onDebug }: Props) {
         <InterestChips interests={profile.interessi} />
       </section>
       <section className="card profile-account" aria-label="Account">
+        {blockedByMe.length > 0 && (
+          <button type="button" className="secondary wide" onClick={() => setShowBlocked(true)}><Icon name="user-x" size={20} /> Utenti bloccati ({blockedByMe.length})</button>
+        )}
         <button type="button" className="secondary wide" onClick={() => void services.auth.logout()}><Icon name="logout" size={20} /> Esci</button>
         <button type="button" className="link" onClick={onDebug}>Debug</button>
       </section>
+      {showBlocked && <BlockedSheet onClose={() => setShowBlocked(false)} />}
     </div>
   )
 }
