@@ -52,3 +52,37 @@ describe('authErrorMessage', () => {
     expect(authErrorMessage(null)).toBe('Qualcosa è andato storto. Riprova.')
   })
 })
+
+describe('recupero password e verifica email (in memoria)', () => {
+  it("il recupero invia l'email solo se l'account esiste, ma senza mai dare errore per un indirizzo sconosciuto", async () => {
+    const auth = new MemoryAuthService()
+    await auth.register('ada@example.com', 'segreta1')
+    await auth.logout()
+    await auth.sendPasswordReset('ADA@example.com ')
+    await auth.sendPasswordReset('sconosciuto@example.com') // nessun errore: non si scopre chi è iscritto
+    expect(auth.sentEmails).toEqual([{ kind: 'reset', to: 'ada@example.com' }])
+  })
+
+  it('il recupero rifiuta un indirizzo non valido', async () => {
+    await expect(new MemoryAuthService().sendPasswordReset('non-una-email')).rejects.toMatchObject({ code: 'auth/invalid-email' })
+  })
+
+  it("la verifica parte per l'utente collegato e lo stato si aggiorna dopo il clic sul link", async () => {
+    const auth = new MemoryAuthService()
+    await auth.register('ada@example.com', 'segreta1')
+    expect(await auth.isEmailVerified()).toBe(false)
+    await auth.sendVerificationEmail()
+    expect(auth.sentEmails).toEqual([{ kind: 'verify', to: 'ada@example.com' }])
+    auth.confirmEmail('ada@example.com')
+    expect(await auth.isEmailVerified()).toBe(true)
+  })
+
+  it('senza utente collegato la verifica dà errore, e dopo troppi invii il limite scatta', async () => {
+    const auth = new MemoryAuthService()
+    await expect(auth.sendVerificationEmail()).rejects.toMatchObject({ code: 'auth/user-not-found' })
+    await auth.register('ada@example.com', 'segreta1')
+    for (let i = 0; i < 5; i++) await auth.sendVerificationEmail()
+    await expect(auth.sendVerificationEmail()).rejects.toMatchObject({ code: 'auth/too-many-requests' })
+    expect(authErrorMessage({ code: 'auth/too-many-requests' })).toContain('Troppi tentativi')
+  })
+})

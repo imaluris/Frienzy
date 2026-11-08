@@ -1,5 +1,5 @@
 import {
-  EllipsisVertical, Flag, UserX, ArrowLeft, ArrowRight, Ban, CalendarDays, CalendarX, Check, CircleCheck, Clock, Hourglass, Info, LogIn, LogOut, Minus, Navigation, Pencil, Settings2, Sparkles, ShieldCheck, Heart, House, LocateFixed, Map, MapPin, PartyPopper,
+  EllipsisVertical, Flag, Mail, MailCheck, UserX, ArrowLeft, ArrowRight, Ban, CalendarDays, CalendarX, Check, CircleCheck, Clock, Hourglass, Info, LogIn, LogOut, Minus, Navigation, Pencil, Settings2, Sparkles, ShieldCheck, Heart, House, LocateFixed, Map, MapPin, PartyPopper,
   MessageCircle, Plus, RefreshCw, SendHorizontal, Trash2, Search, SearchX, Share2, SlidersHorizontal, Ticket, UserRound, UsersRound, X, type LucideIcon,
 } from 'lucide-react'
 
@@ -45,6 +45,8 @@ export const ICONS = {
   more: EllipsisVertical,
   flag: Flag,
   'user-x': UserX,
+  mail: Mail,
+  'mail-check': MailCheck,
 } satisfies Record<string, LucideIcon>
 
 export type IconName = keyof typeof ICONS

@@ -42,3 +42,4 @@ Fase 2 completata
 - Task 35 fatto: Segnala e blocca
 - Task 36 fatto: Eliminazione account
 - Task 37 fatto: Lista d'attesa
+- Task 38 fatto: Recupero password e verifica email

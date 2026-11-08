@@ -11,6 +11,7 @@ const MESSAGES: Record<string, string> = {
   'auth/wrong-password': 'Email o password errate.',
   'auth/requires-recent-login': 'Per sicurezza accedi di nuovo e riprova.',
   'auth/too-many-requests': 'Troppi tentativi. Riprova tra qualche minuto.',
+  'auth/user-disabled': 'Questo account è stato disattivato.',
   'auth/network-request-failed': 'Problema di connessione. Riprova.',
 }
 

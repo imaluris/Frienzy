@@ -6,3 +6,15 @@
 .auth-tagline { margin: 0; color: var(--color-muted); }
 .auth .card button[type='submit'] { width: 100%; margin-top: var(--space-2); }
 .auth .switch { margin-top: var(--space-2); }
+
+/* Avviso "Conferma la tua email" nel Profilo. */
+.verify-banner { display: grid; gap: var(--space-3); background: #fbefc9; }
+.verify-head { display: flex; gap: var(--space-3); align-items: flex-start; }
+.verify-head h3 { margin: 0 0 var(--space-1); }
+.verify-head p { margin: 0; }
+.verify-icon { flex: none; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--color-surface); color: var(--color-secondary); box-shadow: var(--shadow-1); }
+.verify-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+.verify-actions { justify-content: space-between; }
+.verify-actions button { min-width: 0; padding-inline: var(--space-4); }
+.verify-actions { gap: var(--space-2); }
+.verify-actions button.link { padding: 0 var(--space-1); }

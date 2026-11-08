@@ -11,6 +11,7 @@ import { InterestChips } from '../ui/InterestChips'
 import { BlockedSheet } from './BlockedSheet'
 import { DeleteAccountSheet } from './DeleteAccountSheet'
 import { ProfileStats } from './ProfileStats'
+import { VerifyEmailBanner } from './VerifyEmailBanner'
 
 interface Props {
   profile: UserProfile
@@ -39,6 +40,7 @@ export function ProfileView({ profile, onEdit, onDebug }: Props) {
         <p className="profile-age">{calculateAge(profile.dataNascita)} anni</p>
         <button type="button" className="secondary profile-edit" onClick={onEdit}><Icon name="edit" size={20} /> Modifica profilo</button>
       </section>
+      <VerifyEmailBanner />
       <ProfileStats stats={profileStats(mine)} loading={loading} />
       <section className="card profile-about">
         <h3>Chi sono</h3>
