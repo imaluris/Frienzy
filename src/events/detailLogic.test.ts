@@ -30,7 +30,7 @@ describe('parallasse e barra in alto', () => {
 
 describe('barra azione', () => {
   it('ogni situazione ha un pulsante', () => {
-    const views: ParticipationView[] = ['organizzatore', 'annullato', 'chiuso', 'confermato', 'richiesta', 'rifiutato', 'pieno', 'partecipa', 'chiedi']
+    const views: ParticipationView[] = ['organizzatore', 'annullato', 'chiuso', 'confermato', 'richiesta', 'rifiutato', 'pieno', 'attesa', 'partecipa', 'chiedi']
     for (const v of views) expect(barModel(v).label.length).toBeGreaterThan(0)
   })
   it('ritiro e ritiro richiesta chiedono conferma, Partecipa no', () => {
@@ -39,8 +39,13 @@ describe('barra azione', () => {
     expect(barModel('partecipa')).toMatchObject({ action: 'join', confirm: false })
     expect(barModel('chiedi').label).toBe('Chiedi di partecipare')
   })
-  it('evento pieno, annullato, chiuso o rifiutato: pulsante spento', () => {
-    for (const v of ['pieno', 'annullato', 'chiuso', 'rifiutato'] as const) expect(barModel(v).action).toBeNull()
+  it("evento pieno: lista d'attesa; in lista: si può uscire", () => {
+    expect(barModel('pieno').action).toBe('waitlist')
+    expect(barModel('attesa')).toMatchObject({ action: 'withdraw', confirm: true })
+    expect(statusNote('attesa', 3)?.text).toMatch(/3° in lista/)
+  })
+  it('evento annullato, chiuso o rifiutato: pulsante spento', () => {
+    for (const v of ['annullato', 'chiuso', 'rifiutato'] as const) expect(barModel(v).action).toBeNull()
   })
   it("l'organizzatore gestisce", () => expect(barModel('organizzatore').action).toBe('manage'))
   it('frasi di stato solo dove servono', () => {

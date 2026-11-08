@@ -39,6 +39,44 @@ service cloud.firestore {
       return existsAfter(p) ? getAfter(p).data.confermati : 0;
     }
 
+    // Lista d'attesa: events/{id}/contatori/attesa.coda (uid in ordine di arrivo; vuota se il documento non c'è).
+    function queueNow(eventId) {
+      let p = /databases/$(database)/documents/events/$(eventId)/contatori/attesa;
+      return exists(p) ? get(p).data.coda : [];
+    }
+
+    function queueAfter(eventId) {
+      let p = /databases/$(database)/documents/events/$(eventId)/contatori/attesa;
+      return existsAfter(p) ? getAfter(p).data.coda : [];
+    }
+
+    // Nello stesso batch l'utente crea la propria partecipazione 'inAttesa' e si accoda (evento pieno).
+    function joinsWaitlist(eventId) {
+      let p = /databases/$(database)/documents/events/$(eventId)/partecipanti/$(request.auth.uid);
+      return !exists(p) && existsAfter(p) && getAfter(p).data.stato == 'inAttesa'
+        && queueAfter(eventId) == queueNow(eventId).concat([request.auth.uid]);
+    }
+
+    // Nello stesso batch l'utente toglie la propria partecipazione 'inAttesa' e la sua voce dalla coda.
+    function leavesWaitlist(eventId) {
+      let p = /databases/$(database)/documents/events/$(eventId)/partecipanti/$(request.auth.uid);
+      return exists(p) && get(p).data.stato == 'inAttesa' && !existsAfter(p)
+        && request.auth.uid in queueNow(eventId)
+        && queueAfter(eventId).size() == queueNow(eventId).size() - 1
+        && !(request.auth.uid in queueAfter(eventId));
+    }
+
+    // Un confermato si ritira e nello stesso batch il PRIMO della coda sale (coda accorciata di uno, in testa).
+    // `stato` è quello atteso per il promosso: 'confermato' se l'evento è libero, 'richiesta' se serve l'approvazione.
+    function promotesFirst(eventId) {
+      let first = /databases/$(database)/documents/events/$(eventId)/partecipanti/$(queueNow(eventId)[0]);
+      return queueNow(eventId).size() > 0
+        && eventNow(eventId).stato == 'aperto'
+        && get(first).data.stato == 'inAttesa'
+        && getAfter(first).data.stato == (eventNow(eventId).richiedeApprovazione ? 'richiesta' : 'confermato')
+        && queueAfter(eventId) == queueNow(eventId)[1:];
+    }
+
     function isOrganizer(eventId) {
       return signedIn() && eventNow(eventId).organizzatoreId == request.auth.uid;
     }
@@ -65,6 +103,12 @@ service cloud.firestore {
     function withdrawsConfirmed(eventId) {
       let p = /databases/$(database)/documents/events/$(eventId)/partecipanti/$(request.auth.uid);
       return exists(p) && get(p).data.stato == 'confermato' && !existsAfter(p);
+    }
+
+    // Chi scrive si ritira da 'confermato' e nello stesso batch il primo della coda sale.
+    function withdrawsConfirmedAndPromotes(eventId) {
+      let me = /databases/$(database)/documents/events/$(eventId)/partecipanti/$(request.auth.uid);
+      return exists(me) && get(me).data.stato == 'confermato' && !existsAfter(me) && promotesFirst(eventId);
     }
 
     // C'è un blocco tra le due persone (in un senso qualunque)? I documenti sono blocchi/{chi}_{chi}.
@@ -170,6 +214,14 @@ service cloud.firestore {
           && request.resource.data.confermati >= 0
           && request.resource.data.confermati == seatsNow(eventId) - 1
           && withdrawsConfirmed(eventId);
+        // Coda d'attesa: cambia solo il campo `coda` (lista di uid), in tre casi, sempre insieme alla
+        // partecipazione corrispondente nello stesso batch: mi accodo, esco dalla coda, il primo sale.
+        allow create, update: if signedIn()
+          && doc == 'attesa'
+          && hasOnly(request.resource.data, ['coda'])
+          && request.resource.data.coda is list
+          && request.resource.data.coda.size() <= eventNow(eventId).maxPartecipanti * 10 + 50
+          && (joinsWaitlist(eventId) || leavesWaitlist(eventId) || withdrawsConfirmedAndPromotes(eventId));
         allow delete: if false;
       }
 
@@ -205,12 +257,18 @@ service cloud.firestore {
           && request.resource.data.creatoIl is timestamp
           && eventNow(eventId).stato == 'aperto'
           && !blockedBetween(eventNow(eventId).organizzatoreId, uid)
-          && request.resource.data.stato ==
-               (eventNow(eventId).richiedeApprovazione ? 'richiesta' : 'confermato')
-          // Un posto occupato = contatore +1 nello stesso batch/transazione, mai oltre il massimo.
-          && (request.resource.data.stato != 'confermato'
-              || (seatsAfter(eventId) == seatsNow(eventId) + 1
-                  && seatsAfter(eventId) <= eventNow(eventId).maxPartecipanti));
+          && (
+               // Lista d'attesa: solo a evento pieno, con la coda aggiornata nello stesso batch.
+               (request.resource.data.stato == 'inAttesa'
+                 && seatsNow(eventId) >= eventNow(eventId).maxPartecipanti
+                 && joinsWaitlist(eventId))
+               || (request.resource.data.stato ==
+                    (eventNow(eventId).richiedeApprovazione ? 'richiesta' : 'confermato')
+                   // Un posto occupato = contatore +1 nello stesso batch/transazione, mai oltre il massimo.
+                   && (request.resource.data.stato != 'confermato'
+                       || (seatsAfter(eventId) == seatsNow(eventId) + 1
+                           && seatsAfter(eventId) <= eventNow(eventId).maxPartecipanti)))
+             );
 
         // Solo l'organizzatore decide, e solo su una richiesta; cambia soltanto lo stato.
         // Accettare occupa un posto: contatore +1 nello stesso batch, mai oltre il massimo.
@@ -223,11 +281,24 @@ service cloud.firestore {
                   && seatsAfter(eventId) == seatsNow(eventId) + 1
                   && seatsAfter(eventId) <= eventNow(eventId).maxPartecipanti));
 
+        // Promozione dalla lista d'attesa: la fa chi si ritira da confermato (nello stesso batch), solo sul primo della
+        // coda; cambia soltanto lo stato. Se sale a 'confermato' il contatore resta com'è (uno esce, uno entra).
+        allow update: if signedIn()
+          && resource.data.stato == 'inAttesa'
+          && uid == queueNow(eventId)[0]
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stato'])
+          && withdrawsConfirmedAndPromotes(eventId);
+
         // Ritiro: la propria partecipazione. Se era confermata libera un posto: contatore -1 nello stesso batch.
         // L'organizzatore può togliere solo richieste e rifiutati (non occupano posti).
         allow delete: if (isOwner(uid)
-              && (resource.data.stato != 'confermato'
-                  || seatsAfter(eventId) == seatsNow(eventId) - 1))
+              && (resource.data.stato == 'inAttesa'
+                  ? leavesWaitlist(eventId)
+                  : (resource.data.stato != 'confermato'
+                     || seatsAfter(eventId) == seatsNow(eventId) - 1
+                     // oppure sale il primo della lista: i posti restano uguali se sale a 'confermato'
+                     || (seatsAfter(eventId) == seatsNow(eventId) && promotesFirst(eventId)
+                         && !eventNow(eventId).richiedeApprovazione))))
           || (isOrganizer(eventId) && resource.data.stato != 'confermato');
       }
     }

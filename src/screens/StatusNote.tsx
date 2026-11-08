@@ -5,8 +5,8 @@ import { Icon, type IconName } from '../ui/Icon'
 const ICON: Record<'ok' | 'wait' | 'stop', IconName> = { ok: 'check-circle', wait: 'hourglass', stop: 'ban' }
 
 // Frase di stato in evidenza ("Sei dei nostri", "Richiesta inviata"...) con icona e colore del tono.
-export function StatusNote({ view }: { view: ParticipationView }) {
-  const note = statusNote(view)
+export function StatusNote({ view, position }: { view: ParticipationView; position?: number | null }) {
+  const note = statusNote(view, position)
   if (!note) return null
   return (
     <p className={`status-note status-${note.tone}`} role="status">

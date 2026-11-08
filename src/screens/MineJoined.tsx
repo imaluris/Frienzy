@@ -2,7 +2,7 @@ import type { MyJoined } from '../mine/buildMine'
 import { EmptyState } from '../ui/EmptyState'
 import { EventCard } from '../ui/EventCard'
 
-const STATO_LABEL = { richiesta: 'In attesa di risposta', confermato: 'Confermato', rifiutato: 'Rifiutato' } as const
+const STATO_LABEL = { richiesta: 'In attesa di risposta', confermato: 'Confermato', rifiutato: 'Rifiutato', inAttesa: "In lista d'attesa" } as const
 
 interface Props {
   items: MyJoined[]
@@ -25,7 +25,7 @@ export function MineJoined({ items, showEmpty, onOpen, onWithdraw }: Props) {
               note={event.stato === 'annullato' ? undefined : STATO_LABEL[participation.stato]}
               footer={
                 <button type="button" className="link" onClick={() => onWithdraw(event.id)}>
-                  {participation.stato === 'richiesta' ? 'Ritira la richiesta' : 'Ritirati'}
+                  {participation.stato === 'richiesta' ? 'Ritira la richiesta' : participation.stato === 'inAttesa' ? 'Esci dalla lista' : 'Ritirati'}
                 </button>
               }
             />

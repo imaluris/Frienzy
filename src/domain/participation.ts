@@ -1,5 +1,5 @@
-// Campo testuale (non booleano) così si potranno aggiungere stati, es. 'inAttesa'.
-export type ParticipationStatus = 'richiesta' | 'confermato' | 'rifiutato'
+// Campo testuale (non booleano) così si possono aggiungere stati. 'inAttesa' = lista d'attesa di un evento pieno.
+export type ParticipationStatus = 'richiesta' | 'confermato' | 'rifiutato' | 'inAttesa'
 
 // Salvata in events/{eventId}/partecipanti/{uid}.
 export interface Participation {

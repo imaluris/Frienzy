@@ -19,6 +19,8 @@ export interface DemoEventSpec {
   organizzatore: string
   confermati: string[]
   richieste?: string[]
+  /** In lista d'attesa, nell'ordine di arrivo. */
+  attesa?: string[]
   annullato?: boolean
 }
 
@@ -28,7 +30,7 @@ export const DEMO_EVENT_SPECS: DemoEventSpec[] = [
   { tipo: 'mostra', titolo: 'Mostra di fotografia', descrizione: 'Visita guidata e caffè dopo.', giorni: 5, ora: 16, zona: 'Brera, Milano', lat: 45.4719, lng: 9.1881, indirizzo: 'Via Brera 28', max: 10, approvazione: false, organizzatore: 'demo-sara', confermati: [] },
   { tipo: 'trekking', titolo: 'Trekking al lago', descrizione: 'Sentiero facile, circa 3 ore.', giorni: 6, ora: 9, zona: 'Lago di Como', lat: 45.9, lng: 9.27, indirizzo: 'Parcheggio di Onno', max: 12, approvazione: true, organizzatore: 'demo-marco', confermati: ['demo-io', 'demo-luca'] },
   { tipo: 'passeggiata', titolo: 'Passeggiata nel parco', descrizione: 'Due passi con calma.', giorni: 1, ora: 10, zona: 'Parco Sempione, Milano', lat: 45.4727, lng: 9.1747, indirizzo: 'Ingresso Arco della Pace', max: 15, approvazione: false, organizzatore: 'demo-io', confermati: ['demo-giulia'], richieste: [] },
-  { tipo: 'sport', titolo: 'Calcetto del giovedì', descrizione: 'Partita tra amici, tutti i livelli.', giorni: 4, ora: 21, zona: 'Lambrate, Milano', lat: 45.4844, lng: 9.2326, indirizzo: 'Campo Sportivo Rubattino', max: 2, approvazione: false, organizzatore: 'demo-luca', confermati: ['demo-marco', 'demo-sara'] },
+  { tipo: 'sport', titolo: 'Calcetto del giovedì', descrizione: 'Partita tra amici, tutti i livelli.', giorni: 4, ora: 21, zona: 'Lambrate, Milano', lat: 45.4844, lng: 9.2326, indirizzo: 'Campo Sportivo Rubattino', max: 2, approvazione: false, organizzatore: 'demo-luca', confermati: ['demo-marco', 'demo-sara'], attesa: ['demo-giulia'] },
   { tipo: 'altro', titolo: 'Serata giochi da tavolo', descrizione: 'Portate un gioco da condividere.', giorni: 8, ora: 20, zona: 'Porta Romana, Milano', lat: 45.4513, lng: 9.2055, indirizzo: 'Viale Sabotino 3', max: 8, approvazione: false, organizzatore: 'demo-marco', confermati: [] },
   { tipo: 'aperitivo', titolo: 'Brunch della domenica', descrizione: 'Colazione lunga con torte e caffè.', giorni: 9, ora: 11, zona: 'Isola, Milano', lat: 45.4861, lng: 9.1892, indirizzo: 'Via Pastrengo 5', max: 6, approvazione: true, organizzatore: 'demo-io', confermati: ['demo-giulia'], richieste: ['demo-luca', 'demo-sara'] },
   { tipo: 'cena', titolo: 'Cena sociale (annullata)', descrizione: 'Rimandata per imprevisto.', giorni: 7, ora: 20, zona: 'Navigli, Milano', lat: 45.4491, lng: 9.1789, indirizzo: 'Via Vigevano 20', max: 6, approvazione: false, organizzatore: 'demo-io', confermati: ['demo-luca'], annullato: true },

@@ -66,6 +66,19 @@ describe('pulsanti di partecipazione', () => {
     expect(screen.queryByRole('button', { name: 'Partecipa' })).toBeNull()
   })
 
+  it("evento pieno: ci si mette in lista d'attesa, si vede la posizione e si può uscire", async () => {
+    const { services, event } = await setup({ maxPartecipanti: 1 })
+    await joinEvent(services.participations, event.id, 'altro')
+    await services.participations.joinWaitlist(event.id, 'primo')
+    await openDetail(services)
+    fireEvent.click(await screen.findByRole('button', { name: "Mettiti in lista d'attesa" }))
+    expect(await screen.findByText(/2° in lista d'attesa/)).toBeInTheDocument()
+    expect((await services.participations.listConfirmed(event.id)).length).toBe(1) // la lista non occupa posti
+    fireEvent.click(screen.getByRole('button', { name: 'Esci dalla lista' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Sì, esci' }))
+    expect(await screen.findByRole('button', { name: "Mettiti in lista d'attesa" })).toBeInTheDocument()
+  })
+
   it("se i posti finiscono mentre si preme, compare l'errore", async () => {
     const { services, event } = await setup({ maxPartecipanti: 1 })
     await openDetail(services)

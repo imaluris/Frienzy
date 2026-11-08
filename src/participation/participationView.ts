@@ -10,6 +10,7 @@ export type ParticipationView =
   | 'richiesta'
   | 'rifiutato'
   | 'pieno'
+  | 'attesa'
   | 'partecipa'
   | 'chiedi'
 
@@ -28,9 +29,10 @@ interface ViewContext {
  */
 export function decideView({ event, uid, mine, confirmedCount }: ViewContext): ParticipationView {
   if (event.organizzatoreId === uid) return 'organizzatore'
-  if (mine) return mine.stato // 'confermato' | 'richiesta' | 'rifiutato'
+  if (mine) return mine.stato === 'inAttesa' ? 'attesa' : mine.stato // 'confermato' | 'richiesta' | 'rifiutato'
   if (event.stato === 'annullato') return 'annullato'
   if (event.stato !== 'aperto') return 'chiuso'
-  if (event.richiedeApprovazione) return 'chiedi'
-  return confirmedCount >= event.maxPartecipanti ? 'pieno' : 'partecipa'
+  // Evento pieno (anche con approvazione): si può entrare solo in lista d'attesa.
+  if (confirmedCount >= event.maxPartecipanti) return 'pieno'
+  return event.richiedeApprovazione ? 'chiedi' : 'partecipa'
 }

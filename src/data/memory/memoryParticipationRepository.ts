@@ -2,6 +2,7 @@ import type { EventRepository } from '../eventRepository'
 import type { ParticipationRepository } from '../participationRepository'
 import { decideJoin } from '../../participation/joinDecision'
 import { decideWithdraw } from '../../participation/withdrawDecision'
+import { decideWaitlist, waitlistPosition } from '../../participation/waitlist'
 import { decideResponse, type ResponseAction } from '../../participation/responseDecision'
 import type { Participation, ParticipationStatus } from '../../domain/participation'
 
@@ -76,9 +77,28 @@ export class MemoryParticipationRepository implements ParticipationRepository {
   }
 
   // Il contatore dei posti in memoria è sempre contato dalle partecipazioni: togliere la riga libera il posto.
+  // Se il posto liberato era confermato, il primo della lista sale nello stesso passo (dopo l'unico await: nessuno si infila in mezzo).
   async withdraw(eventId: string, uid: string): Promise<void> {
-    const decision = decideWithdraw(this.items.get(this.key(eventId, uid)) ?? null)
+    const event = this.events ? await this.events.getById(eventId) : null
+    const all = [...this.items.values()].filter((p) => p.eventId === eventId)
+    const decision = decideWithdraw({ participation: this.items.get(this.key(eventId, uid)) ?? null, event, all })
     if (!decision.ok) throw new Error(decision.motivo)
     this.items.delete(this.key(eventId, uid))
+    if (decision.promuovi) await this.setStatus(eventId, decision.promuovi.uid, decision.promuovi.stato)
+  }
+
+  // Atomico come join: dopo l'unico await controllo e scrittura stanno nello stesso passo.
+  async joinWaitlist(eventId: string, uid: string): Promise<Participation> {
+    if (!this.events) throw new Error('Repository degli eventi non collegato')
+    const event = await this.events.getById(eventId)
+    const blocked = event ? await this.isBlocked(event.organizzatoreId, uid) : false
+    const confermati = [...this.items.values()].filter((p) => p.eventId === eventId && p.stato === 'confermato').length
+    const decision = decideWaitlist({ event, uid, existing: this.items.get(this.key(eventId, uid)) ?? null, confermati, blocked })
+    if (!decision.ok) throw new Error(decision.motivo)
+    return this.add(eventId, uid, 'inAttesa')
+  }
+
+  async waitlistPosition(eventId: string, uid: string): Promise<number | null> {
+    return waitlistPosition(await this.listByEvent(eventId), uid)
   }
 }

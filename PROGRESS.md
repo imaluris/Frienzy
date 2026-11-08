@@ -41,3 +41,4 @@ Fase 2 completata
 - Task 34 fatto: Chat dell'evento
 - Task 35 fatto: Segnala e blocca
 - Task 36 fatto: Eliminazione account
+- Task 37 fatto: Lista d'attesa

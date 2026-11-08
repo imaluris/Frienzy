@@ -34,6 +34,7 @@ export function ActionBar({ view, event, uid, confirmedCount, pendingCount, onMa
     if (model.action === 'manage') onManage()
     else if (model.confirm) setConfirming(true)
     else if (model.action === 'join') void join()
+    else if (model.action === 'waitlist') void joinWaitlist()
   }
 
   async function join() {
@@ -43,13 +44,18 @@ export function ActionBar({ view, event, uid, confirmedCount, pendingCount, onMa
     if (!event.richiedeApprovazione) setCelebrating(true) // coriandoli solo quando il posto è davvero confermato
   }
 
+  async function joinWaitlist() {
+    const ok = await run(() => participations.joinWaitlist(event.id, uid))
+    if (ok) show("Sei in lista d'attesa: ti avvisiamo se si libera un posto")
+  }
+
   async function confirmWithdraw() {
     const ok = await run(() => withdrawFromEvent(participations, event.id, uid))
     setConfirming(false)
-    if (ok) show(view === 'richiesta' ? 'Hai ritirato la richiesta' : 'Hai lasciato l\'evento')
+    if (ok) show(view === 'richiesta' ? 'Hai ritirato la richiesta' : view === 'attesa' ? "Sei uscito dalla lista d'attesa" : 'Hai lasciato l\'evento')
   }
 
-  const copy = view === 'confermato' || view === 'richiesta' ? WITHDRAW_COPY[view] : null
+  const copy = view === 'confermato' || view === 'richiesta' || view === 'attesa' ? WITHDRAW_COPY[view] : null
   return (
     <>
       <section className="action-bar" aria-label="Partecipazione">

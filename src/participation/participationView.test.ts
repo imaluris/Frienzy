@@ -6,7 +6,7 @@ const event: FrienzyEvent = {
   latApprossimata: 0, lngApprossimata: 0, geohash: 'u0nd8k', maxPartecipanti: 2, richiedeApprovazione: false,
   stato: 'aperto', creatoIl: new Date(),
 }
-const mine = (stato: 'richiesta' | 'confermato' | 'rifiutato') => ({ eventId: 'e', uid: 'me', stato, creatoIl: new Date() })
+const mine = (stato: 'richiesta' | 'confermato' | 'rifiutato' | 'inAttesa') => ({ eventId: 'e', uid: 'me', stato, creatoIl: new Date() })
 
 describe('decideView', () => {
   it("l'organizzatore vede il suo pannello", () => {
@@ -16,8 +16,13 @@ describe('decideView', () => {
     expect(decideView({ event, uid: 'me', mine: null, confirmedCount: 1 })).toBe('partecipa')
     expect(decideView({ event, uid: 'me', mine: null, confirmedCount: 2 })).toBe('pieno')
   })
-  it('con approvazione: chiedi, anche se i posti sono presi (la richiesta non occupa posti)', () => {
-    expect(decideView({ event: { ...event, richiedeApprovazione: true }, uid: 'me', mine: null, confirmedCount: 2 })).toBe('chiedi')
+  it('con approvazione: chiedi se ci sono posti, lista d\'attesa (pieno) se sono finiti', () => {
+    const approval = { ...event, richiedeApprovazione: true }
+    expect(decideView({ event: approval, uid: 'me', mine: null, confirmedCount: 1 })).toBe('chiedi')
+    expect(decideView({ event: approval, uid: 'me', mine: null, confirmedCount: 2 })).toBe('pieno')
+  })
+  it('chi è in lista d\'attesa vede "attesa"', () => {
+    expect(decideView({ event, uid: 'me', mine: mine('inAttesa'), confirmedCount: 2 })).toBe('attesa')
   })
   it('la propria iscrizione ha la precedenza', () => {
     expect(decideView({ event, uid: 'me', mine: mine('confermato'), confirmedCount: 2 })).toBe('confermato')

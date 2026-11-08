@@ -4,6 +4,7 @@ import type { Participation, ParticipationStatus } from '../domain/participation
 import { db } from './app'
 import { decideJoin } from '../participation/joinDecision'
 import { decideWithdraw } from '../participation/withdrawDecision'
+import { decideWaitlist, waitlistPosition } from '../participation/waitlist'
 import { decideResponse, type ResponseAction } from '../participation/responseDecision'
 import { blockId } from './firestoreBlockRepository'
 import { eventFromData, participationFromData, participationToData } from './converters'
@@ -105,17 +106,71 @@ export class FirestoreParticipationRepository implements ParticipationRepository
     })
   }
 
-  // Transazione: se la partecipazione era confermata, la cancellazione e il contatore -1 avvengono insieme.
+  // La coda d'attesa sta in events/{id}/contatori/attesa.coda (uid in ordine di arrivo): una query non è ammessa
+  // in transazione, e la coda serve sia a dare la posizione sia a trovare chi promuovere.
+  // Transazione: se la partecipazione era confermata, la cancellazione, il contatore e la promozione del primo
+  // in lista avvengono insieme (se il primo sale a "confermato" il numero di posti occupati non cambia).
   async withdraw(eventId: string, uid: string): Promise<void> {
-    const seatsRef = doc(db(), 'events', eventId, 'contatori', 'posti')
+    const eventRef = doc(db(), 'events', eventId)
+    const seatsRef = doc(eventRef, 'contatori', 'posti')
+    const queueRef = doc(eventRef, 'contatori', 'attesa')
     await runTransaction(db(), async (tx) => {
-      const [seatsSnap, partSnap] = await Promise.all([tx.get(seatsRef), tx.get(ref(eventId, uid))])
-      const decision = decideWithdraw(partSnap.exists() ? participationFromData(partSnap.data()) : null)
+      const [eventSnap, seatsSnap, queueSnap, partSnap] = await Promise.all([tx.get(eventRef), tx.get(seatsRef), tx.get(queueRef), tx.get(ref(eventId, uid))])
+      const coda = queueSnap.exists() ? (queueSnap.data().coda as string[]) : []
+      const mine = partSnap.exists() ? participationFromData(partSnap.data()) : null
+      // Serve la partecipazione del primo in lista solo se chi esce occupava un posto.
+      const firstSnap = mine?.stato === 'confermato' && coda[0] ? await tx.get(ref(eventId, coda[0])) : null
+      const waiting = firstSnap?.exists() ? [participationFromData(firstSnap.data())] : []
+      const decision = decideWithdraw({ participation: mine, event: eventSnap.exists() ? eventFromData(eventId, eventSnap.data()) : null, all: waiting })
       if (!decision.ok) throw new Error(decision.motivo)
       tx.delete(ref(eventId, uid))
-      if (decision.liberaPosto && seatsSnap.exists()) {
-        tx.set(seatsRef, { confermati: Math.max(0, (seatsSnap.data().confermati as number) - 1) })
+      if (mine?.stato === 'inAttesa') tx.set(queueRef, { coda: coda.filter((u) => u !== uid) })
+      const taken = seatsSnap.exists() ? (seatsSnap.data().confermati as number) : 0
+      if (decision.promuovi) {
+        tx.update(ref(eventId, decision.promuovi.uid), { stato: decision.promuovi.stato })
+        tx.set(queueRef, { coda: coda.slice(1) })
+        if (decision.promuovi.stato !== 'confermato') tx.set(seatsRef, { confermati: Math.max(0, taken - 1) })
+      } else if (decision.liberaPosto && seatsSnap.exists()) {
+        tx.set(seatsRef, { confermati: Math.max(0, taken - 1) })
       }
     })
+  }
+
+  // Transazione: coda e iscrizione 'inAttesa' si scrivono insieme, solo se l'evento è davvero pieno.
+  async joinWaitlist(eventId: string, uid: string): Promise<Participation> {
+    const eventRef = doc(db(), 'events', eventId)
+    const seatsRef = doc(eventRef, 'contatori', 'posti')
+    const queueRef = doc(eventRef, 'contatori', 'attesa')
+    return runTransaction(db(), async (tx) => {
+      const [eventSnap, seatsSnap, queueSnap, existingSnap] = await Promise.all([tx.get(eventRef), tx.get(seatsRef), tx.get(queueRef), tx.get(ref(eventId, uid))])
+      const organizer = eventSnap.exists() ? String(eventSnap.data().organizzatoreId) : ''
+      const [blockOne, blockTwo] = await Promise.all([
+        tx.get(doc(db(), 'blocchi', blockId(organizer, uid))),
+        tx.get(doc(db(), 'blocchi', blockId(uid, organizer))),
+      ])
+      const decision = decideWaitlist({
+        event: eventSnap.exists() ? eventFromData(eventId, eventSnap.data()) : null,
+        uid,
+        existing: existingSnap.exists() ? participationFromData(existingSnap.data()) : null,
+        confermati: seatsSnap.exists() ? (seatsSnap.data().confermati as number) : 0,
+        blocked: blockOne.exists() || blockTwo.exists(),
+      })
+      if (!decision.ok) throw new Error(decision.motivo)
+      const created: Participation = { eventId, uid, stato: 'inAttesa', creatoIl: new Date() }
+      tx.set(ref(eventId, uid), participationToData(created))
+      tx.set(queueRef, { coda: [...(queueSnap.exists() ? (queueSnap.data().coda as string[]) : []), uid] })
+      return created
+    })
+  }
+
+  // Posizione = indice nella coda + 1. Si costruiscono partecipazioni minime solo per riusare waitlistPosition.
+  async waitlistPosition(eventId: string, uid: string): Promise<number | null> {
+    const snap = await getDoc(doc(db(), 'events', eventId, 'contatori', 'attesa'))
+    const coda = snap.exists() ? (snap.data().coda as string[]) : []
+    const base = Date.now()
+    return waitlistPosition(
+      coda.map((u, i) => ({ eventId, uid: u, stato: 'inAttesa' as const, creatoIl: new Date(base + i) })),
+      uid,
+    )
   }
 }

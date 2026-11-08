@@ -23,6 +23,7 @@ export async function createDemoServices(): Promise<Services> {
     const event = await services.events.create(toNewEvent(spec), { indirizzo: spec.indirizzo, lat: spec.lat, lng: spec.lng })
     for (const uid of spec.confermati) await services.participations.add(event.id, uid, 'confermato')
     for (const uid of spec.richieste ?? []) await services.participations.add(event.id, uid, 'richiesta')
+    for (const uid of spec.attesa ?? []) await services.participations.joinWaitlist(event.id, uid)
     if (spec.annullato) await services.events.update(event.id, { stato: 'annullato' })
   }
   await seedDemoChat(services)

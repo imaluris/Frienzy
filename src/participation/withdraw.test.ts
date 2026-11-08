@@ -64,10 +64,10 @@ describe('ritiro dall\'evento', () => {
 describe('decideWithdraw', () => {
   const part = (stato: 'richiesta' | 'confermato' | 'rifiutato') => ({ eventId: 'e', uid: 'a', stato, creatoIl: new Date() })
   it('libera un posto solo se era confermato', () => {
-    expect(decideWithdraw(part('confermato'))).toEqual({ ok: true, liberaPosto: true })
-    expect(decideWithdraw(part('richiesta'))).toEqual({ ok: true, liberaPosto: false })
-    expect(decideWithdraw(part('rifiutato'))).toEqual({ ok: true, liberaPosto: false })
-    expect(decideWithdraw(null).ok).toBe(false)
+    expect(decideWithdraw({ participation: part('confermato') })).toEqual({ ok: true, liberaPosto: true, promuovi: null })
+    expect(decideWithdraw({ participation: part('richiesta') })).toEqual({ ok: true, liberaPosto: false, promuovi: null })
+    expect(decideWithdraw({ participation: part('rifiutato') })).toEqual({ ok: true, liberaPosto: false, promuovi: null })
+    expect(decideWithdraw({ participation: null }).ok).toBe(false)
   })
 })
 

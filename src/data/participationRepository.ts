@@ -25,7 +25,14 @@ export interface ParticipationRepository {
   respond(eventId: string, uid: string, actorUid: string, azione: ResponseAction): Promise<Participation>
   /**
    * Ritiro: `uid` toglie la PROPRIA partecipazione (richiesta, confermata o rifiutata), in modo ATOMICO
-   * (vedi decideWithdraw): se era confermata libera un posto. Errore se non è iscritto.
+   * (vedi decideWithdraw): se era confermata libera un posto e il primo della lista d'attesa sale (vedi pickPromotion). Errore se non è iscritto.
    */
   withdraw(eventId: string, uid: string): Promise<void>
+  /**
+   * Lista d'attesa: con l'evento pieno `uid` si mette in coda (stato 'inAttesa'), in modo ATOMICO
+   * (vedi decideWaitlist). Errore con il motivo se ci sono ancora posti o se non può iscriversi.
+   */
+  joinWaitlist(eventId: string, uid: string): Promise<Participation>
+  /** Posizione di `uid` in lista d'attesa (1 = il prossimo), o null se non è in lista. */
+  waitlistPosition(eventId: string, uid: string): Promise<number | null>
 }

@@ -14,11 +14,13 @@ export interface ParticipationData {
   loaded: boolean
   mine: Participation | null
   confirmedCount: number
+  /** Posizione in lista d'attesa (1 = il prossimo), se chi guarda è in lista. */
+  position: number | null
   /** Richieste in attesa: le vede e le carica solo l'organizzatore. */
   requests: PendingRequest[]
 }
 
-const EMPTY: ParticipationData = { loaded: false, mine: null, confirmedCount: 0, requests: [] }
+const EMPTY: ParticipationData = { loaded: false, mine: null, confirmedCount: 0, position: null, requests: [] }
 
 async function loadRequests(services: Services, all: Participation[]): Promise<PendingRequest[]> {
   const pending = all.filter((p) => p.stato === 'richiesta')
@@ -46,10 +48,11 @@ export function useEventParticipation(services: Services, event: FrienzyEvent | 
       if (event.organizzatoreId === uid) {
         const all = await participations.listByEvent(event.id)
         const confirmedCount = all.filter((p) => p.stato === 'confermato').length
-        return { loaded: true, mine: null, confirmedCount, requests: await loadRequests(services, all) }
+        return { loaded: true, mine: null, confirmedCount, position: null, requests: await loadRequests(services, all) }
       }
       const [mine, confirmed] = await Promise.all([participations.get(event.id, uid), participations.listConfirmed(event.id)])
-      return { loaded: true, mine, confirmedCount: confirmed.length, requests: [] }
+      const position = mine?.stato === 'inAttesa' ? await participations.waitlistPosition(event.id, uid) : null
+      return { loaded: true, mine, confirmedCount: confirmed.length, position, requests: [] }
     }
     load()
       .then((next) => active && setData(next))

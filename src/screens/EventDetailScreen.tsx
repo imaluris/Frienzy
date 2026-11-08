@@ -84,7 +84,7 @@ export function EventDetailScreen({ eventId, onBack, onOpenChat }: { eventId: st
         <>
           <EventHero event={event} scrollY={scrollY} />
           <div className="detail-body">
-            {view && <StatusNote view={view} />}
+            {view && <StatusNote view={view} position={participation.position} />}
             <EventInfo event={event} place={place} />
             {view && <ChatLink open={view === 'organizzatore' || view === 'confermato'} onOpen={onOpenChat} />}
             <EventPeople people={people} meUid={uid} />

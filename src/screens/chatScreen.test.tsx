@@ -43,7 +43,7 @@ describe('chat dal dettaglio', () => {
     await services.chat.send(event.id, 'org', 'Benvenuta!')
     fireEvent.click(await screen.findByRole('button', { name: /Chat dell'evento/ }))
     expect(await screen.findByText('Benvenuta!')).toBeInTheDocument()
-    expect(screen.getByText('Olga')).toBeInTheDocument()
+    expect(await screen.findByText('Olga')).toBeInTheDocument() // i nomi arrivano dopo il caricamento delle persone
     fireEvent.change(screen.getByLabelText('Scrivi un messaggio'), { target: { value: 'Ciao, ci sono!' } })
     fireEvent.click(screen.getByRole('button', { name: 'Invia' }))
     expect(await screen.findByText('Ciao, ci sono!')).toBeInTheDocument()
