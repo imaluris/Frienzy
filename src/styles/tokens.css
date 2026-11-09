@@ -8,6 +8,8 @@
   --color-muted: #6b5a4c;
   --color-primary-soft: #fbe3dc;
   --color-secondary-soft: #dcebe3;
+  --color-accent-deep: #9a6b00; /* senape scuro: stelle e segni su sfondo chiaro */
+  --color-primary-deep: #a8472f; /* terracotta scuro: testo sul tono morbido */
   /* Spaziature: griglia a 4/8 (4, 8, 12, 16, 24, 32). */
   --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-6: 24px; --space-8: 32px;
   /* Scala tipografica (Nunito): titolo grande, titolo, sottotitolo, corpo, didascalia. */

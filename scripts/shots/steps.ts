@@ -149,5 +149,10 @@ export const STEPS: Step[] = [
   { name: '52-profilo-bloccati', go: async (p) => { await fromHome(p, /pasta fatta/, 'Altre azioni', /Blocca /, 'Blocca'); await p.getByRole('dialog').waitFor({ state: 'detached' }); await p.getByText(/Hai bloccato/).waitFor({ state: 'detached' }); await click(p, 'Profilo'); await click(p, /Utenti bloccati/); await p.getByRole('dialog').waitFor() } },
   { name: '53-elimina-account-avviso', go: async (p) => { await fromHome(p, 'Profilo', 'Elimina account'); await p.getByRole('dialog').waitFor(); await p.getByText(/Verranno annullati/).waitFor() } },
   { name: '54-elimina-account-password', go: async (p) => { await fromHome(p, 'Profilo', 'Elimina account', 'Continua'); await p.getByLabel('Password', { exact: true }).fill('sbagliata1'); await click(p, 'Elimina definitivamente'); await p.getByRole('alert').waitFor() } },
+  { name: '62-presenze-organizzatore', go: async (p) => { await fromHome(p, 'I miei eventi', /Aperitivo di ieri sera/); await p.getByRole('button', { name: /Chi è venuto/ }).waitFor() } },
+  { name: '63-presenze-segnate', go: async (p) => { await fromHome(p, 'I miei eventi', /Aperitivo di ieri sera/, /Chi è venuto/); await click(p, /È venuto/); await p.getByRole('button', { name: /È venuto/, pressed: true }).waitFor() } },
+  { name: '64-voto-da-dare', go: async (p) => { await fromHome(p, 'I miei eventi'); await p.getByRole('tab', { name: /Iscrizioni/ }).click(); await click(p, /Cena d'autunno/); await click(p, /Com'è andata/); await p.getByRole('radio', { name: '4 stelle' }).click(); await click(p, 'Puntuale') } },
+  { name: '65-voto-dato', go: async (p) => { await fromHome(p, 'I miei eventi'); await p.getByRole('tab', { name: /Iscrizioni/ }).click(); await click(p, /Trekking di domenica/); await p.getByText(/Hai votato 5 stelle/).waitFor() } },
+  { name: '66-profilo-affidabilita', go: async (p) => { await fromHome(p, 'Profilo'); await p.getByText('67%').waitFor() } },
   { name: '14-registrazione', go: (p) => fromHome(p, 'Profilo', 'Esci', 'Crea il tuo account') },
 ]

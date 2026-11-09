@@ -6,9 +6,11 @@ import type { PhotoStorage } from '../data/photoStorage'
 import type { UserRepository } from '../data/userRepository'
 import { CapacitorPushService } from '../push/capacitorPushService'
 import type { PushService } from '../push/pushService'
+import type { AttendanceRepository } from '../attendance/attendanceRepository'
 import type { SavedRepository } from '../saved/savedRepository'
 import type { BlockRepository } from '../safety/blockRepository'
 import type { ReportRepository } from '../safety/reportRepository'
+import { FirestoreAttendanceRepository } from './firestoreAttendanceRepository'
 import { FirestoreBlockRepository } from './firestoreBlockRepository'
 import { FirestoreReportRepository } from './firestoreReportRepository'
 import { FirestoreChatRepository } from './firestoreChatRepository'
@@ -31,19 +33,23 @@ export interface Services {
   chat: ChatRepository
   reports: ReportRepository
   blocks: BlockRepository
+  attendance: AttendanceRepository
 }
 
 export function createFirebaseServices(): Services {
+  const events = new FirestoreEventRepository()
+  const participations = new FirestoreParticipationRepository()
   return {
     auth: new FirebaseAuthService(),
     users: new FirestoreUserRepository(),
-    events: new FirestoreEventRepository(),
-    participations: new FirestoreParticipationRepository(),
+    events,
+    participations,
     photos: new FirebasePhotoStorage(),
     push: new CapacitorPushService(),
     saved: new FirestoreSavedRepository(),
     chat: new FirestoreChatRepository(),
     reports: new FirestoreReportRepository(),
     blocks: new FirestoreBlockRepository(),
+    attendance: new FirestoreAttendanceRepository(events, participations),
   }
 }

@@ -1,3 +1,4 @@
+import { MemoryAttendanceRepository } from '../../attendance/memoryAttendanceRepository'
 import { chatRoleOf } from '../../chat/chatRole'
 import { MemoryChatRepository } from '../../chat/memoryChatRepository'
 import { MemoryPushService } from '../../push/memoryPushService'
@@ -30,5 +31,6 @@ export function createMemoryServices(auth: AuthService = new MemoryAuthService()
     chat: new MemoryChatRepository((eventId, uid) => chatRoleOf(events, participations, eventId, uid)),
     reports: new MemoryReportRepository(),
     blocks,
+    attendance: new MemoryAttendanceRepository(events, participations),
   }
 }

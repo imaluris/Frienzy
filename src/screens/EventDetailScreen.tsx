@@ -19,6 +19,7 @@ import { DetailTopBar } from './DetailTopBar'
 import { EventAreaMap } from './EventAreaMap'
 import { EventHero } from './EventHero'
 import { EventInfo } from './EventInfo'
+import { FeedbackLink } from './FeedbackLink'
 import { EventPeople } from './EventPeople'
 import { OrganizerSheet } from './OrganizerSheet'
 import { SafetyMenu } from './SafetyMenu'
@@ -87,6 +88,7 @@ export function EventDetailScreen({ eventId, onBack, onOpenChat }: { eventId: st
             {view && <StatusNote view={view} position={participation.position} />}
             <EventInfo event={event} place={place} />
             {view && <ChatLink open={view === 'organizzatore' || view === 'confermato'} onOpen={onOpenChat} />}
+            {uid && (view === 'organizzatore' || view === 'confermato') && <FeedbackLink event={event} uid={uid} role={view} />}
             <EventPeople people={people} meUid={uid} />
             <EventAreaMap lat={event.latApprossimata} lng={event.lngApprossimata} />
           </div>

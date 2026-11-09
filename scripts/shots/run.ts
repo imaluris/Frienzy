@@ -31,7 +31,8 @@ try {
   page.setDefaultTimeout(8000)
   await page.goto(`http://localhost:${PORT}/`)
   await page.getByRole('heading').first().waitFor()
-  for (const step of STEPS) {
+  const only = process.env.SHOTS_ONLY ? new RegExp(process.env.SHOTS_ONLY) : null // es. SHOTS_ONLY='^5[7-9]' per rifare solo alcune schermate
+  for (const step of STEPS.filter((x) => !only || only.test(x.name))) {
     try {
       await step.go(page)
       await page.waitForTimeout(400)

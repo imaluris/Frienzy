@@ -3,6 +3,7 @@ import { createMemoryServices } from '../data/memory/createMemoryServices'
 import type { Services } from '../firebase/createServices'
 import { EXTREME_PROFILES, EXTREME_SPEC } from './demoExtreme'
 import { DEMO_EVENT_SPECS, toNewEvent } from './demoEvents'
+import { seedDemoPast } from './demoPast'
 import { seedDemoChat } from './demoChat'
 import { DEMO_PROFILES, DEMO_UID } from './demoPeople'
 
@@ -27,6 +28,7 @@ export async function createDemoServices(): Promise<Services> {
     if (spec.annullato) await services.events.update(event.id, { stato: 'annullato' })
   }
   await seedDemoChat(services)
+  await seedDemoPast(services)
   await services.auth.register(DEMO_EMAIL, DEMO_PASSWORD) // dopo la registrazione si è già dentro
   return services
 }

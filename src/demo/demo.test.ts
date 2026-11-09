@@ -1,3 +1,4 @@
+import { DEMO_PAST_SPECS } from './demoPast'
 import { describe, expect, it } from 'vitest'
 import { createDemoServices, DEMO_EMAIL } from './createDemoServices'
 import { DEMO_EVENT_SPECS } from './demoEvents'
@@ -14,7 +15,7 @@ describe('servizi demo', () => {
   it('contiene eventi di tutti i tipi, con e senza approvazione, uno pieno e uno annullato', async () => {
     const s = await createDemoServices()
     const events = await s.events.list()
-    expect(events).toHaveLength(DEMO_EVENT_SPECS.length)
+    expect(events).toHaveLength(DEMO_EVENT_SPECS.length + DEMO_PAST_SPECS.length)
     for (const tipo of EVENT_TYPE_IDS) expect(events.some((e) => e.tipo === tipo)).toBe(true)
     expect(events.some((e) => e.richiedeApprovazione)).toBe(true)
     expect(events.some((e) => !e.richiedeApprovazione)).toBe(true)

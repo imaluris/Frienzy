@@ -342,6 +342,46 @@ service cloud.firestore {
       allow read, update, delete: if false;
     }
 
+    // ---------- presenze e voti (task 39) ----------
+    // presenze/{evento}_{uid}: lo segna SOLO l'organizzatore, dopo l'inizio dell'evento, per un confermato.
+    // Contiene solo "presente/assente": lo leggono tutti i collegati (serve al riepilogo del profilo).
+    match /presenze/{pid} {
+      allow read: if signedIn();
+      allow create, update: if signedIn()
+        && hasOnly(request.resource.data, ['eventId', 'uid', 'organizzatoreId', 'stato', 'segnatoIl'])
+        && request.resource.data.eventId is string && request.resource.data.uid is string
+        && pid == request.resource.data.eventId + '_' + request.resource.data.uid
+        && request.resource.data.organizzatoreId == request.auth.uid
+        && eventNow(request.resource.data.eventId).organizzatoreId == request.auth.uid
+        && eventNow(request.resource.data.eventId).stato != 'annullato'
+        && request.time >= eventNow(request.resource.data.eventId).dataOra
+        && request.resource.data.stato in ['presente', 'assente']
+        && request.resource.data.segnatoIl == request.time
+        && exists(/databases/$(database)/documents/events/$(request.resource.data.eventId)/partecipanti/$(request.resource.data.uid))
+        && get(/databases/$(database)/documents/events/$(request.resource.data.eventId)/partecipanti/$(request.resource.data.uid)).data.stato == 'confermato';
+      allow delete: if false;
+    }
+
+    // valutazioni/{evento}_{uid}: una sola per persona (solo create, mai update), dopo l'inizio dell'evento, da un confermato.
+    // La leggono chi ha votato e l'organizzatore dell'evento.
+    match /valutazioni/{vid} {
+      allow read: if signedIn() && (resource.data.uid == request.auth.uid || resource.data.organizzatoreId == request.auth.uid);
+      allow create: if signedIn()
+        && hasOnly(request.resource.data, ['eventId', 'uid', 'organizzatoreId', 'stelle', 'etichetta', 'creatoIl'])
+        && request.resource.data.eventId is string
+        && request.resource.data.uid == request.auth.uid
+        && vid == request.resource.data.eventId + '_' + request.auth.uid
+        && request.resource.data.organizzatoreId == eventNow(request.resource.data.eventId).organizzatoreId
+        && request.resource.data.organizzatoreId != request.auth.uid
+        && eventNow(request.resource.data.eventId).stato != 'annullato'
+        && request.time >= eventNow(request.resource.data.eventId).dataOra
+        && isConfirmed(request.resource.data.eventId)
+        && request.resource.data.stelle is int && request.resource.data.stelle >= 1 && request.resource.data.stelle <= 5
+        && request.resource.data.etichetta in ['', 'Simpatico', 'Ben organizzato', 'Puntuale', 'Accogliente', 'Da migliorare']
+        && request.resource.data.creatoIl == request.time;
+      allow update, delete: if false;
+    }
+
     function validEventFields(d) {
       return d.tipo in ['aperitivo', 'cena', 'mostra', 'trekking', 'passeggiata', 'sport', 'altro']
         && d.titolo is string && d.titolo.size() >= 3 && d.titolo.size() <= 100

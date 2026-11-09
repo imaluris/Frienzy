@@ -10,6 +10,8 @@ import { Icon } from '../ui/Icon'
 import { InterestChips } from '../ui/InterestChips'
 import { BlockedSheet } from './BlockedSheet'
 import { DeleteAccountSheet } from './DeleteAccountSheet'
+import { useTrust } from '../attendance/useTrust'
+import { ProfileTrust } from './ProfileTrust'
 import { ProfileStats } from './ProfileStats'
 import { VerifyEmailBanner } from './VerifyEmailBanner'
 
@@ -24,6 +26,7 @@ interface Props {
 export function ProfileView({ profile, onEdit, onDebug }: Props) {
   const services = useServices()
   const { loading, mine } = useMine(services, profile.uid)
+  const trust = useTrust(services, profile.uid)
   const { blockedByMe } = useBlocks()
   const [showBlocked, setShowBlocked] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -42,6 +45,7 @@ export function ProfileView({ profile, onEdit, onDebug }: Props) {
       </section>
       <VerifyEmailBanner />
       <ProfileStats stats={profileStats(mine)} loading={loading} />
+      <ProfileTrust trust={trust} />
       <section className="card profile-about">
         <h3>Chi sono</h3>
         {profile.bio ? <p>{profile.bio}</p> : <p className="muted">Nessuna bio: raccontati in due righe.</p>}

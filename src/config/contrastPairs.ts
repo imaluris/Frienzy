@@ -25,6 +25,8 @@ export const PAIRS = [
   { name: 'marchio sopra il saluto (terracotta scuro su sfondo)', fg: '#a8452f', bg: background, min: 4.5 },
   { name: 'mese nel badge data (terracotta scuro su bianco)', fg: '#a8452f', bg: WHITE, min: 4.5 },
   { name: 'ultimi posti (ocra scuro su bianco)', fg: '#7a5200', bg: WHITE, min: 4.5 },
+  { name: 'stella del voto (senape scuro su bianco)', fg: '#9a6b00', bg: WHITE, min: 3 },
+  { name: 'valore affidabilità (secondario su bianco)', fg: secondary, bg: WHITE, min: 4.5 },
   { name: 'cuore salvato (rosso su bianco)', fg: '#c0432c', bg: WHITE, min: 3 },
   { name: 'bordo marker (primario su bianco)', fg: primary, bg: WHITE, min: 3 },
   { name: 'titolo bianco sulla copertina (sfumatura scura su giallo chiaro)', fg: WHITE, bg: '#7b5e2c', min: 4.5 },
