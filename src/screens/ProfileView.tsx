@@ -13,6 +13,7 @@ import { DeleteAccountSheet } from './DeleteAccountSheet'
 import { useTrust } from '../attendance/useTrust'
 import { ProfileTrust } from './ProfileTrust'
 import { ProfileStats } from './ProfileStats'
+import { NotificationSettings } from './NotificationSettings'
 import { VerifyEmailBanner } from './VerifyEmailBanner'
 
 interface Props {
@@ -52,6 +53,7 @@ export function ProfileView({ profile, onEdit, onDebug }: Props) {
         {profile.interessi.length > 0 && <h3>Cosa mi piace</h3>}
         <InterestChips interests={profile.interessi} />
       </section>
+      <NotificationSettings uid={profile.uid} />
       <section className="card profile-account" aria-label="Account">
         {blockedByMe.length > 0 && (
           <button type="button" className="secondary wide" onClick={() => setShowBlocked(true)}><Icon name="user-x" size={20} /> Utenti bloccati ({blockedByMe.length})</button>

@@ -1,6 +1,7 @@
 import { MemoryAttendanceRepository } from '../../attendance/memoryAttendanceRepository'
 import { chatRoleOf } from '../../chat/chatRole'
 import { MemoryChatRepository } from '../../chat/memoryChatRepository'
+import { MemoryNotificationRepository } from '../../notifications/memoryNotificationRepository'
 import { MemoryPushService } from '../../push/memoryPushService'
 import type { AuthService } from '../../auth/authService'
 import { MemoryBlockRepository } from '../../safety/memoryBlockRepository'
@@ -32,5 +33,6 @@ export function createMemoryServices(auth: AuthService = new MemoryAuthService()
     reports: new MemoryReportRepository(),
     blocks,
     attendance: new MemoryAttendanceRepository(events, participations),
+    notifications: new MemoryNotificationRepository(),
   }
 }

@@ -7,6 +7,7 @@ import type { UserRepository } from '../data/userRepository'
 import { CapacitorPushService } from '../push/capacitorPushService'
 import type { PushService } from '../push/pushService'
 import type { AttendanceRepository } from '../attendance/attendanceRepository'
+import type { NotificationRepository } from '../notifications/notificationRepository'
 import type { SavedRepository } from '../saved/savedRepository'
 import type { BlockRepository } from '../safety/blockRepository'
 import type { ReportRepository } from '../safety/reportRepository'
@@ -18,6 +19,7 @@ import { FirebaseAuthService } from './firebaseAuthService'
 import { FirebasePhotoStorage } from './firebasePhotoStorage'
 import { FirestoreEventRepository } from './firestoreEventRepository'
 import { FirestoreParticipationRepository } from './firestoreParticipationRepository'
+import { FirestoreNotificationRepository } from './firestoreNotificationRepository'
 import { FirestoreSavedRepository } from './firestoreSavedRepository'
 import { FirestoreUserRepository } from './firestoreUserRepository'
 
@@ -34,6 +36,7 @@ export interface Services {
   reports: ReportRepository
   blocks: BlockRepository
   attendance: AttendanceRepository
+  notifications: NotificationRepository
 }
 
 export function createFirebaseServices(): Services {
@@ -51,5 +54,6 @@ export function createFirebaseServices(): Services {
     reports: new FirestoreReportRepository(),
     blocks: new FirestoreBlockRepository(),
     attendance: new FirestoreAttendanceRepository(events, participations),
+    notifications: new FirestoreNotificationRepository(),
   }
 }

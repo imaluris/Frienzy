@@ -44,3 +44,4 @@ Fase 2 completata
 - Task 37 fatto: Lista d'attesa
 - Task 38 fatto: Recupero password e verifica email
 - Task 39 fatto: Presenza e voti
+- Task 40 fatto: Notifiche promemoria e inviti

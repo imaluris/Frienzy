@@ -141,6 +141,27 @@ service cloud.firestore {
       // Eliminazione account: ognuno cancella solo il proprio profilo.
       allow delete: if isOwner(uid);
 
+      // Notifiche: preferenze (4 interruttori) e dispositivo (token + zona di ~5 km). Privati del proprietario;
+      // il server (Cloud Functions, con credenziali di amministrazione) li legge senza passare da qui.
+      match /notifiche/preferenze {
+        allow read, delete: if isOwner(uid);
+        allow create, update: if isOwner(uid)
+          && hasOnly(request.resource.data, ['promemoria', 'richieste', 'risposte', 'inviti'])
+          && request.resource.data.promemoria is bool
+          && request.resource.data.richieste is bool
+          && request.resource.data.risposte is bool
+          && request.resource.data.inviti is bool;
+      }
+
+      match /notifiche/dispositivo {
+        allow read, delete: if isOwner(uid);
+        allow create, update: if isOwner(uid)
+          && hasOnly(request.resource.data, ['token', 'zona', 'aggiornatoIl'])
+          && request.resource.data.token is string && request.resource.data.token.size() <= 1024
+          && request.resource.data.zona is string && request.resource.data.zona.size() <= 5
+          && request.resource.data.aggiornatoIl == request.time;
+      }
+
       // Eventi salvati col cuore: privati, li vede e li scrive solo il proprietario.
       match /salvati/{eventId} {
         allow read: if isOwner(uid);

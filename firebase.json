@@ -1,8 +1,22 @@
 {
-  "firestore": { "rules": "firestore.rules" },
-  "storage": { "rules": "storage.rules" },
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
   "emulators": {
-    "firestore": { "port": 8080 },
+    "firestore": {
+      "port": 8080
+    },
     "singleProjectMode": true
+  },
+  "functions": {
+    "source": "functions",
+    "codebase": "default",
+    "ignore": [
+      "node_modules",
+      "lib/**/*.test.js"
+    ]
   }
 }
