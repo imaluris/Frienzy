@@ -1,0 +1,47 @@
+# Notifiche a app chiusa, gratis: ogni 15 minuti legge Firestore e manda le notifiche con Firebase Cloud Messaging.
+# Senza il segreto FIREBASE_SERVICE_ACCOUNT non fa nulla (esce con successo): le notifiche sono "spente".
+name: Notifiche
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+# Una sola esecuzione alla volta: se una è lenta, la successiva aspetta invece di mandare doppioni.
+concurrency:
+  group: notifiche
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  invia:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+    steps:
+      - name: Controllo del segreto
+        if: env.FIREBASE_SERVICE_ACCOUNT == ''
+        run: echo "Notifiche spente - manca il segreto FIREBASE_SERVICE_ACCOUNT (vedi docs/giorno-40b-notifiche-gratis.md)."
+
+      - uses: actions/checkout@v4
+        if: env.FIREBASE_SERVICE_ACCOUNT != ''
+
+      - uses: actions/setup-node@v4
+        if: env.FIREBASE_SERVICE_ACCOUNT != ''
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: notifier/package-lock.json
+
+      - name: Installa e compila
+        if: env.FIREBASE_SERVICE_ACCOUNT != ''
+        working-directory: notifier
+        run: npm ci && npm run build
+
+      - name: Invia le notifiche
+        if: env.FIREBASE_SERVICE_ACCOUNT != ''
+        working-directory: notifier
+        run: npm start
