@@ -35,6 +35,9 @@ export const PAIRS = [
   { name: 'stato in attesa (ocra scuro su giallo chiaro)', fg: '#5c3f00', bg: '#fbefc9', min: 4.5 },
   { name: 'stato negativo (rosso scuro su rosa chiaro)', fg: '#7a1913', bg: '#f6d5d1', min: 4.5 },
   { name: 'pulsante spento nella barra azione', fg: '#6b5a4c', bg: '#eadfd2', min: 4.5 },
+  { name: 'numero sulla campanella (bianco su terracotta scuro)', fg: WHITE, bg: '#a8452f', min: 4.5 },
+  { name: 'icona avviso invito (senape scuro su giallo chiaro)', fg: '#9a6b00', bg: '#fdf0cf', min: 3 },
+  { name: 'icona avviso richiesta (terracotta scuro su rosa chiaro)', fg: '#a8472f', bg: '#fbe3dc', min: 3 },
   ...AVATAR_COLORS.map((c) => ({ name: `iniziali su avatar ${c}`, fg: text, bg: c, min: 4.5 })),
 ] as const
 

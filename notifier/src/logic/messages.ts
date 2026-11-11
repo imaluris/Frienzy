@@ -1,4 +1,3 @@
-import type { ReminderKind } from './reminders'
 import type { EventLite } from './types'
 
 export interface Message {
@@ -8,15 +7,6 @@ export interface Message {
 
 const EMOJI: Record<string, string> = { aperitivo: '🍹', cena: '🍽️', mostra: '🖼️', trekking: '🥾', passeggiata: '🚶', sport: '⚽', altro: '✨' }
 const emoji = (tipo: string) => EMOJI[tipo] ?? '✨'
-
-function timeLabel(date: Date, timeZone: string): string {
-  return new Intl.DateTimeFormat('it-IT', { hour: '2-digit', minute: '2-digit', timeZone }).format(date)
-}
-
-export function reminderMessage(event: EventLite, kind: ReminderKind, timeZone = 'Europe/Rome'): Message {
-  const when = kind === '24h' ? `domani alle ${timeLabel(event.dataOra, timeZone)}` : `tra circa due ore, alle ${timeLabel(event.dataOra, timeZone)}`
-  return { title: `${emoji(event.tipo)} ${event.titolo}`, body: `Ci vediamo ${when} (${event.zonaNome}).` }
-}
 
 export function requestMessage(event: EventLite, requesterName: string): Message {
   return { title: 'Nuova richiesta', body: `${requesterName} vorrebbe partecipare a "${event.titolo}".` }

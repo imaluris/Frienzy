@@ -9,6 +9,7 @@ export type Overlay =
   | { kind: 'chat'; id: string }
   | { kind: 'debug' }
   | { kind: 'edit' }
+  | { kind: 'alerts' }
 
 export interface Nav {
   tab: Tab
@@ -31,6 +32,7 @@ export const selectTab = (tab: Tab): Nav => ({ tab, overlay: { kind: 'none' } })
 export const openEvent = (nav: Nav, id: string): Nav => ({ ...nav, overlay: { kind: 'event', id } })
 export const openDebug = (nav: Nav): Nav => ({ ...nav, overlay: { kind: 'debug' } })
 export const openEdit = (nav: Nav): Nav => ({ ...nav, overlay: { kind: 'edit' } })
+export const openAlerts = (nav: Nav): Nav => ({ ...nav, overlay: { kind: 'alerts' } })
 export const openChat = (nav: Nav, id: string): Nav => ({ ...nav, overlay: { kind: 'chat', id } })
 // Dalla chat si torna all'evento; da ogni altra schermata alla scheda.
 export const goBack = (nav: Nav): Nav => ({ ...nav, overlay: nav.overlay.kind === 'chat' ? { kind: 'event', id: nav.overlay.id } : { kind: 'none' } })
@@ -50,6 +52,7 @@ export function titleOf(nav: Nav): string {
     case 'chat': return 'Chat'
     case 'debug': return 'Debug'
     case 'edit': return 'Modifica profilo'
+    case 'alerts': return 'Avvisi'
     default: return nav.tab === 'eventi' ? 'Eventi in programma' : nav.tab === 'crea' ? 'Crea un evento' : TAB_LABEL[nav.tab]
   }
 }

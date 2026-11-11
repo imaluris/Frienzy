@@ -5,6 +5,7 @@ import { EXTREME_PROFILES, EXTREME_SPEC } from './demoExtreme'
 import { DEMO_EVENT_SPECS, toNewEvent } from './demoEvents'
 import { seedDemoPast } from './demoPast'
 import { seedDemoChat } from './demoChat'
+import { DEFAULT_PREFS } from '../notifications/prefs'
 import { DEMO_PROFILES, DEMO_UID } from './demoPeople'
 
 export const DEMO_EMAIL = 'demo@frienzy.it'
@@ -27,6 +28,7 @@ export async function createDemoServices(): Promise<Services> {
     for (const uid of spec.attesa ?? []) await services.participations.joinWaitlist(event.id, uid)
     if (spec.annullato) await services.events.update(event.id, { stato: 'annullato' })
   }
+  await services.notifications.savePrefs(DEMO_UID, { ...DEFAULT_PREFS, inviti: true }) // così la demo mostra anche gli inviti
   await seedDemoChat(services)
   await seedDemoPast(services)
   await services.auth.register(DEMO_EMAIL, DEMO_PASSWORD) // dopo la registrazione si è già dentro

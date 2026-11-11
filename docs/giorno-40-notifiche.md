@@ -1,5 +1,7 @@
 # Giorno 40 – Notifiche: promemoria, avvisi e inviti
 
+> **Avviso:** la parte Cloud Functions di questa nota (cartella `functions/`, `firebase deploy`) è stata sostituita dal task 40b, perché le Cloud Functions richiedono il piano a pagamento. La cartella `functions/` non esiste più: la logica pura è passata in `notifier/` e il dispositivo si salva ora in `dispositivi/{uid}`. Leggi `giorno-40b-notifiche-gratis.md`.
+
 Lettura scelta: i task dicono "Cloud Functions NON eseguite", quindi ho scritto il codice dei server e la logica che decide *chi* avvisare come funzioni pure testate, e nell'app gli interruttori nel Profilo. Il token del telefono e la zona approssimata vengono salvati dall'app; le funzioni li leggono.
 
 ## Perché queste scelte

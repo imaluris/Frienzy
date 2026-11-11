@@ -8,6 +8,20 @@ export interface EventLite {
   organizzatoreId: string
   geohash: string
   stato: string
+  richiedeApprovazione: boolean
+  creatoIl: Date
+}
+
+/** Iscrizione a un evento: chi e in che stato. */
+export interface PartLite {
+  uid: string
+  stato: string
+}
+
+/** Un blocco: `blockerId` ha bloccato `blockedId`. */
+export interface BlockLite {
+  blockerId: string
+  blockedId: string
 }
 
 export interface PrefsLite {
@@ -24,7 +38,7 @@ export interface DeviceLite {
   zona?: string
 }
 
-/** Chi può essere avvisato: preferenze e dispositivo letti da users/{uid}/notifiche. */
+/** Chi può essere avvisato: preferenze (users/{uid}/notifiche/preferenze) e dispositivo (dispositivi/{uid}). */
 export interface Contact {
   uid: string
   prefs: PrefsLite

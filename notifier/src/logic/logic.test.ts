@@ -1,51 +1,25 @@
 import { describe, expect, it } from 'vitest'
 import { inviteTargets, type InviteCandidate } from './invites'
-import { inviteMessage, reminderMessage } from './messages'
-import { dueReminders } from './reminders'
-import { reminderUids, tokensFor } from './recipients'
+import { answerMessage, inviteMessage, requestMessage } from './messages'
+import { tokensFor } from './recipients'
 import type { EventLite } from './types'
 
 const HOUR = 3_600_000
 const now = new Date('2030-05-10T10:00:00Z')
 const ev = (over: Partial<EventLite> = {}): EventLite => ({
   id: 'e1', titolo: 'Aperitivo ai Navigli', tipo: 'aperitivo', dataOra: new Date(now.getTime() + 24 * HOUR - 10 * 60_000),
-  zonaNome: 'Navigli', organizzatoreId: 'org', geohash: 'u0nd9h', stato: 'aperto', ...over,
-})
-
-describe('promemoria dovuti', () => {
-  it('24 ore prima: dentro la finestra sì, troppo presto no', () => {
-    expect(dueReminders([ev()], {}, now).map((d) => d.kind)).toEqual(['24h'])
-    expect(dueReminders([ev({ dataOra: new Date(now.getTime() + 30 * HOUR) })], {}, now)).toEqual([])
-  })
-  it('2 ore prima', () => {
-    const e = ev({ dataOra: new Date(now.getTime() + 90 * 60_000) })
-    expect(dueReminders([e], {}, now).map((d) => d.kind)).toEqual(['2h'])
-  })
-  it('non ripete quello già inviato', () => {
-    expect(dueReminders([ev()], { e1: { h24: true } }, now)).toEqual([])
-  })
-  it('eventi annullati o già passati non hanno promemoria', () => {
-    expect(dueReminders([ev({ stato: 'annullato' })], {}, now)).toEqual([])
-    expect(dueReminders([ev({ dataOra: new Date(now.getTime() - HOUR) })], {}, now)).toEqual([])
-  })
-  it('un evento creato 5 ore prima non riceve il promemoria "domani"', () => {
-    expect(dueReminders([ev({ dataOra: new Date(now.getTime() + 5 * HOUR) })], {}, now)).toEqual([])
-  })
+  zonaNome: 'Navigli', organizzatoreId: 'org', geohash: 'u0nd9h', stato: 'aperto', richiedeApprovazione: false, creatoIl: new Date(now.getTime() - HOUR), ...over,
 })
 
 describe('destinatari', () => {
-  it('promemoria: organizzatore e confermati, nessun altro', () => {
-    const ps = [{ uid: 'a', stato: 'confermato' }, { uid: 'b', stato: 'richiesta' }, { uid: 'c', stato: 'inAttesa' }, { uid: 'd', stato: 'rifiutato' }]
-    expect(reminderUids('org', ps).sort()).toEqual(['a', 'org'])
-  })
   it('rispetta le preferenze e serve un token', () => {
     const contacts = [
       { uid: 'a', prefs: {}, device: { token: 't1' } },
-      { uid: 'b', prefs: { promemoria: false }, device: { token: 't2' } },
+      { uid: 'b', prefs: { richieste: false }, device: { token: 't2' } },
       { uid: 'c', prefs: {}, device: {} },
       { uid: 'd', prefs: {}, device: { token: 't1' } },
     ]
-    expect(tokensFor(contacts, 'promemoria')).toEqual(['t1'])
+    expect(tokensFor(contacts, 'richieste')).toEqual(['t1'])
     expect(tokensFor(contacts, 'inviti')).toEqual([])
   })
 })
@@ -80,8 +54,9 @@ describe('messaggi', () => {
     expect(m.body).toBe('Aperitivo ai Navigli · Navigli')
     expect(JSON.stringify(m)).not.toContain('org')
   })
-  it('il promemoria dice quando, con ora italiana', () => {
-    const m = reminderMessage(ev({ dataOra: new Date('2030-05-11T16:00:00Z') }), '24h')
-    expect(m.body).toContain('domani alle 18:00')
+  it('la richiesta dice chi e a cosa; la risposta cambia con l\'esito', () => {
+    expect(requestMessage(ev(), 'Bruno').body).toBe('Bruno vorrebbe partecipare a "Aperitivo ai Navigli".')
+    expect(answerMessage(ev(), 'confermato').title).toContain('Sei dentro')
+    expect(answerMessage(ev(), 'rifiutato').title).toBe('Richiesta non accettata')
   })
 })

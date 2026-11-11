@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { buildDiscover } from '../discover/sections'
 import type { EventTypeId } from '../domain/eventTypes'
+import { useAlerts } from '../alerts/AlertsContext'
 import { useServices } from '../app/ServicesContext'
 import { groupByPeriod } from '../events/periods'
 import { searchEvents } from '../events/search'
@@ -24,11 +25,13 @@ interface Props {
   interessi: EventTypeId[]
   onOpen: (eventId: string) => void
   onCreate: () => void
+  onOpenAlerts?: () => void
 }
 
 // Schermata Eventi: saluto, ricerca, filtri per tipo e le schede divise per periodo (oggi, domani...).
-export function EventListScreen({ uid, name, interessi, onOpen, onCreate }: Props) {
+export function EventListScreen({ uid, name, interessi, onOpen, onCreate, onOpenAlerts }: Props) {
   const { events } = useServices()
+  const { unseenCount } = useAlerts()
   const { loading, list, failed, refresh } = useUpcomingEvents(events)
   const [filters, setFilters] = useState<EventFilters>(NO_FILTERS)
   const [query, setQuery] = useState('')
@@ -43,7 +46,7 @@ export function EventListScreen({ uid, name, interessi, onOpen, onCreate }: Prop
 
   return (
     <PullToRefresh onRefresh={refresh}>
-      <HomeHeader name={name} />
+      <HomeHeader name={name} alertCount={unseenCount} onOpenAlerts={onOpenAlerts} />
       <section className="home-body" aria-label="Eventi in programma">
         <SearchField value={query} onChange={setQuery} />
         <FiltersBar filters={filters} onChange={setFilters} position={position} onAskPosition={ask} />

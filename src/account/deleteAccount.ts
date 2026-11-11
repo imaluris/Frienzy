@@ -19,7 +19,7 @@ export class AccountDeletionError extends Error {
   }
 }
 
-type Ports = Pick<Services, 'auth' | 'users' | 'events' | 'participations' | 'chat' | 'saved' | 'blocks' | 'notifications'>
+type Ports = Pick<Services, 'auth' | 'users' | 'events' | 'participations' | 'chat' | 'saved' | 'blocks' | 'notifications' | 'seen' | 'reminders'>
 
 /** Eventi futuri che verrebbero annullati: serve alla finestra di conferma ("Verranno annullati N eventi"). */
 export async function countEventsToCancel(services: Pick<Ports, 'events' | 'auth'>, now: Date = new Date()): Promise<number> {
@@ -49,7 +49,7 @@ export async function deleteAccount(services: Ports, password: string, now: Date
   await run('messaggi', () => Promise.all(plan.chatEventIds.map((id) => services.chat.removeOwn(id, uid))))
   await run('eventi', () => Promise.all(plan.eventsToCancel.map((id) => cancelEvent(services.events, id, uid))))
   await run('iscrizioni', async () => { for (const id of plan.withdrawEventIds) await services.participations.withdraw(id, uid) })
-  await run('salvati', () => Promise.all([services.saved.clear(uid), services.notifications.clear(uid)]))
+  await run('salvati', () => Promise.all([services.saved.clear(uid), services.notifications.clear(uid), services.seen.clear(uid), services.reminders.cancelAll()]))
   await run('blocchi', () => services.blocks.unblockAll(uid))
   await run('profilo', () => services.users.delete(uid))
   await run('account', () => services.auth.deleteAccount())

@@ -9,6 +9,9 @@ import type { PushService } from '../push/pushService'
 import type { AttendanceRepository } from '../attendance/attendanceRepository'
 import type { NotificationRepository } from '../notifications/notificationRepository'
 import type { SavedRepository } from '../saved/savedRepository'
+import type { SeenRepository } from '../alerts/seenRepository'
+import type { ReminderService } from '../reminders/reminderService'
+import { CapacitorReminderService } from '../reminders/capacitorReminderService'
 import type { BlockRepository } from '../safety/blockRepository'
 import type { ReportRepository } from '../safety/reportRepository'
 import { FirestoreAttendanceRepository } from './firestoreAttendanceRepository'
@@ -21,6 +24,7 @@ import { FirestoreEventRepository } from './firestoreEventRepository'
 import { FirestoreParticipationRepository } from './firestoreParticipationRepository'
 import { FirestoreNotificationRepository } from './firestoreNotificationRepository'
 import { FirestoreSavedRepository } from './firestoreSavedRepository'
+import { FirestoreSeenRepository } from './firestoreSeenRepository'
 import { FirestoreUserRepository } from './firestoreUserRepository'
 
 // L'unico punto che sa che si usa Firebase: il resto dell'app riceve solo le interfacce.
@@ -37,6 +41,8 @@ export interface Services {
   blocks: BlockRepository
   attendance: AttendanceRepository
   notifications: NotificationRepository
+  seen: SeenRepository
+  reminders: ReminderService
 }
 
 export function createFirebaseServices(): Services {
@@ -55,5 +61,7 @@ export function createFirebaseServices(): Services {
     blocks: new FirestoreBlockRepository(),
     attendance: new FirestoreAttendanceRepository(events, participations),
     notifications: new FirestoreNotificationRepository(),
+    seen: new FirestoreSeenRepository(),
+    reminders: new CapacitorReminderService(),
   }
 }

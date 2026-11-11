@@ -10,13 +10,5 @@
       "port": 8080
     },
     "singleProjectMode": true
-  },
-  "functions": {
-    "source": "functions",
-    "codebase": "default",
-    "ignore": [
-      "node_modules",
-      "lib/**/*.test.js"
-    ]
   }
 }

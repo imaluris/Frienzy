@@ -59,7 +59,7 @@ describe('copertine', () => {
 describe('stati vuoti e benvenuto', () => {
   it('ci sono otto illustrazioni, tutte disegnate', () => {
     const kinds = Object.keys(EMPTY_ART) as EmptyArtKind[]
-    expect(kinds).toHaveLength(8)
+    expect(kinds).toHaveLength(9)
     for (const kind of kinds) {
       const { container, unmount } = render(<EmptyArt kind={kind} label="" />)
       expect(container.querySelectorAll('path, circle, rect').length).toBeGreaterThan(6)

@@ -45,3 +45,4 @@ Fase 2 completata
 - Task 38 fatto: Recupero password e verifica email
 - Task 39 fatto: Presenza e voti
 - Task 40 fatto: Notifiche promemoria e inviti
+- Task 40b fatto: Notifiche senza spese

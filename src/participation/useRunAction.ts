@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { notifyDataChanged } from '../reminders/syncSignal'
 
 /**
  * Esegue un'azione asincrona (iscriviti, accetta...) e tiene d'occhio due cose:
@@ -20,6 +21,7 @@ export function useRunAction(onDone: () => void) {
     } finally {
       setBusy(false)
       onDone() // anche dopo un errore: i dati (es. posti) potrebbero essere cambiati
+      notifyDataChanged() // promemoria e avvisi si ricalcolano
     }
   }
   return { busy, error, run }

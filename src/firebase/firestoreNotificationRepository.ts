@@ -3,10 +3,11 @@ import type { NotificationRepository } from '../notifications/notificationReposi
 import { normalizePrefs, type DeviceInfo, type NotificationPrefs } from '../notifications/prefs'
 import { db } from './app'
 
-// users/{uid}/notifiche/preferenze e users/{uid}/notifiche/dispositivo: privati, solo il proprietario li legge.
-// Il dispositivo lo legge anche il server (Cloud Functions) per inviare le notifiche.
+// Preferenze: users/{uid}/notifiche/preferenze. Dispositivo (token + zona di ~5 km): dispositivi/{uid}, raccolta di primo livello.
+// Sono privati, solo il proprietario li legge. Il dispositivo lo legge anche il notificatore (GitHub Actions, con credenziali
+// di amministrazione): sta a primo livello così lo legge con UNA lettura della raccolta, senza indici di collection group.
 const prefsRef = (uid: string) => doc(db(), 'users', uid, 'notifiche', 'preferenze')
-const deviceRef = (uid: string) => doc(db(), 'users', uid, 'notifiche', 'dispositivo')
+const deviceRef = (uid: string) => doc(db(), 'dispositivi', uid)
 
 export class FirestoreNotificationRepository implements NotificationRepository {
   async getPrefs(uid: string): Promise<NotificationPrefs> {

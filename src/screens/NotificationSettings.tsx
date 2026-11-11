@@ -5,11 +5,12 @@ import { buildDevice } from '../notifications/device'
 import { PREF_KEYS, PREF_LABELS } from '../notifications/prefs'
 import { useNotificationPrefs } from '../notifications/useNotificationPrefs'
 import { usePush } from '../push/usePush'
+import { notifyDataChanged } from '../reminders/syncSignal'
 import { Icon } from '../ui/Icon'
 
 // Scheda "Notifiche" del Profilo: attivazione sul telefono e quattro interruttori.
 export function NotificationSettings({ uid }: { uid: string }) {
-  const { push, notifications } = useServices()
+  const { push, notifications, reminders } = useServices()
   const { prefs, loaded, error, toggle } = useNotificationPrefs(uid)
   const { state, enable } = usePush(push)
   const position = useMyPosition()
@@ -24,7 +25,15 @@ export function NotificationSettings({ uid }: { uid: string }) {
   function onToggle(key: (typeof PREF_KEYS)[number]) {
     // Per gli inviti serve la zona: la si chiede nel momento in cui si accendono.
     if (key === 'inviti' && !prefs.inviti) position.ask()
-    void toggle(key)
+    // Un interruttore cambiato fa ricalcolare promemoria (sul telefono) e avvisi (in app).
+    void toggle(key).then(notifyDataChanged)
+  }
+
+  // Un solo gesto chiede i due permessi: notifiche push e promemoria sul telefono (su Android sono lo stesso permesso).
+  async function enableAll() {
+    await enable()
+    if (reminders.isSupported()) await reminders.requestPermission().catch(() => undefined)
+    notifyDataChanged()
   }
 
   return (
@@ -34,7 +43,7 @@ export function NotificationSettings({ uid }: { uid: string }) {
       {state.status === 'denied' && <p className="muted">Le notifiche sono bloccate: puoi riattivarle dalle impostazioni del telefono.</p>}
       {state.status === 'error' && <p role="alert" className="error">{state.error}</p>}
       {(state.status === 'idle' || state.status === 'registering') && (
-        <button type="button" className="secondary wide" onClick={() => void enable()} aria-busy={state.status === 'registering'}>Attiva le notifiche</button>
+        <button type="button" className="secondary wide" onClick={() => void enableAll()} aria-busy={state.status === 'registering'}>Attiva le notifiche</button>
       )}
       {state.status === 'registered' && <p className="notif-on"><Icon name="check-circle" size={20} /> Notifiche attive su questo telefono</p>}
       <ul className="notif-list">

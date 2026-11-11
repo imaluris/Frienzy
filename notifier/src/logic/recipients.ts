@@ -12,9 +12,3 @@ export function tokensFor(contacts: Contact[], pref: PrefName): string[] {
   const tokens = contacts.filter((c) => wants(c, pref) && c.device.token).map((c) => c.device.token as string)
   return [...new Set(tokens)]
 }
-
-/** Destinatari di un promemoria: organizzatore + confermati (mai richieste, rifiutati o lista d'attesa). */
-export function reminderUids(organizerId: string, participants: { uid: string; stato: string }[]): string[] {
-  const confirmed = participants.filter((p) => p.stato === 'confermato').map((p) => p.uid)
-  return [...new Set([organizerId, ...confirmed])]
-}

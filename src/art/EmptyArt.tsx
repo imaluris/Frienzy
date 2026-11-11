@@ -1,10 +1,11 @@
 import { NoEventsArt, NoResultsArt } from './empty/calendarArt'
+import { NoAlertsArt } from './empty/bellArt'
 import { NoMessagesArt } from './empty/chatArt'
 import { NoSavedArt } from './empty/heartArt'
 import { FailureArt, OfflineArt } from './empty/failureArt'
 import { NoJoinedArt, NoOrganizedArt } from './empty/ticketArt'
 
-// Le otto illustrazioni per gli stati vuoti, di errore e senza connessione.
+// Le nove illustrazioni per gli stati vuoti, di errore e senza connessione.
 export const EMPTY_ART = {
   'no-events': NoEventsArt,
   'no-results': NoResultsArt,
@@ -12,6 +13,7 @@ export const EMPTY_ART = {
   'no-organized': NoOrganizedArt,
   'no-saved': NoSavedArt,
   'no-messages': NoMessagesArt,
+  'no-alerts': NoAlertsArt,
   failure: FailureArt,
   offline: OfflineArt,
 } as const

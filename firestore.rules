@@ -141,8 +141,8 @@ service cloud.firestore {
       // Eliminazione account: ognuno cancella solo il proprio profilo.
       allow delete: if isOwner(uid);
 
-      // Notifiche: preferenze (4 interruttori) e dispositivo (token + zona di ~5 km). Privati del proprietario;
-      // il server (Cloud Functions, con credenziali di amministrazione) li legge senza passare da qui.
+      // Notifiche: preferenze (4 interruttori) e avvisi già visti (elenco di chiavi, max 200). Privati del proprietario;
+      // il notificatore (GitHub Actions, con credenziali di amministrazione) le legge senza passare da qui.
       match /notifiche/preferenze {
         allow read, delete: if isOwner(uid);
         allow create, update: if isOwner(uid)
@@ -153,12 +153,11 @@ service cloud.firestore {
           && request.resource.data.inviti is bool;
       }
 
-      match /notifiche/dispositivo {
+      match /notifiche/visti {
         allow read, delete: if isOwner(uid);
         allow create, update: if isOwner(uid)
-          && hasOnly(request.resource.data, ['token', 'zona', 'aggiornatoIl'])
-          && request.resource.data.token is string && request.resource.data.token.size() <= 1024
-          && request.resource.data.zona is string && request.resource.data.zona.size() <= 5
+          && hasOnly(request.resource.data, ['chiavi', 'aggiornatoIl'])
+          && request.resource.data.chiavi is list && request.resource.data.chiavi.size() <= 200
           && request.resource.data.aggiornatoIl == request.time;
       }
 
@@ -328,6 +327,17 @@ service cloud.firestore {
     // Ognuno trova solo le proprie (il campo uid del documento deve essere il suo).
     match /{path=**}/partecipanti/{uid} {
       allow read: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    // Dispositivo di notifica (token + zona di ~5 km): privato del proprietario. Sta a primo livello perché il notificatore
+    // lo legge con una sola lettura della raccolta (credenziali di amministrazione, senza passare da qui).
+    match /dispositivi/{uid} {
+      allow read, delete: if isOwner(uid);
+      allow create, update: if isOwner(uid)
+        && hasOnly(request.resource.data, ['token', 'zona', 'aggiornatoIl'])
+        && request.resource.data.token is string && request.resource.data.token.size() <= 1024
+        && request.resource.data.zona is string && request.resource.data.zona.size() <= 5
+        && request.resource.data.aggiornatoIl == request.time;
     }
 
     // Blocchi: blocchi/{chi blocca}_{chi è bloccato}. Li legge solo chi è coinvolto (anche il bloccato: serve

@@ -1,0 +1,16 @@
+/* Campanella nella testata di Eventi e schermata Avvisi. */
+.home-text { flex: 1; min-width: 0; }
+.bell { position: relative; flex: none; display: grid; place-items: center; width: var(--tap); height: var(--tap); padding: 0; border-radius: 50%; background: var(--color-surface); color: var(--color-secondary); border: 1px solid var(--color-border-soft); box-shadow: var(--shadow-1); }
+.bell-badge { position: absolute; top: -2px; right: -2px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px; background: #a8452f; color: #fff; font-size: 0.75rem; font-weight: var(--weight-heavy); line-height: 20px; text-align: center; box-shadow: 0 0 0 2px var(--color-background); }
+.alerts { padding: var(--space-4); }
+.alert-list { display: grid; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+.alert-row { display: flex; align-items: flex-start; gap: var(--space-3); width: 100%; min-height: 72px; padding: var(--space-4); text-align: left; background: var(--color-surface); color: inherit; border: 1px solid var(--color-border-soft); border-radius: 16px; box-shadow: var(--shadow-1); }
+.alert-row.is-fresh { border-color: var(--color-primary); background: #fffdf9; }
+.alert-icon { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; background: var(--color-primary-soft); color: var(--color-primary-deep); }
+.alert-risposte .alert-icon { background: var(--color-secondary-soft); color: var(--color-secondary); }
+.alert-inviti .alert-icon { background: #fdf0cf; color: var(--color-accent-deep); }
+.alert-text { display: grid; flex: 1; gap: 2px; min-width: 0; overflow-wrap: anywhere; }
+.alert-text strong { font-size: var(--text-subtitle); line-height: 1.25; }
+.alert-text span { color: var(--color-muted); font-size: 0.9375rem; }
+.alert-dot { flex: none; width: 10px; height: 10px; margin-top: 6px; border-radius: 50%; background: #a8452f; }
+.alert-skeleton { height: 88px; border-radius: 16px; list-style: none; }
