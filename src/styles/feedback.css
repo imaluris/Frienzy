@@ -15,7 +15,7 @@
 }
 .badge {
   display: inline-block; padding: 2px var(--space-2); border-radius: 999px;
-  background: var(--color-accent); color: var(--color-text); font-size: 0.8rem; font-weight: 800;
+  background: var(--color-accent); color: var(--color-ink); font-size: 0.8rem; font-weight: 800;
 }
 .empty-state { text-align: center; color: var(--color-muted); padding: var(--space-6) var(--space-4); }
 .empty-art { display: block; width: 160px; height: 120px; margin: 0 auto var(--space-3); }

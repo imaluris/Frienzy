@@ -1,8 +1,8 @@
 /* Selettore a segmenti (I miei eventi: Organizzo / Iscrizioni / Salvati). */
-.segments { display: flex; gap: var(--space-1); padding: var(--space-1); margin: 0 0 var(--space-4); background: #f1e6d8; border-radius: 999px; }
+.segments { display: flex; gap: var(--space-1); padding: var(--space-1); margin: 0 0 var(--space-4); background: var(--color-surface-3); border-radius: 999px; }
 .segments button {
   flex: 1; min-height: 44px; padding: 0 var(--space-2); background: transparent; color: var(--color-muted); border: 0; border-radius: 999px;
   box-shadow: none; font-weight: var(--weight-bold); font-size: 0.9375rem; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
 }
 .segments button[aria-selected='true'] { background: var(--color-surface); color: var(--color-secondary); box-shadow: var(--shadow-1); font-weight: var(--weight-heavy); }
-.segments .count { min-width: 20px; padding: 0 6px; border-radius: 999px; background: #e9dccb; font-size: var(--text-caption); line-height: 20px; color: var(--color-text); }
+.segments .count { min-width: 20px; padding: 0 6px; border-radius: 999px; background: var(--color-neutral-bg-2); font-size: var(--text-caption); line-height: 20px; color: var(--color-text); }

@@ -158,5 +158,6 @@ export const STEPS: Step[] = [
   { name: '65-voto-dato', go: async (p) => { await fromHome(p, 'I miei eventi'); await p.getByRole('tab', { name: /Iscrizioni/ }).click(); await click(p, /Trekking di domenica/); await p.getByText(/Hai votato 5 stelle/).waitFor() } },
   { name: '66-profilo-affidabilita', go: async (p) => { await fromHome(p, 'Profilo'); await p.getByText('67%').waitFor() } },
   { name: '14-registrazione', go: (p) => fromHome(p, 'Profilo', 'Esci', 'Crea il tuo account') },
+  { name: '71-profilo-aspetto', go: async (p) => { await fromHome(p, 'Profilo'); await p.getByRole('radiogroup').scrollIntoViewIfNeeded() } },
   ...ALERT_STEPS,
 ]

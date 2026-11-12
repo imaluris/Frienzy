@@ -46,3 +46,4 @@ Fase 2 completata
 - Task 39 fatto: Presenza e voti
 - Task 40 fatto: Notifiche promemoria e inviti
 - Task 40b fatto: Notifiche senza spese
+- Task 41 fatto: Tema scuro

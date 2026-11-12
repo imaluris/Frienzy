@@ -1,7 +1,7 @@
 /* Avatar con iniziali, chip degli interessi, scheda profilo. */
 .avatar {
   display: inline-flex; align-items: center; justify-content: center; flex: none;
-  border-radius: 50%; color: var(--color-text); font-weight: 800; user-select: none;
+  border-radius: 50%; color: var(--color-ink); font-weight: 800; user-select: none;
 }
 .avatar-sm { width: 40px; height: 40px; font-size: 0.95rem; }
 .avatar-md { width: 56px; height: 56px; font-size: 1.15rem; }
@@ -14,7 +14,7 @@
   min-height: 40px; padding: 0 var(--space-3); background: var(--color-surface); color: var(--color-text);
   border: 2px solid var(--color-border); border-radius: 999px; font-weight: 700;
 }
-.chip-toggle[aria-pressed='true'] { background: var(--color-secondary); border-color: var(--color-secondary); color: #fff; }
+.chip-toggle[aria-pressed='true'] { background: var(--color-secondary); border-color: var(--color-secondary); color: var(--color-on-secondary); }
 .people li { display: flex; gap: var(--space-3); align-items: flex-start; }
 .people .person { min-width: 0; }
 .people .person p { margin: var(--space-1) 0 0; }

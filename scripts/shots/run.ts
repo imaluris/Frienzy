@@ -18,14 +18,16 @@ async function scrollShot(page: Page, path: string) {
 
 // Salva screenshot 390x844 (viewport del telefono) di ogni schermata in docs/screenshots/.
 const PORT = 5199
-const OUT = 'docs/screenshots'
+// SHOTS_THEME=scuro: il telefono simulato è in modalità scura (il tema Automatico lo segue) e le immagini vanno in docs/screenshots/scuro.
+const DARK = process.env.SHOTS_THEME === 'scuro'
+const OUT = DARK ? 'docs/screenshots/scuro' : 'docs/screenshots'
 
 const server = await startDemoServer(PORT)
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH ?? '/opt/pw-browsers/chromium', args: ['--no-sandbox'] })
 try {
   // Posizione finta a Milano con permesso già dato: serve alla fila "Vicino a te".
   const page = await browser.newPage({
-    viewport: { width: 390, height: 844 }, deviceScaleFactor: 2,
+    viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, colorScheme: DARK ? 'dark' : 'light',
     permissions: ['geolocation'], geolocation: { latitude: 45.4642, longitude: 9.19 },
   })
   page.setDefaultTimeout(8000)

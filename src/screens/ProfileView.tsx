@@ -13,6 +13,7 @@ import { DeleteAccountSheet } from './DeleteAccountSheet'
 import { useTrust } from '../attendance/useTrust'
 import { ProfileTrust } from './ProfileTrust'
 import { ProfileStats } from './ProfileStats'
+import { AppearanceSettings } from './AppearanceSettings'
 import { NotificationSettings } from './NotificationSettings'
 import { VerifyEmailBanner } from './VerifyEmailBanner'
 
@@ -53,6 +54,7 @@ export function ProfileView({ profile, onEdit, onDebug }: Props) {
         {profile.interessi.length > 0 && <h3>Cosa mi piace</h3>}
         <InterestChips interests={profile.interessi} />
       </section>
+      <AppearanceSettings />
       <NotificationSettings uid={profile.uid} />
       <section className="card profile-account" aria-label="Account">
         {blockedByMe.length > 0 && (

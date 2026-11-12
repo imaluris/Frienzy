@@ -6,13 +6,13 @@
 .detail-hero-text { position: absolute; left: 0; right: 0; bottom: var(--space-8); padding: 0 var(--space-4); color: #fff; }
 .detail-title { margin: var(--space-2) 0 var(--space-1); font-size: var(--text-display); line-height: 1.15; color: #fff; overflow-wrap: anywhere; text-shadow: 0 1px 8px rgba(43, 33, 24, 0.4); }
 .detail-when { display: flex; align-items: center; gap: var(--space-2); margin: 0; font-weight: var(--weight-bold); }
-.badge-hero { background: rgba(255, 255, 255, 0.92); color: var(--color-text); }
+.badge-hero { background: var(--color-glass); color: var(--color-text); }
 .detail-bar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 1000; display: flex; align-items: center; gap: var(--space-3);
   padding: calc(var(--space-2) + var(--safe-top)) var(--space-3) var(--space-2); min-height: calc(64px + var(--safe-top));
-  border-bottom: 1px solid rgba(234, 223, 210, var(--p));
-  box-shadow: 0 2px 8px rgba(43, 33, 24, calc(var(--p) * 0.1));
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border-soft) calc(var(--p) * 100%), transparent);
+  box-shadow: 0 2px 8px rgba(var(--shadow-rgb), calc(var(--p) * 0.1 * var(--shadow-k)));
 }
 .detail-bar-title { flex: 1; min-width: 0; margin: 0; font-size: var(--text-subtitle); font-weight: var(--weight-heavy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: var(--p); }
 .round-btn, .round-spacer { flex: none; width: var(--tap); height: var(--tap); }
-.round-btn { padding: 0; min-height: var(--tap); border-radius: 50%; background: rgba(255, 255, 255, 0.94); color: var(--color-text); box-shadow: var(--shadow-2); }
+.round-btn { padding: 0; min-height: var(--tap); border-radius: 50%; background: var(--color-glass); color: var(--color-text); box-shadow: var(--shadow-2); }

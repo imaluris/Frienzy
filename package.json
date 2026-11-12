@@ -12,6 +12,7 @@
     "check:contrast": "node scripts/check-contrast.ts",
     "test:rules": "npx firebase-tools emulators:exec --only firestore --project frienzy-test \"vitest run --config vitest.rules.config.ts\"",
     "shots": "node scripts/shots/run.ts",
+    "audit": "node scripts/shots/audit.ts",
     "shots:extreme": "node scripts/shots/extreme.ts",
     "brand": "node scripts/brand/make-assets.ts"
   },

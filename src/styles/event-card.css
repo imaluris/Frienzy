@@ -6,7 +6,7 @@
   text-align: left; background: none; border: 0; border-radius: 0; padding: 0; font-weight: 400; min-height: 0; box-shadow: none;
 }
 .event-card-body { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; padding: var(--space-4); }
-.event-card-title { font-weight: var(--weight-heavy); font-size: var(--text-subtitle); line-height: 1.25; overflow-wrap: anywhere; }
+.event-card-title { color: var(--color-text); font-weight: var(--weight-heavy); font-size: var(--text-subtitle); line-height: 1.25; overflow-wrap: anywhere; }
 .event-card-meta { display: flex; align-items: center; gap: var(--space-2); color: var(--color-muted); font-size: 0.9375rem; font-weight: var(--weight-bold); min-width: 0; }
 .event-card-meta svg { flex: none; }
 .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -14,6 +14,6 @@
 .event-card-badges { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-2); margin-top: var(--space-2); }
 .event-card-badges:empty { display: none; }
 .event-card > button.link { margin: 0 var(--space-2) var(--space-2); }
-.badge-neutral { background: #ece3d8; }
-.badge-accent { background: var(--color-accent); }
-.badge-warn { background: #f6d5d1; color: #7a1913; }
+.badge-neutral { background: var(--color-neutral-bg); color: var(--color-text); }
+.badge-accent { background: var(--color-accent); color: var(--color-ink); }
+.badge-warn { background: var(--color-bad-bg); color: var(--color-bad-fg); }

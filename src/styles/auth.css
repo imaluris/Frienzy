@@ -8,7 +8,7 @@
 .auth .switch { margin-top: var(--space-2); }
 
 /* Avviso "Conferma la tua email" nel Profilo. */
-.verify-banner { display: grid; gap: var(--space-3); background: #fbefc9; }
+.verify-banner { display: grid; gap: var(--space-3); background: var(--color-accent-soft); }
 .verify-head { display: flex; gap: var(--space-3); align-items: flex-start; }
 .verify-head h3 { margin: 0 0 var(--space-1); }
 .verify-head p { margin: 0; }

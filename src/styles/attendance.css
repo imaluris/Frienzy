@@ -7,8 +7,8 @@
 .rating-labels li { display: contents; }
 .presence-row .row-actions { gap: var(--space-2); }
 .presence-row .row-actions button { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1); }
-.presence-on { background: var(--color-secondary); color: #fff; }
-.presence-off { background: var(--color-error); color: #fff; }
+.presence-on { background: var(--color-secondary); color: var(--color-on-secondary); }
+.presence-off { background: var(--color-error); color: var(--color-on-error); }
 .feedback-done .chat-link-icon { background: var(--color-primary-soft); color: var(--color-primary-deep); }
 .profile-trust { display: flex; flex-wrap: wrap; align-items: center; padding: var(--space-3) 0; }
 .trust-item { flex: 1; display: grid; justify-items: center; gap: 2px; min-width: 0; }

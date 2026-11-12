@@ -13,7 +13,7 @@ interface Props {
 // Barra fissa in alto nel dettaglio: indietro e condividi sempre a portata di pollice; il titolo compare scorrendo.
 export function DetailTopBar({ title, progress, onBack, onShare, onMore = null }: Props) {
   return (
-    <header className="detail-bar" style={{ ['--p' as string]: progress, backgroundColor: `rgba(255, 248, 240, ${progress})` }}>
+    <header className="detail-bar" style={{ ['--p' as string]: progress, backgroundColor: `color-mix(in srgb, var(--color-background) ${Math.round(progress * 100)}%, transparent)` }}>
       <button type="button" className="round-btn" aria-label="Indietro" onClick={onBack}><Icon name="back" size={24} /></button>
       <p className="detail-bar-title" aria-hidden={progress < 0.9}>{title}</p>
       <div className="detail-bar-actions">

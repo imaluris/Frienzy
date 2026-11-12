@@ -2,7 +2,7 @@
 .sheet-layer { position: fixed; inset: 0; z-index: 2000; display: flex; flex-direction: column; justify-content: flex-end; }
 .sheet-backdrop {
   position: absolute; inset: 0; width: 100%; min-height: 0; padding: 0; border: 0; border-radius: 0;
-  background: rgba(43, 33, 24, 0.5); box-shadow: none; animation: fade-in var(--motion-base) ease;
+  background: rgba(var(--shadow-rgb), calc(0.5 * var(--shadow-k) * 0.6)); box-shadow: none; animation: fade-in var(--motion-base) ease;
 }
 .sheet-backdrop:active:not(:disabled) { transform: none; filter: none; }
 .sheet {
@@ -15,8 +15,8 @@
 .sheet-text { color: var(--color-muted); margin: 0 0 var(--space-6); }
 .sheet-actions { display: grid; gap: var(--space-3); }
 .sheet-actions button { width: 100%; }
-button.danger { background: var(--color-error); color: #fff; }
-button.danger[aria-busy='true']::after { border-color: #fff transparent #fff transparent; }
+button.danger { background: var(--color-error); color: var(--color-on-error); }
+button.danger[aria-busy='true']::after { border-color: var(--color-on-error) transparent var(--color-on-error) transparent; }
 @keyframes sheet-up { from { transform: translateY(100%); } to { transform: none; } }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .sheet, .sheet-backdrop { animation: none; } }

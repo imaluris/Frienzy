@@ -19,7 +19,7 @@
 .chat-row.mine .chat-bubble-wrap { align-items: flex-end; }
 .chat-author { margin: var(--space-2) 0 2px var(--space-3); font-size: var(--text-caption); font-weight: var(--weight-bold); color: var(--color-secondary); }
 .chat-bubble { padding: var(--space-2) var(--space-3); border-radius: var(--radius) var(--radius) var(--radius) 4px; background: var(--color-surface); border: 1px solid var(--color-border-soft); box-shadow: var(--shadow-1); }
-.chat-row.mine .chat-bubble { border-radius: var(--radius) var(--radius) 4px var(--radius); background: var(--color-primary); border-color: transparent; color: var(--color-text); }
+.chat-row.mine .chat-bubble { border-radius: var(--radius) var(--radius) 4px var(--radius); background: var(--color-primary); border-color: transparent; color: var(--color-on-primary); }
 .chat-bubble p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.4; }
 .chat-meta { display: block; margin-top: 2px; text-align: right; font-size: 0.6875rem; opacity: 0.75; }
 .chat-row .chat-delete { flex: none; width: 40px; height: var(--tap); min-height: var(--tap); padding: 0; border: 0; box-shadow: none; background: transparent; color: var(--color-muted); border-radius: 999px; }

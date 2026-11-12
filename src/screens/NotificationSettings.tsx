@@ -53,8 +53,8 @@ export function NotificationSettings({ uid }: { uid: string }) {
               <strong>{PREF_LABELS[key].title}</strong>
               <span className="muted">{PREF_LABELS[key].hint}</span>
             </span>
-            <button type="button" role="switch" aria-checked={prefs[key]} aria-label={PREF_LABELS[key].title} disabled={!loaded} className="switch" onClick={() => onToggle(key)}>
-              <span className="switch-knob" />
+            <button type="button" role="switch" aria-checked={prefs[key]} aria-label={PREF_LABELS[key].title} disabled={!loaded} className="toggle-switch" onClick={() => onToggle(key)}>
+              <span className="toggle-knob" />
             </button>
           </li>
         ))}

@@ -3,7 +3,7 @@
 .pull-content { transition: transform var(--motion-fast, 150ms) ease-out; }
 .pull-indicator {
   position: absolute; top: 0; left: 50%; margin-left: -20px; width: 40px; height: 40px; z-index: 5;
-  display: grid; place-items: center; border-radius: 50%; background: var(--color-surface); color: #a8452f;
+  display: grid; place-items: center; border-radius: 50%; background: var(--color-surface); color: var(--color-primary-deep);
   box-shadow: var(--shadow-2); pointer-events: none;
 }
 .pull-indicator svg { transition: transform 150ms ease-out; }

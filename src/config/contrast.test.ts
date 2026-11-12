@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { contrastRatio } from './contrast'
-import { checkContrast } from './contrastPairs'
+import { checkContrast } from '../theme/contrastPairs'
 
 describe('contrasto', () => {
   it('nero su bianco fa 21, uguali fa 1', () => {

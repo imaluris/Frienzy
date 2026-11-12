@@ -7,7 +7,19 @@
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icon-192.png" />
-    <meta name="theme-color" content="#E2725B" />
+    <meta name="theme-color" content="#FFF8F0" />
+    <style>
+      html { background: #fff8f0; }
+      html[data-theme='scuro'] { background: #17120e; color-scheme: dark; }
+    </style>
+    <script>
+      /* Evita il lampo chiaro all'avvio: applica subito il tema salvato (la palette completa arriva da src/theme). */
+      try {
+        var c = localStorage.getItem('frienzy.tema');
+        var dark = c === 'scuro' || (c !== 'chiaro' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (dark) document.documentElement.setAttribute('data-theme', 'scuro');
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

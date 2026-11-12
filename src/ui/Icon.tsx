@@ -1,11 +1,14 @@
 import {
-  Bell, EllipsisVertical, Flag, Mail, MailCheck, UserX, ArrowLeft, ArrowRight, Ban, CalendarDays, CalendarX, Check, CircleCheck, Clock, Hourglass, Info, LogIn, LogOut, Minus, Navigation, Pencil, Settings2, Sparkles, ShieldCheck, Star, UserCheck, Heart, House, LocateFixed, Map, MapPin, PartyPopper,
+  Bell, EllipsisVertical, Moon, Smartphone, Sun, Flag, Mail, MailCheck, UserX, ArrowLeft, ArrowRight, Ban, CalendarDays, CalendarX, Check, CircleCheck, Clock, Hourglass, Info, LogIn, LogOut, Minus, Navigation, Pencil, Settings2, Sparkles, ShieldCheck, Star, UserCheck, Heart, House, LocateFixed, Map, MapPin, PartyPopper,
   MessageCircle, Plus, RefreshCw, SendHorizontal, Trash2, Search, SearchX, Share2, SlidersHorizontal, Ticket, UserRound, UsersRound, X, type LucideIcon,
 } from 'lucide-react'
 
 // Set unico di icone vettoriali (libreria lucide-react, licenza ISC): stesso tratto e stessa griglia ovunque.
 export const ICONS = {
   calendar: CalendarDays,
+  sun: Sun,
+  moon: Moon,
+  phone: Smartphone,
   'calendar-empty': CalendarX,
   map: Map,
   plus: Plus,

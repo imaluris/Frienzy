@@ -1,6 +1,6 @@
 import { appConfig } from './app'
 
-// Traduce la config in variabili CSS applicate alla pagina.
+// Traduce la palette di marca in variabili CSS (il tema chiaro/scuro completo è in src/theme).
 export function themeVariables(): Record<string, string> {
   const c = appConfig.colors
   return {
@@ -10,11 +10,5 @@ export function themeVariables(): Record<string, string> {
     '--color-background': c.background,
     '--color-text': c.text,
     '--radius': appConfig.radius,
-  }
-}
-
-export function applyTheme(root: HTMLElement): void {
-  for (const [name, value] of Object.entries(themeVariables())) {
-    root.style.setProperty(name, value)
   }
 }
