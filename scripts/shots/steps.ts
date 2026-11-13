@@ -159,5 +159,7 @@ export const STEPS: Step[] = [
   { name: '66-profilo-affidabilita', go: async (p) => { await fromHome(p, 'Profilo'); await p.getByText('67%').waitFor() } },
   { name: '14-registrazione', go: (p) => fromHome(p, 'Profilo', 'Esci', 'Crea il tuo account') },
   { name: '71-profilo-aspetto', go: async (p) => { await fromHome(p, 'Profilo'); await p.getByRole('radiogroup').scrollIntoViewIfNeeded() } },
+  { name: '72-modifica-evento', go: async (p) => { await fromHome(p, 'I miei eventi', /Brunch/, /Gestisci evento/, /Modifica evento/); await p.getByRole('dialog', { name: 'Modifica evento' }).waitFor() } },
+  { name: '73-modifica-evento-errore', go: async (p) => { await fromHome(p, 'I miei eventi', /Brunch/, /Gestisci evento/, /Modifica evento/); await p.getByLabel('Titolo').fill('ab'); await click(p, 'Salva modifiche'); await p.getByRole('alert').waitFor() } },
   ...ALERT_STEPS,
 ]

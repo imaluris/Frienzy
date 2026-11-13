@@ -53,6 +53,7 @@ export function eventFromData(id: string, d: Data): FrienzyEvent {
     richiedeApprovazione: d.richiedeApprovazione as boolean,
     stato: d.stato as FrienzyEvent['stato'],
     creatoIl: toDate(d.creatoIl),
+    ...(d.modificatoIl ? { modificatoIl: toDate(d.modificatoIl), modifiche: (d.modifiche as FrienzyEvent['modifiche']) ?? [] } : {}),
   }
 }
 

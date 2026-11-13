@@ -47,3 +47,4 @@ Fase 2 completata
 - Task 40 fatto: Notifiche promemoria e inviti
 - Task 40b fatto: Notifiche senza spese
 - Task 41 fatto: Tema scuro
+- Task 42 fatto: Modifica evento e condivisione

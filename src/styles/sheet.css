@@ -20,3 +20,7 @@ button.danger[aria-busy='true']::after { border-color: var(--color-on-error) tra
 @keyframes sheet-up { from { transform: translateY(100%); } to { transform: none; } }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .sheet, .sheet-backdrop { animation: none; } }
+
+/* Finestra "Modifica evento": campi in colonna con respiro tra l'uno e l'altro. */
+.edit-form { display: flex; flex-direction: column; gap: 0; }
+.edit-form textarea { resize: vertical; min-height: 96px; }

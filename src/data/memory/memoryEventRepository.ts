@@ -1,5 +1,5 @@
 import type { EventRepository } from '../eventRepository'
-import type { ExactPlace, FrienzyEvent, NewEvent } from '../../domain/event'
+import type { EventChanges, ExactPlace, FrienzyEvent, NewEvent } from '../../domain/event'
 import type { Participation } from '../../domain/participation'
 import { canSeeExactPlace } from '../../place/placeAccess'
 
@@ -40,7 +40,7 @@ export class MemoryEventRepository implements EventRepository {
     return [...this.events.values()].map((e) => ({ ...e }))
   }
 
-  async update(id: string, changes: Partial<NewEvent & Pick<FrienzyEvent, 'stato'>>): Promise<FrienzyEvent> {
+  async update(id: string, changes: EventChanges): Promise<FrienzyEvent> {
     const current = this.events.get(id)
     if (!current) throw new Error(`Evento non trovato: ${id}`)
     const updated = { ...current, ...changes }

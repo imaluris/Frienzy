@@ -195,7 +195,8 @@ service cloud.firestore {
       allow update: if isOrganizer(eventId)
         && request.resource.data.organizzatoreId == resource.data.organizzatoreId
         && request.resource.data.creatoIl == resource.data.creatoIl
-        && validEventFields(request.resource.data);
+        && validEventFields(request.resource.data)
+        && validEventEdit(resource.data, request.resource.data, seatsNow(eventId));
 
       // Un evento non si cancella: si annulla (stato = 'annullato').
       allow delete: if false;
@@ -424,6 +425,17 @@ service cloud.firestore {
         && d.maxPartecipanti is int && d.maxPartecipanti >= 1 && d.maxPartecipanti <= 200
         && d.richiedeApprovazione is bool
         && d.stato in ['aperto', 'chiuso', 'annullato'];
+    }
+
+    // Modifica dell'organizzatore: cambiano solo titolo, descrizione, data, posti, stato e i due campi di avviso.
+    // I posti non scendono sotto i confermati; la nuova data è nel futuro; `modificatoIl` è l'ora del server.
+    function validEventEdit(before, after, confirmed) {
+      return after.diff(before).affectedKeys().hasOnly(['titolo', 'descrizione', 'dataOra', 'maxPartecipanti', 'stato', 'modificatoIl', 'modifiche'])
+        && after.maxPartecipanti >= confirmed
+        && (after.dataOra == before.dataOra || after.dataOra > request.time)
+        && (!('modificatoIl' in after.diff(before).affectedKeys()) || after.modificatoIl == request.time)
+        && (!('modifiche' in after) || (after.modifiche is list && after.modifiche.size() <= 4
+            && after.modifiche.hasOnly(['titolo', 'descrizione', 'dataOra', 'maxPartecipanti'])));
     }
 
     function validNewEvent(d) {

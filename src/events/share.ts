@@ -1,10 +1,16 @@
 import type { FrienzyEvent } from '../domain/event'
+import { eventLink } from '../config/links'
 import { EVENT_TYPE_EMOJI } from '../domain/eventTypes'
 import { formatShortDate } from './format'
 
 /** Testo da condividere: titolo, quando e zona. Mai l'indirizzo esatto (l'evento non lo contiene). */
 export function buildShareText(event: FrienzyEvent): string {
   return `${EVENT_TYPE_EMOJI[event.tipo]} ${event.titolo}\n${formatShortDate(event.dataOra)} · ${event.zonaNome}\nVieni anche tu su Frienzy!`
+}
+
+/** Testo con il link in fondo: è quello che finisce negli appunti quando manca il pannello di condivisione. */
+export function buildShareTextWithLink(event: FrienzyEvent): string {
+  return `${buildShareText(event)}\n${eventLink(event.id)}`
 }
 
 export type ShareResult = 'shared' | 'copied' | 'unavailable'
@@ -14,11 +20,11 @@ export async function shareEvent(event: FrienzyEvent, nav: Pick<Navigator, 'shar
   const text = buildShareText(event)
   try {
     if (typeof nav.share === 'function') {
-      await nav.share({ title: event.titolo, text })
+      await nav.share({ title: event.titolo, text, url: eventLink(event.id) })
       return 'shared'
     }
     if (nav.clipboard?.writeText) {
-      await nav.clipboard.writeText(text)
+      await nav.clipboard.writeText(buildShareTextWithLink(event))
       return 'copied'
     }
   } catch {

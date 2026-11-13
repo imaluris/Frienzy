@@ -1,6 +1,7 @@
 import type { FrienzyEvent } from '../domain/event'
 import { EVENT_TYPE_EMOJI, type EventTypeId } from '../domain/eventTypes'
 import type { Participation } from '../domain/participation'
+import { describeChanges } from '../events/editRules'
 import { friendlyWhen } from '../events/dayBadge'
 import type { LatLng } from '../events/geohashDecode'
 import { distanceToGeohashKm } from '../filters/distance'
@@ -54,6 +55,23 @@ function answerAlerts({ uid, events, myParticipations, now }: AlertsInput): AppA
   return out
 }
 
+// Avviso a chi è dentro (confermato o in attesa di risposta) quando l'organizzatore cambia l'evento. Dura 7 giorni.
+function changedAlerts({ uid, events, myParticipations, now }: AlertsInput): AppAlert[] {
+  const byId = new Map(events.map((e) => [e.id, e]))
+  const since = now.getTime() - INVITE_DAYS * DAY
+  const out: AppAlert[] = []
+  for (const p of myParticipations) {
+    const e = byId.get(p.eventId)
+    if (!e || e.organizzatoreId === uid || !isLive(e, now) || !e.modificatoIl || !e.modifiche?.length) continue
+    if (p.stato !== 'confermato' && p.stato !== 'richiesta') continue
+    if (e.modificatoIl.getTime() < since) continue
+    // La chiave contiene l'istante della modifica: una seconda modifica torna "nuova".
+    out.push({ key: `mod:${e.id}:${e.modificatoIl.getTime()}`, kind: 'risposte', eventId: e.id, at: e.modificatoIl,
+      title: `"${e.titolo}" è cambiato`, body: `L'organizzatore ha aggiornato ${describeChanges(e.modifiche)}.` })
+  }
+  return out
+}
+
 function inviteAlerts({ uid, interessi, events, myParticipations, position, now }: AlertsInput): AppAlert[] {
   const joined = new Set(myParticipations.map((p) => p.eventId))
   const since = now.getTime() - INVITE_DAYS * DAY
@@ -71,9 +89,9 @@ function inviteAlerts({ uid, interessi, events, myParticipations, position, now 
 
 /**
  * Tutti gli avvisi di adesso, dal più recente: richieste in attesa sui miei eventi, risposte alle mie richieste,
- * inviti a eventi nuovi (ultimi 7 giorni) nei miei interessi. Rispetta gli interruttori delle notifiche. Funzione pura.
+ * modifiche agli eventi a cui partecipo, inviti a eventi nuovi (ultimi 7 giorni) nei miei interessi. Rispetta gli interruttori delle notifiche. Funzione pura.
  */
 export function buildAlerts(input: AlertsInput): AppAlert[] {
-  const all = [...pendingAlerts(input), ...answerAlerts(input), ...inviteAlerts(input)]
+  const all = [...pendingAlerts(input), ...answerAlerts(input), ...changedAlerts(input), ...inviteAlerts(input)]
   return all.filter((a) => input.prefs[a.kind]).sort((a, b) => b.at.getTime() - a.at.getTime())
 }

@@ -71,15 +71,17 @@ describe('condivisione', () => {
     expect(text).toContain('Navigli')
     expect(text).not.toMatch(/Via |indirizzo/i)
   })
-  it('usa il pannello del telefono se c\'è', async () => {
+  it('usa il pannello del telefono se c\'è, con il link all\'evento', async () => {
     const share = vi.fn().mockResolvedValue(undefined)
     expect(await shareEvent(event, { share } as unknown as Navigator)).toBe('shared')
     expect(share).toHaveBeenCalledOnce()
+    expect(share.mock.calls[0][0].url).toContain(`/evento/${event.id}`)
   })
   it('altrimenti copia negli appunti', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined)
     expect(await shareEvent(event, { clipboard: { writeText } } as unknown as Navigator)).toBe('copied')
     expect(writeText).toHaveBeenCalledOnce()
+    expect(writeText.mock.calls[0][0]).toContain(`/evento/${event.id}`)
   })
   it('se l\'utente chiude il pannello non è un errore', async () => {
     const share = vi.fn().mockRejectedValue(new DOMException('chiuso', 'AbortError'))

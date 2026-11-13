@@ -1,10 +1,8 @@
 import { collection, doc, getDoc, getDocs, serverTimestamp, Timestamp, updateDoc, writeBatch } from 'firebase/firestore'
 import type { EventRepository } from '../data/eventRepository'
-import type { ExactPlace, FrienzyEvent, NewEvent } from '../domain/event'
+import type { EventChanges, ExactPlace, FrienzyEvent, NewEvent } from '../domain/event'
 import { db } from './app'
 import { eventFromData, newEventToData, placeFromData, placeToData } from './converters'
-
-type Changes = Partial<NewEvent & Pick<FrienzyEvent, 'stato'>>
 
 export class FirestoreEventRepository implements EventRepository {
   async create(event: NewEvent, place: ExactPlace): Promise<FrienzyEvent> {
@@ -40,9 +38,15 @@ export class FirestoreEventRepository implements EventRepository {
     return snap.docs.map((d) => eventFromData(d.id, d.data()))
   }
 
-  async update(id: string, changes: Changes): Promise<FrienzyEvent> {
-    // Se cambia la data, va convertita in Timestamp come alla creazione.
-    const data = changes.dataOra ? { ...changes, dataOra: Timestamp.fromDate(changes.dataOra) } : changes
+  async update(id: string, changes: EventChanges): Promise<FrienzyEvent> {
+    // Le date vanno convertite in Timestamp come alla creazione. `modificatoIl` usa l'ora del server:
+    // le regole pretendono che sia request.time, così nessuno può scriverne una falsa.
+    const { dataOra, modificatoIl, ...rest } = changes
+    const data = {
+      ...rest,
+      ...(dataOra ? { dataOra: Timestamp.fromDate(dataOra) } : {}),
+      ...(modificatoIl ? { modificatoIl: serverTimestamp() } : {}),
+    }
     await updateDoc(doc(db(), 'events', id), data)
     return this.mustGet(id)
   }

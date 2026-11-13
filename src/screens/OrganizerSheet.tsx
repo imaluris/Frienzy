@@ -9,6 +9,7 @@ import { useRunAction } from '../participation/useRunAction'
 import { Avatar } from '../ui/Avatar'
 import { BottomSheet } from '../ui/BottomSheet'
 import { ConfirmSheet } from '../ui/ConfirmSheet'
+import { EditEventSheet } from './EditEventSheet'
 
 interface Props {
   event: FrienzyEvent
@@ -25,6 +26,7 @@ export function OrganizerSheet({ event, uid, requests, confirmedCount, onChanged
   const { busy, error, run } = useRunAction(onChanged)
   const { show } = useToast()
   const [confirming, setConfirming] = useState(false)
+  const [editing, setEditing] = useState(false)
   const cancelled = event.stato === 'annullato'
 
   async function doCancel() {
@@ -46,6 +48,9 @@ export function OrganizerSheet({ event, uid, requests, confirmedCount, onChanged
       />
     )
   }
+  if (editing) {
+    return <EditEventSheet event={event} uid={uid} confirmedCount={confirmedCount} onChanged={onChanged} onClose={() => { setEditing(false); onClose() }} />
+  }
   return (
     <BottomSheet title="Gestisci evento" onClose={onClose}>
       <p className="sheet-text">Posti occupati: {confirmedCount} su {event.maxPartecipanti}</p>
@@ -65,6 +70,7 @@ export function OrganizerSheet({ event, uid, requests, confirmedCount, onChanged
         </ul>
       )}
       {error && <p role="alert" className="error">{error}</p>}
+      {!cancelled && <button type="button" className="secondary wide" disabled={busy} onClick={() => setEditing(true)}>Modifica evento</button>}
       {!cancelled && <button type="button" className="secondary danger-outline wide" disabled={busy} onClick={() => setConfirming(true)}>Annulla evento</button>}
       <button type="button" className="link wide" onClick={onClose}>Chiudi</button>
     </BottomSheet>
