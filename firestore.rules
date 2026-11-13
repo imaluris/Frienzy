@@ -126,17 +126,20 @@ service cloud.firestore {
       allow read: if signedIn();
 
       allow create: if isOwner(uid)
-        && hasOnly(request.resource.data,
-             ['nome', 'dataNascita', 'bio', 'interessi', 'fotoUrl', 'creatoIl'])
+        && profileKeys(request.resource.data)
         && validProfile(request.resource.data)
-        && request.resource.data.creatoIl is timestamp;
+        && request.resource.data.creatoIl is timestamp
+        // Alla creazione il consenso è obbligatorio: termini accettati e maggiore età dichiarata.
+        && validConsent(request.resource.data.get('consenso', null));
 
       // Il creatoIl non si cambia mai.
       allow update: if isOwner(uid)
-        && hasOnly(request.resource.data,
-             ['nome', 'dataNascita', 'bio', 'interessi', 'fotoUrl', 'creatoIl'])
+        && profileKeys(request.resource.data)
         && validProfile(request.resource.data)
-        && request.resource.data.creatoIl == resource.data.creatoIl;
+        && request.resource.data.creatoIl == resource.data.creatoIl
+        // Il consenso si può solo aggiungere (profili vecchi) o aggiornare a una versione valida, mai togliere.
+        && (request.resource.data.get('consenso', null) == resource.data.get('consenso', null)
+            || validConsent(request.resource.data.get('consenso', null)));
 
       // Eliminazione account: ognuno cancella solo il proprio profilo.
       allow delete: if isOwner(uid);
@@ -171,6 +174,22 @@ service cloud.firestore {
         allow update: if false;
         allow delete: if isOwner(uid);
       }
+    }
+
+    // Chiavi ammesse nel profilo: le sei di base sono obbligatorie, `consenso` si aggiunge.
+    function profileKeys(d) {
+      return d.keys().hasAll(['nome', 'dataNascita', 'bio', 'interessi', 'fotoUrl', 'creatoIl'])
+        && d.keys().hasOnly(['nome', 'dataNascita', 'bio', 'interessi', 'fotoUrl', 'creatoIl', 'consenso']);
+    }
+
+    // Consenso: versione dei testi, data e dichiarazione di maggiore età (sempre true).
+    function validConsent(c) {
+      return c is map
+        && c.keys().hasOnly(['versione', 'accettatoIl', 'maggiorenne'])
+        && c.keys().hasAll(['versione', 'accettatoIl', 'maggiorenne'])
+        && c.versione is string && c.versione.size() > 0 && c.versione.size() <= 20
+        && c.accettatoIl is timestamp
+        && c.maggiorenne == true;
     }
 
     function validProfile(d) {

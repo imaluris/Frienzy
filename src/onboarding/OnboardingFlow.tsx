@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useServices } from '../app/ServicesContext'
 import type { UserProfile } from '../domain/user'
+import { buildConsent, NO_CONSENT, validateConsent, type ConsentChecks } from '../legal/consent'
 import { useMyPosition } from '../filters/useMyPosition'
 import { saveProfile } from '../profile/profileService'
 import type { ProfileInput } from '../profile/validation'
@@ -20,8 +21,10 @@ export function OnboardingFlow({ uid, onSaved }: { uid: string; onSaved: (profil
   const [step, setStep] = useState<Step>('profilo')
   const [input, setInput] = useState<ProfileInput>(EMPTY)
   const [error, setError] = useState<string | null>(null)
+  const [consentError, setConsentError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const { state: position, ask } = useMyPosition()
+  const [checks, setChecks] = useState<ConsentChecks>(NO_CONSENT)
   const finishing = useRef(false)
 
   async function finish() {
@@ -29,7 +32,7 @@ export function OnboardingFlow({ uid, onSaved }: { uid: string; onSaved: (profil
     finishing.current = true
     setBusy(true)
     try {
-      onSaved(await saveProfile(users, uid, input))
+      onSaved(await saveProfile(users, uid, input, new Date(), buildConsent(checks)))
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Qualcosa è andato storto.')
       finishing.current = false
@@ -38,16 +41,21 @@ export function OnboardingFlow({ uid, onSaved }: { uid: string; onSaved: (profil
   }
 
   // Quando il telefono ha risposto alla richiesta di posizione (sì, no o non disponibile) si conclude.
+  // Solo nell'ultimo passo: se il permesso era già concesso la posizione si legge da sola fin dall'inizio,
+  // e senza questo controllo la registrazione si chiuderebbe (con errore) già sul passo del profilo.
   useEffect(() => {
-    if (position.status !== 'idle' && position.status !== 'asking') void finish()
+    if (step === 'posizione' && position.status !== 'idle' && position.status !== 'asking') void finish()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [position.status])
+  }, [step, position.status])
 
   function goNext() {
     if (step === 'profilo') {
+      // Prima i campi del profilo, poi le due caselle (maggiore età e termini).
       const problem = validateProfileStep(input)
+      const consentProblem = problem ? null : validateConsent(checks)
       setError(problem)
-      if (problem) return
+      setConsentError(consentProblem)
+      if (problem || consentProblem) return
     }
     setStep(nextStep(step) ?? step)
   }
@@ -62,7 +70,7 @@ export function OnboardingFlow({ uid, onSaved }: { uid: string; onSaved: (profil
         <StepProgress step={step} />
       </header>
       <section className="onboarding-body">
-        {step === 'profilo' && <StepProfile input={input} error={error} onChange={(patch) => setInput((old) => ({ ...old, ...patch }))} />}
+        {step === 'profilo' && <StepProfile input={input} error={error} checks={checks} onChecks={(next) => { setChecks(next); setConsentError(null) }} consentError={consentError} onChange={(patch) => setInput((old) => ({ ...old, ...patch }))} />}
         {step === 'interessi' && <StepInterests selected={input.interessi} onChange={(interessi) => setInput((old) => ({ ...old, interessi }))} />}
         {step === 'posizione' && <StepLocation />}
         {step === 'posizione' && error && <p role="alert" className="error">{error}</p>}

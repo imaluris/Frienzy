@@ -14,7 +14,8 @@
     "shots": "node scripts/shots/run.ts",
     "audit": "node scripts/shots/audit.ts",
     "shots:extreme": "node scripts/shots/extreme.ts",
-    "brand": "node scripts/brand/make-assets.ts"
+    "brand": "node scripts/brand/make-assets.ts",
+    "store:graphic": "node scripts/store/make-feature-graphic.ts"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.2",

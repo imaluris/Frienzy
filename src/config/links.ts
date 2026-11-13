@@ -11,3 +11,10 @@ export function webBaseUrl(raw: string | undefined = import.meta.env.VITE_WEB_BA
 export function eventLink(eventId: string, base: string = webBaseUrl()): string {
   return `${base}/evento/${encodeURIComponent(eventId)}`
 }
+
+export type LegalPage = 'privacy' | 'termini'
+
+/** Pagine web statiche dei testi legali (sono in `public/`). */
+export function legalLink(page: LegalPage, base: string = webBaseUrl()): string {
+  return `${base}/${page}.html`
+}

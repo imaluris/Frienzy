@@ -45,6 +45,16 @@ async function toStep(page: Page, target: number) {
   await click(page, 'Continua')
 }
 
+/** Passo "profilo" della registrazione compilato (nome, data, le due caselle) e superato. */
+async function profileStepDone(p: Page) {
+  await onboarding(p)
+  await p.getByLabel('Nome').fill('Marta Rossi')
+  await p.getByLabel('Data di nascita').fill('1994-03-12')
+  await p.getByRole('checkbox').first().check()
+  await p.getByRole('checkbox').nth(1).check()
+  await click(p, 'Continua')
+}
+
 export const STEPS: Step[] = [
   { name: '02-eventi', go: (p) => fromHome(p) },
   { name: '36-scoperta', go: async (p) => { await fromHome(p); await p.getByRole('region', { name: 'Vicino a te' }).waitFor() } },
@@ -136,8 +146,11 @@ export const STEPS: Step[] = [
   { name: '26-benvenuto', go: (p) => fromHome(p, 'Profilo', 'Esci') },
   { name: '13-accesso', go: (p) => fromHome(p, 'Profilo', 'Esci', 'Accedi') },
   { name: '27-registrazione-passo2', go: async (p) => { await onboarding(p); await p.getByRole('heading', { name: 'Come ti chiami?' }).waitFor() } },
-  { name: '28-registrazione-passo3', go: async (p) => { await onboarding(p); await p.getByLabel('Nome').fill('Marta Rossi'); await p.getByLabel('Data di nascita').fill('1994-03-12'); await click(p, 'Continua'); await click(p, /aperitivo/); await click(p, /passeggiata/) } },
-  { name: '29-registrazione-passo4', go: async (p) => { await onboarding(p); await p.getByLabel('Nome').fill('Marta Rossi'); await p.getByLabel('Data di nascita').fill('1994-03-12'); await click(p, 'Continua'); await click(p, 'Salta per ora') } },
+  { name: '74-registrazione-consenso-errore', go: async (p) => { await onboarding(p); await p.getByLabel('Nome').fill('Marta Rossi'); await p.getByLabel('Data di nascita').fill('1994-03-12'); await click(p, 'Continua'); await p.getByRole('alert').waitFor() } },
+  { name: '75-registrazione-consenso-ok', go: async (p) => { await onboarding(p); await p.getByLabel('Nome').fill('Marta Rossi'); await p.getByLabel('Data di nascita').fill('1994-03-12'); await p.getByRole('checkbox').first().check(); await p.getByRole('checkbox').nth(1).check() } },
+  { name: '76-profilo-informazioni', go: async (p) => { await fromHome(p, 'Profilo'); await p.getByRole('region', { name: 'Informazioni legali' }).scrollIntoViewIfNeeded() } },
+  { name: '28-registrazione-passo3', go: async (p) => { await profileStepDone(p); await click(p, /aperitivo/); await click(p, /passeggiata/) } },
+  { name: '29-registrazione-passo4', go: async (p) => { await profileStepDone(p); await click(p, 'Salta per ora') } },
   { name: '41-chat-confermato', go: async (p) => { await fromHome(p, /Trekking al lago/, /Chat dell'evento/); await p.getByText(/parcheggio di Onno/).waitFor() } },
   { name: '42-chat-organizzatore', go: async (p) => { await fromHome(p, 'I miei eventi', /Passeggiata/, /Chat dell'evento/); await p.getByText(/più siamo meglio/).waitFor() } },
   { name: '43-chat-segnaposto', go: async (p) => { await fromHome(p, /pasta fatta/); await p.getByText('La chat si apre quando sei confermato.').waitFor() } },

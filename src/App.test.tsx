@@ -74,6 +74,13 @@ describe('App: registrazione, login e logout', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('almeno 18')
 
     type('Data di nascita', `${year - 30}-01-01`)
+    // Senza le due caselle non si va avanti: prima la maggiore età, poi i termini.
+    fireEvent.click(screen.getByRole('button', { name: 'Continua' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('almeno 18 anni')
+    fireEvent.click(screen.getByRole('checkbox', { name: /almeno 18 anni/ }))
+    fireEvent.click(screen.getByRole('button', { name: 'Continua' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent(/Termini d'uso/)
+    fireEvent.click(screen.getByRole('checkbox', { name: /Accetto i Termini d'uso/ }))
     fireEvent.click(screen.getByRole('button', { name: 'Continua' }))
     await screen.findByRole('heading', { name: 'Cosa ti piace fare?' })
     expect(screen.getByRole('button', { name: 'Salta per ora' })).toBeInTheDocument()
@@ -86,5 +93,7 @@ describe('App: registrazione, login e logout', () => {
     expect(screen.getByText(/^3[01] anni$/)).toBeInTheDocument()
     expect(screen.queryByText(/-01-01/)).toBeNull()
     expect(screen.getByRole('region', { name: 'Statistiche' })).toHaveTextContent('Organizzati')
+    expect(screen.getByRole('link', { name: /Informativa privacy/ })).toHaveAttribute('href', expect.stringMatching(/\/privacy\.html$/))
+    expect(screen.getByRole('link', { name: /Termini d'uso/ })).toHaveAttribute('href', expect.stringMatching(/\/termini\.html$/))
   })
 })

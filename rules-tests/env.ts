@@ -21,6 +21,7 @@ export const profile = (over: Record<string, unknown> = {}) => ({
   interessi: ['cena'],
   fotoUrl: '',
   creatoIl: Timestamp.now(),
+  consenso: { versione: '2026-11', accettatoIl: Timestamp.now(), maggiorenne: true },
   ...over,
 })
 

@@ -1,5 +1,5 @@
 import {
-  Bell, EllipsisVertical, Moon, Smartphone, Sun, Flag, Mail, MailCheck, UserX, ArrowLeft, ArrowRight, Ban, CalendarDays, CalendarX, Check, CircleCheck, Clock, Hourglass, Info, LogIn, LogOut, Minus, Navigation, Pencil, Settings2, Sparkles, ShieldCheck, Star, UserCheck, Heart, House, LocateFixed, Map, MapPin, PartyPopper,
+  Bell, EllipsisVertical, FileText, Moon, Smartphone, Sun, Flag, Mail, MailCheck, UserX, ArrowLeft, ArrowRight, Ban, CalendarDays, CalendarX, Check, CircleCheck, Clock, Hourglass, Info, LogIn, LogOut, Minus, Navigation, Pencil, Settings2, Sparkles, ShieldCheck, Star, UserCheck, Heart, House, LocateFixed, Map, MapPin, PartyPopper,
   MessageCircle, Plus, RefreshCw, SendHorizontal, Trash2, Search, SearchX, Share2, SlidersHorizontal, Ticket, UserRound, UsersRound, X, type LucideIcon,
 } from 'lucide-react'
 
@@ -29,6 +29,7 @@ export const ICONS = {
   filters: SlidersHorizontal,
   party: PartyPopper,
   shield: ShieldCheck,
+  'file-text': FileText,
   info: Info,
   'check-circle': CircleCheck,
   hourglass: Hourglass,

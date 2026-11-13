@@ -1,6 +1,7 @@
 import type { UserRepository } from '../data/userRepository'
 import type { UserProfile } from '../domain/user'
 import type { EventTypeId } from '../domain/eventTypes'
+import type { Consent } from '../legal/consent'
 import { parseBirthDate } from './age'
 import { validateProfile, type ProfileInput } from './validation'
 
@@ -10,6 +11,7 @@ export async function saveProfile(
   uid: string,
   input: ProfileInput,
   today: Date = new Date(),
+  consent?: Consent,
 ): Promise<UserProfile> {
   const problem = validateProfile(input, today)
   if (problem) throw new Error(problem)
@@ -24,6 +26,9 @@ export async function saveProfile(
     fotoUrl: input.fotoUrl,
     creatoIl: existing?.creatoIl ?? today,
   }
+  // Il consenso nuovo vince; altrimenti si conserva quello già dato (la modifica del profilo non lo cancella).
+  const consenso = consent ?? existing?.consenso
+  if (consenso) profile.consenso = consenso
   await users.save(profile)
   return profile
 }

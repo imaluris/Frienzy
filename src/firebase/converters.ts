@@ -17,6 +17,7 @@ export function userToData(user: UserProfile): Data {
     interessi: user.interessi,
     fotoUrl: user.fotoUrl,
     creatoIl: Timestamp.fromDate(user.creatoIl),
+    ...(user.consenso ? { consenso: { versione: user.consenso.versione, accettatoIl: Timestamp.fromDate(user.consenso.accettatoIl), maggiorenne: true } } : {}),
   }
 }
 
@@ -30,7 +31,13 @@ export function userFromData(uid: string, d: Data): UserProfile {
     interessi,
     fotoUrl: d.fotoUrl as string,
     creatoIl: toDate(d.creatoIl),
+    ...consentFromData(d.consenso),
   }
+}
+
+function consentFromData(raw: unknown): { consenso?: UserProfile['consenso'] } {
+  const c = raw as { versione?: string; accettatoIl?: Timestamp } | undefined
+  return c?.versione && c.accettatoIl ? { consenso: { versione: c.versione, accettatoIl: toDate(c.accettatoIl), maggiorenne: true } } : {}
 }
 
 export function newEventToData(event: NewEvent): Data {

@@ -34,6 +34,24 @@ describe('regole: profili', () => {
     await assertFails(setDoc(doc(as(ANNA), 'users', ANNA), profile({ interessi: ['karaoke'] })))
   })
 
+  it('senza consenso valido il profilo non si crea', async () => {
+    const { consenso: _unused, ...senza } = profile()
+    void _unused
+    await assertFails(setDoc(doc(as(ANNA), 'users', ANNA), senza))
+    await assertFails(setDoc(doc(as(ANNA), 'users', ANNA), profile({ consenso: { versione: '2026-11', accettatoIl: Timestamp.now(), maggiorenne: false } })))
+    await assertFails(setDoc(doc(as(ANNA), 'users', ANNA), profile({ consenso: { versione: '', accettatoIl: Timestamp.now(), maggiorenne: true } })))
+    await assertFails(setDoc(doc(as(ANNA), 'users', ANNA), profile({ consenso: { versione: '2026-11', accettatoIl: Timestamp.now(), maggiorenne: true, extra: 1 } })))
+  })
+
+  it('il consenso non si toglie con una modifica, ma un profilo vecchio può aggiungerlo', async () => {
+    await assertSucceeds(setDoc(doc(as(ANNA), 'users', ANNA), profile()))
+    const { consenso: _unused, ...senza } = profile()
+    void _unused
+    await assertFails(setDoc(doc(as(ANNA), 'users', ANNA), senza))
+    await env.withSecurityRulesDisabled(async (ctx) => { await setDoc(doc(ctx.firestore(), 'users', BRUNO), senza) })
+    await assertSucceeds(setDoc(doc(as(BRUNO), 'users', BRUNO), profile()))
+  })
+
   it('un utente collegato legge i profili', async () => {
     await assertSucceeds(setDoc(doc(as(ANNA), 'users', ANNA), profile()))
     await assertSucceeds(getDoc(doc(as(BRUNO), 'users', ANNA)))
