@@ -30,7 +30,7 @@ Gli screenshot rifatti differivano dai precedenti solo per le date dei dati d'es
 
 ## Difetti per gravità
 **Alta (blocca la pubblicazione finché non si prova)**
-1. (Risolto) `.github/workflows/android.yml` ora è il workflow con AAB firmato, copiato da `docs/pubblicazione/android.workflow.yml`. Non ha ancora girato su GitHub.
+1. (Risolto) `.github/workflows/android.yml` ora è il workflow con AAB firmato, copiato da `docs/pubblicazione/android.workflow.yml`. Ha girato su GitHub con esito verde (esecuzioni 38 e 39): APK di debug compilato con Gradle; i passi di firma sono saltati perché i segreti non ci sono ancora.
 2. Nessuna prova end-to-end su Firebase e telefono: eventuali errori di regole o di permessi Android sono sconosciuti.
 
 **Media**
