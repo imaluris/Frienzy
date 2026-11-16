@@ -30,7 +30,7 @@ Gli screenshot rifatti differivano dai precedenti solo per le date dei dati d'es
 
 ## Difetti per gravità
 **Alta (blocca la pubblicazione finché non si prova)**
-1. `.github/workflows/android.yml` è ancora la versione vecchia: il workflow con AAB firmato sta in `docs/pubblicazione/android.workflow.yml` e va copiato (serve il permesso `workflow`).
+1. (Risolto) `.github/workflows/android.yml` ora è il workflow con AAB firmato, copiato da `docs/pubblicazione/android.workflow.yml`. Non ha ancora girato su GitHub.
 2. Nessuna prova end-to-end su Firebase e telefono: eventuali errori di regole o di permessi Android sono sconosciuti.
 
 **Media**
@@ -43,14 +43,14 @@ Gli screenshot rifatti differivano dai precedenti solo per le date dei dati d'es
 7. L'avviso "Conferma la tua email" occupa spazio sopra le statistiche finché non si conferma.
 8. Pacchetti JavaScript grandi (circa 600 kB l'uno): l'avvio su telefoni lenti può essere lento.
 
-## Lista di controllo finale (per Andrea)
-- [ ] Copiare `docs/pubblicazione/android.workflow.yml` in `.github/workflows/android.yml` (da PC o dal sito GitHub).
-- [ ] Lanciare `npm run test:rules` sul PC (serve Java per l'emulatore).
-- [ ] Pubblicare le regole: `npx firebase-tools deploy --only firestore:rules`.
-- [ ] Installare l'APK sul telefono e fare un giro completo con due account veri.
-- [ ] Creare la chiave di firma e i 4 segreti (guida `docs/pubblicazione.md`), far girare il workflow, controllare l'AAB.
-- [ ] Provare notifiche, GPS, gesto indietro e tema scuro sul telefono.
-- [ ] Rileggere `docs/store/` prima di aprire la scheda Play Console.
+## Lista di controllo finale
+Fatto dalla sessione cloud: controlli automatici, screenshot, workflow Android copiato.
+
+Restano solo cose che dalla sessione cloud non si possono fare (servono credenziali, il telefono o un pagamento):
+- [ ] Segreti di firma su GitHub (4 valori, guida `docs/pubblicazione.md`): servono le impostazioni del repo e la chiave, che non devono passare dal repo.
+- [ ] Regole pubblicate su Firebase ed emulatore delle regole: serve l'accesso al progetto Firebase, bloccato dalla rete del cloud.
+- [ ] Prova sul telefono con due account veri (APK dal workflow): GPS, notifiche, gesto indietro, tema scuro.
+- [ ] Account Play Console: è a pagamento, decisione tua.
 
 ## Esercizio
 Scegli il difetto 3: scrivi una funzione che, data una cella geohash di 4 caratteri, restituisca anche le 8 celle vicine, e un test che verifica che una cella al bordo trovi la vicina.
