@@ -23,3 +23,5 @@ Con Firebase vero: copia `.env.example` in `.env` e metti i valori del tuo proge
 
 ## Stato
 MVP e Fase 2 completati. Cosa è stato provato e cosa no: vedi `docs/giorno-27-verifica-finale.md`.
+
+Pubblicazione su Android (AAB firmato, APK senza store): vedi `docs/pubblicazione.md`.

@@ -7,8 +7,10 @@ android {
         applicationId "it.andrea.frienzy"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        // Numero di versione automatico: il workflow passa -PversionCode=<numero esecuzione> e -PversionName.
+        // A mano (senza parametri) restano 1 e "1.0". Play Store vuole un versionCode sempre crescente.
+        versionCode Integer.parseInt((project.findProperty('versionCode') ?: '1').toString())
+        versionName "${project.findProperty('versionName') ?: '1.0'}"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,8 +18,24 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    // Firma di rilascio: i dati arrivano da variabili d'ambiente (nel workflow, dai segreti di GitHub),
+    // MAI scritti nel repo. Senza variabili la firma non c'è e il rilascio resta non firmato.
+    signingConfigs {
+        release {
+            def storePath = System.getenv('FRIENZY_KEYSTORE_PATH')
+            if (storePath && file(storePath).exists()) {
+                storeFile file(storePath)
+                storePassword System.getenv('FRIENZY_KEYSTORE_PASSWORD')
+                keyAlias System.getenv('FRIENZY_KEY_ALIAS')
+                keyPassword System.getenv('FRIENZY_KEY_PASSWORD')
+            }
+        }
+    }
     buildTypes {
         release {
+            if (signingConfigs.release.storeFile != null) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

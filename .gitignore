@@ -7,3 +7,8 @@ google-services.json
 *.log
 coverage
 *.tsbuildinfo
+# Chiavi di firma Android: mai nel repo
+*.jks
+*.keystore
+keystore.properties
+*.bundle

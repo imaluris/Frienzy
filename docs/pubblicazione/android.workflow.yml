@@ -1,0 +1,111 @@
+# Workflow per APK di debug (sempre) e AAB firmato per il Play Store (solo se esistono i segreti).
+# DA COPIARE A MANO in .github/workflows/android.yml (il token del PC non ha il permesso `workflow`,
+# quindi non si può pubblicare con il push). Sostituisce il file attuale: la configurazione web di Firebase è la stessa.
+name: Android (APK debug + AAB firmato)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    env:
+      # Numero di versione automatico: cresce a ogni esecuzione (Play Store lo richiede).
+      VERSION_CODE: ${{ github.run_number }}
+      VERSION_NAME: 1.0.${{ github.run_number }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Installa le dipendenze
+        run: npm ci
+
+      # Ricrea il file di Firebase dal secret. Se il secret manca si compila lo stesso, senza notifiche.
+      - name: Ricrea google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -n "$GOOGLE_SERVICES_JSON" ]; then
+            printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+            echo "google-services.json creato"
+          else
+            echo "Secret GOOGLE_SERVICES_JSON assente: compilo senza notifiche"
+          fi
+
+      # Configurazione web di Firebase: non è una password (è inclusa in ogni app pubblicata),
+      # i dati sono protetti dalle regole di sicurezza di Firestore.
+      - name: Build web
+        env:
+          VITE_FIREBASE_API_KEY: AIzaSyBXOejOTR2RPYugw-a7C7yj7I3D7MdAjkc
+          VITE_FIREBASE_AUTH_DOMAIN: frienzy-57ace.firebaseapp.com
+          VITE_FIREBASE_PROJECT_ID: frienzy-57ace
+          VITE_FIREBASE_STORAGE_BUCKET: frienzy-57ace.firebasestorage.app
+          VITE_FIREBASE_MESSAGING_SENDER_ID: "870807149383"
+          VITE_FIREBASE_APP_ID: 1:870807149383:web:77031ff79f92f69c850a62
+        run: npm run build
+
+      - name: Sincronizza Capacitor
+        run: npx cap sync android
+
+      - name: Compila l'APK di debug
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon -PversionCode=$VERSION_CODE -PversionName=$VERSION_NAME
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frienzy-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+
+      # ---- Rilascio firmato: solo se i 4 segreti della firma esistono ----
+      - name: Controlla se la firma è configurata
+        id: firma
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ] && [ -n "$KEYSTORE_PASSWORD" ] && [ -n "$KEY_ALIAS" ] && [ -n "$KEY_PASSWORD" ]; then
+            echo "presente=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "presente=false" >> "$GITHUB_OUTPUT"
+            echo "Segreti di firma assenti: salto l'AAB firmato (resta l'APK di debug)"
+          fi
+
+      - name: Ricrea la chiave di firma dal segreto
+        if: steps.firma.outputs.presente == 'true'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/frienzy-release.jks"
+
+      - name: Compila l'AAB firmato
+        if: steps.firma.outputs.presente == 'true'
+        working-directory: android
+        env:
+          FRIENZY_KEYSTORE_PATH: ${{ runner.temp }}/frienzy-release.jks
+          FRIENZY_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          FRIENZY_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          FRIENZY_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: ./gradlew bundleRelease --no-daemon -PversionCode=$VERSION_CODE -PversionName=$VERSION_NAME
+
+      - uses: actions/upload-artifact@v4
+        if: steps.firma.outputs.presente == 'true'
+        with:
+          name: frienzy-release-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+
+      - name: Cancella la chiave di firma dal runner
+        if: always() && steps.firma.outputs.presente == 'true'
+        run: rm -f "$RUNNER_TEMP/frienzy-release.jks"
