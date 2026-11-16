@@ -5,6 +5,7 @@ import { MAX_DETAILS_LENGTH, REASON_LABELS, REPORT_REASONS, type ReportReason } 
 import { submitReport } from '../safety/submitReport'
 import type { SafetyOption } from '../safety/options'
 import { BottomSheet } from '../ui/BottomSheet'
+import { errorMessage } from '../errors/reportError'
 
 type ReportOption = Extract<SafetyOption, { kind: 'report-event' | 'report-user' }>
 
@@ -32,7 +33,7 @@ export function ReportSheet({ option, onClose }: { option: ReportOption; onClose
       show('Grazie: abbiamo ricevuto la segnalazione', 'success')
       onClose()
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Non sono riuscito a inviare la segnalazione. Riprova.')
+      setError(errorMessage(e, 'segnalazione'))
       setBusy(false)
     }
   }

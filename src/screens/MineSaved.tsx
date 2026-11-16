@@ -12,12 +12,12 @@ import { LoadFailed } from '../ui/LoadFailed'
 export function MineSaved({ onOpen }: { onOpen: (eventId: string) => void }) {
   const { events } = useServices()
   const { ids } = useSaved()
-  const { loading, list, failed } = useUpcomingEvents(events)
+  const { loading, list, failed, refresh } = useUpcomingEvents(events)
   const shown = useMemo(() => savedEvents(list, ids), [list, ids])
   const attendance = useAttendance(shown)
   return (
     <>
-      {failed && <LoadFailed text="Non riesco a caricare gli eventi salvati." />}
+      {failed && <LoadFailed text="Non riesco a caricare gli eventi salvati." onRetry={() => void refresh()} />}
       {!loading && !failed && shown.length === 0 && (
         <EmptyState art="no-saved" text="Non hai ancora salvato nessun evento. Tocca il cuore su una scheda per ritrovarla qui." />
       )}

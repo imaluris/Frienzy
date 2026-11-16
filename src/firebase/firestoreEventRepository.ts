@@ -2,6 +2,7 @@ import { collection, doc, getDoc, getDocs, serverTimestamp, Timestamp, updateDoc
 import type { EventRepository } from '../data/eventRepository'
 import type { EventChanges, ExactPlace, FrienzyEvent, NewEvent } from '../domain/event'
 import { db } from './app'
+import { stampLimit } from './limitStamp'
 import { eventFromData, newEventToData, placeFromData, placeToData } from './converters'
 
 export class FirestoreEventRepository implements EventRepository {
@@ -11,6 +12,7 @@ export class FirestoreEventRepository implements EventRepository {
     const batch = writeBatch(db())
     batch.set(eventRef, { ...newEventToData(event), stato: 'aperto', creatoIl: serverTimestamp() })
     batch.set(doc(eventRef, 'privato', 'luogo'), placeToData(place))
+    stampLimit(batch, event.organizzatoreId, 'ultimoEvento') // al massimo un evento al minuto
     await batch.commit()
     return this.mustGet(eventRef.id)
   }

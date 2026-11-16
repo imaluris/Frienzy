@@ -2,12 +2,14 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from './App'
 import { getMode, initTheme, subscribe } from './theme/store'
+import { installGlobalErrorLog } from './errors/errorLog'
 import { configureStatusBar } from './native/nativeBars'
 import type { Services } from './firebase/createServices'
 import '@fontsource-variable/nunito/wght.css'
 import './styles.css'
 
 initTheme()
+installGlobalErrorLog()
 void configureStatusBar(getMode())
 subscribe(() => void configureStatusBar(getMode()))
 

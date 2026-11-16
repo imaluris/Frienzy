@@ -11,6 +11,7 @@ import { EmptyState } from '../ui/EmptyState'
 import { Icon } from '../ui/Icon'
 import { ChatBubble } from './ChatBubble'
 import { ChatComposer } from './ChatComposer'
+import { errorMessage } from '../errors/reportError'
 
 interface Props {
   eventId: string
@@ -41,7 +42,7 @@ export function ChatScreen({ eventId, uid, onBack }: Props) {
       await services.chat.send(eventId, uid, testo)
       return null
     } catch (e) {
-      return e instanceof Error ? e.message : 'Messaggio non inviato'
+      return errorMessage(e, 'chat')
     }
   }
 

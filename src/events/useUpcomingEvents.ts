@@ -4,6 +4,7 @@ import type { FrienzyEvent } from '../domain/event'
 import { withoutBlockedEvents } from '../safety/blocking'
 import { useBlocks } from '../safety/BlocksContext'
 import { upcomingEvents } from './listing'
+import { logError } from '../errors/errorLog'
 
 interface State {
   loading: boolean
@@ -23,7 +24,7 @@ export function useUpcomingEvents(events: EventRepository) {
     events
       .list()
       .then((all) => active && setState({ loading: false, list: upcomingEvents(all), failed: false }))
-      .catch(() => active && setState({ loading: false, list: [], failed: true }))
+      .catch((e) => { logError(e, 'carica-eventi'); if (active) setState({ loading: false, list: [], failed: true }) })
     return () => {
       active = false
     }

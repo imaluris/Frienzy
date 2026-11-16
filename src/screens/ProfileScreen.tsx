@@ -5,6 +5,7 @@ import { saveProfile, toProfileInput } from '../profile/profileService'
 import { BIO_MAX, type ProfileInput } from '../profile/validation'
 import { InterestPicker } from './InterestPicker'
 import { Avatar } from '../ui/Avatar'
+import { errorMessage } from '../errors/reportError'
 
 interface Props {
   uid: string
@@ -28,7 +29,7 @@ export function ProfileScreen({ uid, current, onSaved }: Props) {
       setError(null)
       onSaved(await saveProfile(users, uid, input))
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Qualcosa è andato storto.')
+      setError(errorMessage(e, 'profilo'))
     } finally {
       setBusy(false)
     }

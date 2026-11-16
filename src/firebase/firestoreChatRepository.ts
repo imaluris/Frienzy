@@ -1,9 +1,10 @@
-import { addDoc, collection, deleteDoc, doc, getDocs, onSnapshot, orderBy, query, serverTimestamp, Timestamp, where } from 'firebase/firestore'
+import { collection, deleteDoc, doc, getDocs, onSnapshot, orderBy, query, serverTimestamp, Timestamp, where, writeBatch } from 'firebase/firestore'
 import { checkMessageText } from '../chat/chatRules'
 import type { ChatRepository } from '../chat/chatRepository'
 import type { ChatMessage } from '../chat/message'
 import { deleteInBatches } from './batchDelete'
 import { db } from './app'
+import { stampLimit } from './limitStamp'
 
 // events/{eventId}/messaggi/{id}: le regole Firestore lasciano leggere e scrivere solo organizzatore e confermati.
 const messages = (eventId: string) => collection(db(), 'events', eventId, 'messaggi')
@@ -24,7 +25,11 @@ export class FirestoreChatRepository implements ChatRepository {
   async send(eventId: string, uid: string, testo: string): Promise<void> {
     const check = checkMessageText(testo)
     if (!check.ok) throw new Error(check.error)
-    await addDoc(messages(eventId), { authorUid: uid, testo: check.testo, creatoIl: serverTimestamp() })
+    // Messaggio e timbro dei limiti insieme: le regole accettano il messaggio solo con il timbro.
+    const batch = writeBatch(db())
+    batch.set(doc(messages(eventId)), { authorUid: uid, testo: check.testo, creatoIl: serverTimestamp() })
+    stampLimit(batch, uid, 'ultimoMessaggio')
+    await batch.commit()
   }
 
   async remove(eventId: string, _uid: string, messageId: string): Promise<void> {

@@ -10,6 +10,7 @@ import { MineJoined } from './MineJoined'
 import { MineOrganized } from './MineOrganized'
 import { MineSaved } from './MineSaved'
 import { MineTabs, type MineTab } from './MineTabs'
+import { errorMessage } from '../errors/reportError'
 
 // "I miei eventi": tre schede (Organizzo, Iscrizioni, Salvati), con annullamento, ritiro e tira per aggiornare.
 export function MyEventsScreen({ uid, onOpen }: { uid: string; onOpen: (eventId: string) => void }) {
@@ -25,7 +26,7 @@ export function MyEventsScreen({ uid, onOpen }: { uid: string; onOpen: (eventId:
     try {
       await action()
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Operazione non riuscita')
+      setError(errorMessage(e, 'miei-eventi'))
     }
     reload()
   }
@@ -38,7 +39,7 @@ export function MyEventsScreen({ uid, onOpen }: { uid: string; onOpen: (eventId:
       <section className="screen">
         <MineTabs active={tab} onSelect={setTab} counts={counts} />
         {tab !== 'salvati' && loading && <p className="loading">Caricamento…</p>}
-        {tab !== 'salvati' && failed && <LoadFailed text="Non riesco a caricare i tuoi eventi." />}
+        {tab !== 'salvati' && failed && <LoadFailed text="Non riesco a caricare i tuoi eventi." onRetry={reload} />}
         {error && <p role="alert" className="error">{error}</p>}
         {tab === 'organizzo' && (
           <MineOrganized events={mine.organized} showEmpty={showEmpty} onOpen={onOpen} onCancel={(id) => void run(() => cancelEvent(services.events, id, uid))} />

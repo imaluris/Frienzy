@@ -1,6 +1,6 @@
 import { assertFails, assertSucceeds, type RulesTestEnvironment } from '@firebase/rules-unit-testing'
-import { Timestamp, addDoc, collection, deleteDoc, doc, getDocs, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
-import { ANNA, BRUNO, ORG, createEnv, seedEvent, seedParticipation } from './env'
+import { Timestamp, collection, deleteDoc, doc, getDocs, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
+import { ANNA, BRUNO, ORG, addWithLimit, createEnv, seedEvent, seedParticipation } from './env'
 
 let env: RulesTestEnvironment
 beforeAll(async () => { env = await createEnv() })
@@ -16,6 +16,9 @@ const as = (uid: string) => env.authenticatedContext(uid).firestore()
 const msgs = (uid: string) => collection(as(uid), 'events', 'e1', 'messaggi')
 const message = (uid: string, over: Record<string, unknown> = {}) => ({ authorUid: uid, testo: 'Ciao a tutti', creatoIl: serverTimestamp(), ...over })
 
+// Invia come l'app: messaggio + timbro dei limiti nello stesso batch.
+const send = (uid: string, data: Record<string, unknown>) => addWithLimit(as(uid), uid, 'ultimoMessaggio', msgs(uid), data)
+
 async function seedMessage(id: string, uid = ANNA) {
   await env.withSecurityRulesDisabled(async (ctx) => {
     await setDoc(doc(ctx.firestore(), 'events', 'e1', 'messaggi', id), { authorUid: uid, testo: 'Ciao', creatoIl: Timestamp.now() })
@@ -24,16 +27,16 @@ async function seedMessage(id: string, uid = ANNA) {
 
 describe('regole: chat dell\'evento', () => {
   it('organizzatore e confermati scrivono e leggono', async () => {
-    await assertSucceeds(addDoc(msgs(ANNA), message(ANNA)))
-    await assertSucceeds(addDoc(msgs(ORG), message(ORG)))
+    await assertSucceeds(send(ANNA, message(ANNA)))
+    await assertSucceeds(send(ORG, message(ORG)))
     await assertSucceeds(getDocs(msgs(ANNA)))
     await assertSucceeds(getDocs(msgs(ORG)))
   })
 
   it('chi ha solo una richiesta o non è iscritto non legge né scrive', async () => {
-    await assertFails(addDoc(msgs(BRUNO), message(BRUNO)))
+    await assertFails(send(BRUNO, message(BRUNO)))
     await assertFails(getDocs(msgs(BRUNO)))
-    await assertFails(addDoc(msgs('estraneo'), message('estraneo')))
+    await assertFails(send('estraneo', message('estraneo')))
     await assertFails(getDocs(msgs('estraneo')))
   })
 
@@ -41,25 +44,25 @@ describe('regole: chat dell\'evento', () => {
     await assertSucceeds(getDocs(msgs(ANNA)))
     await env.withSecurityRulesDisabled(async (ctx) => { await deleteDoc(doc(ctx.firestore(), 'events', 'e1', 'partecipanti', ANNA)) })
     await assertFails(getDocs(msgs(ANNA)))
-    await assertFails(addDoc(msgs(ANNA), message(ANNA)))
+    await assertFails(send(ANNA, message(ANNA)))
   })
 
   it('non si scrive a nome di un altro, né con campi extra o data falsa', async () => {
-    await assertFails(addDoc(msgs(ANNA), message(ORG)))
-    await assertFails(addDoc(msgs(ANNA), message(ANNA, { extra: 1 })))
-    await assertFails(addDoc(msgs(ANNA), message(ANNA, { creatoIl: Timestamp.fromDate(new Date('2020-01-01')) })))
+    await assertFails(send(ANNA, message(ORG)))
+    await assertFails(send(ANNA, message(ANNA, { extra: 1 })))
+    await assertFails(send(ANNA, message(ANNA, { creatoIl: Timestamp.fromDate(new Date('2020-01-01')) })))
   })
 
   it('il testo ha da 1 a 500 caratteri', async () => {
-    await assertFails(addDoc(msgs(ANNA), message(ANNA, { testo: '' })))
-    await assertFails(addDoc(msgs(ANNA), message(ANNA, { testo: 'a'.repeat(501) })))
-    await assertFails(addDoc(msgs(ANNA), message(ANNA, { testo: 42 })))
-    await assertSucceeds(addDoc(msgs(ANNA), message(ANNA, { testo: 'a'.repeat(500) })))
+    await assertFails(send(ANNA, message(ANNA, { testo: '' })))
+    await assertFails(send(ANNA, message(ANNA, { testo: 'a'.repeat(501) })))
+    await assertFails(send(ANNA, message(ANNA, { testo: 42 })))
+    await assertSucceeds(send(ANNA, message(ANNA, { testo: 'a'.repeat(500) })))
   })
 
   it('in un evento annullato non si scrive più', async () => {
     await env.withSecurityRulesDisabled(async (ctx) => { await updateDoc(doc(ctx.firestore(), 'events', 'e1'), { stato: 'annullato' }) })
-    await assertFails(addDoc(msgs(ANNA), message(ANNA)))
+    await assertFails(send(ANNA, message(ANNA)))
   })
 
   it('i messaggi non si modificano', async () => {
@@ -79,6 +82,6 @@ describe('regole: chat dell\'evento', () => {
   it('chi non è collegato non può nulla', async () => {
     const anon = env.unauthenticatedContext().firestore()
     await assertFails(getDocs(collection(anon, 'events', 'e1', 'messaggi')))
-    await assertFails(addDoc(collection(anon, 'events', 'e1', 'messaggi'), message(ANNA)))
+    await assertFails(addWithLimit(anon, ANNA, 'ultimoMessaggio', collection(anon, 'events', 'e1', 'messaggi'), message(ANNA)))
   })
 })

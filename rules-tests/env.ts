@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { initializeTestEnvironment, type RulesTestEnvironment } from '@firebase/rules-unit-testing'
-import { Timestamp, serverTimestamp, setDoc, doc } from 'firebase/firestore'
+import { Timestamp, serverTimestamp, setDoc, doc, writeBatch, type CollectionReference, type Firestore } from 'firebase/firestore'
 
 // Aiuti comuni ai test delle regole. Servono l'emulatore Firestore acceso (vedi package.json).
 export async function createEnv(): Promise<RulesTestEnvironment> {
@@ -60,4 +60,14 @@ export async function seedParticipation(env: RulesTestEnvironment, eventId: stri
       eventId, uid, stato, creatoIl: Timestamp.now(),
     })
   })
+}
+
+export type LimitField = 'ultimoEvento' | 'ultimoMessaggio' | 'ultimaSegnalazione'
+
+/** Come fanno i repository dell'app: il nuovo documento e il timbro dell'ora in limiti/{uid} nello stesso batch. */
+export async function addWithLimit(db: Firestore, uid: string, field: LimitField, col: CollectionReference, data: Record<string, unknown>) {
+  const batch = writeBatch(db)
+  batch.set(doc(col), data)
+  batch.set(doc(db, 'limiti', uid), { [field]: serverTimestamp() }, { merge: true })
+  await batch.commit()
 }

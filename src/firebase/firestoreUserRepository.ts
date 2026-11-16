@@ -11,6 +11,7 @@ export class FirestoreUserRepository implements UserRepository {
 
   async delete(uid: string): Promise<void> {
     await deleteDoc(doc(db(), 'users', uid))
+    await deleteDoc(doc(db(), 'limiti', uid)) // anche l'ora delle ultime azioni (task 44)
   }
 
   async getById(uid: string): Promise<UserProfile | null> {

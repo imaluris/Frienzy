@@ -121,6 +121,40 @@ service cloud.firestore {
       return data.keys().hasOnly(keys) && data.keys().hasAll(keys);
     }
 
+    // ---------- limiti di frequenza (task 44) ----------
+    // limiti/{uid} tiene l'ora dell'ultima azione "costosa" di ognuno. Chi crea un evento, un messaggio o una
+    // segnalazione deve aggiornare il proprio documento nello stesso batch con l'ora del server, e il documento
+    // si aggiorna solo se è passato l'intervallo minimo (eventi 60 s, messaggi 2 s, segnalazioni 30 s).
+    // Gli stessi numeri stanno in src/limits/limits.ts (un test li confronta).
+    function waited(before, field, seconds) {
+      return !(field in before) || before[field] <= request.time - duration.value(seconds, 's');
+    }
+
+    function limitStep(before, after, field, seconds) {
+      return !(field in after)
+        || (field in before && before[field] == after[field])
+        || (after[field] == request.time && waited(before, field, seconds));
+    }
+
+    function validLimits(before, after) {
+      return after.keys().hasOnly(['ultimoEvento', 'ultimoMessaggio', 'ultimaSegnalazione'])
+        && limitStep(before, after, 'ultimoEvento', 60)
+        && limitStep(before, after, 'ultimoMessaggio', 2)
+        && limitStep(before, after, 'ultimaSegnalazione', 30);
+    }
+
+    // L'azione vale solo se, nello stesso batch, il documento dei limiti registra l'ora di questa scrittura.
+    function limitStamped(uid, field) {
+      return getAfter(/databases/$(database)/documents/limiti/$(uid)).data[field] == request.time;
+    }
+
+    match /limiti/{uid} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid) && validLimits({}, request.resource.data);
+      allow update: if isOwner(uid) && validLimits(resource.data, request.resource.data);
+      allow delete: if isOwner(uid);
+    }
+
     // ---------- profili ----------
     match /users/{uid} {
       allow read: if signedIn();
@@ -208,7 +242,8 @@ service cloud.firestore {
       allow read: if signedIn();
 
       allow create: if signedIn()
-        && validNewEvent(request.resource.data);
+        && validNewEvent(request.resource.data)
+        && limitStamped(request.auth.uid, 'ultimoEvento');
 
       // Solo l'organizzatore; organizzatoreId e creatoIl restano quelli di prima.
       allow update: if isOrganizer(eventId)
@@ -276,7 +311,8 @@ service cloud.firestore {
           && request.resource.data.testo is string
           && request.resource.data.testo.size() >= 1
           && request.resource.data.testo.size() <= 500
-          && request.resource.data.creatoIl == request.time;
+          && request.resource.data.creatoIl == request.time
+          && limitStamped(request.auth.uid, 'ultimoMessaggio');
         allow update: if false;
         // Anche chi l'ha scritto può cancellare il proprio messaggio (serve all'eliminazione dell'account).
         allow delete: if isOrganizer(eventId) || (signedIn() && resource.data.authorUid == request.auth.uid);
@@ -389,7 +425,8 @@ service cloud.firestore {
         && request.resource.data.motivo in ['spam', 'inappropriato', 'molestie', 'truffa', 'falso', 'altro']
         && request.resource.data.dettagli is string
         && request.resource.data.dettagli.size() <= 300
-        && request.resource.data.creatoIl == request.time;
+        && request.resource.data.creatoIl == request.time
+        && limitStamped(request.auth.uid, 'ultimaSegnalazione');
       allow read, update, delete: if false;
     }
 

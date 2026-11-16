@@ -11,6 +11,7 @@ import { StepLocation } from './StepLocation'
 import { StepProfile } from './StepProfile'
 import { StepProgress } from './StepProgress'
 import { interestsActionLabel, nextStep, previousStep, validateProfileStep, type Step } from './steps'
+import { errorMessage } from '../errors/reportError'
 
 const EMPTY: ProfileInput = { nome: '', dataNascita: '', bio: '', interessi: [], fotoUrl: '' }
 
@@ -34,7 +35,7 @@ export function OnboardingFlow({ uid, onSaved }: { uid: string; onSaved: (profil
     try {
       onSaved(await saveProfile(users, uid, input, new Date(), buildConsent(checks)))
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Qualcosa è andato storto.')
+      setError(errorMessage(e, 'registrazione'))
       finishing.current = false
       setBusy(false)
     }

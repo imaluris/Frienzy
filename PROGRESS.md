@@ -49,3 +49,4 @@ Fase 2 completata
 - Task 41 fatto: Tema scuro
 - Task 42 fatto: Modifica evento e condivisione
 - Task 43 fatto: Privacy, termini e requisiti dello store
+- Task 44 fatto: Costi e abusi

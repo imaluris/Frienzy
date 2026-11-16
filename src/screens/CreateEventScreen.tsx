@@ -9,6 +9,7 @@ import { ProgressBars } from '../ui/ProgressBars'
 import { useScrollTop } from '../ui/useScrollTop'
 import { CreateStepBody } from './CreateStepBody'
 import { CreateSummary } from './CreateSummary'
+import { errorMessage } from '../errors/reportError'
 
 const EMPTY: EventInput = {
   tipo: 'aperitivo', titolo: '', descrizione: '', dataOra: '', zonaNome: '', indirizzo: '', lat: '', lng: '',
@@ -56,7 +57,7 @@ export function CreateEventScreen({ uid, onDone }: Props) {
       await createEvent(events, uid, input)
       onDone()
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Qualcosa è andato storto.')
+      setError(errorMessage(e, 'crea-evento'))
       setBusy(false)
     }
   }

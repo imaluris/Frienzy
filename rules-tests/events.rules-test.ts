@@ -1,5 +1,5 @@
 import { assertFails, assertSucceeds, type RulesTestEnvironment } from '@firebase/rules-unit-testing'
-import { collection, doc, getDoc, updateDoc, writeBatch, deleteDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, updateDoc, writeBatch, deleteDoc, serverTimestamp } from 'firebase/firestore'
 import { ANNA, BRUNO, ORG, createEnv, eventData, place, seedEvent, seedParticipation } from './env'
 
 let env: RulesTestEnvironment
@@ -16,6 +16,7 @@ async function createLikeApp(uid: string, over: Record<string, unknown> = {}) {
   const batch = writeBatch(db)
   batch.set(ref, eventData(over))
   batch.set(doc(ref, 'privato', 'luogo'), place)
+  batch.set(doc(db, 'limiti', uid), { ultimoEvento: serverTimestamp() }, { merge: true })
   return batch.commit()
 }
 

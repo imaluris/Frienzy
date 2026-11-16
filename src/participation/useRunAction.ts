@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { notifyDataChanged } from '../reminders/syncSignal'
+import { errorMessage } from '../errors/reportError'
 
 /**
  * Esegue un'azione asincrona (iscriviti, accetta...) e tiene d'occhio due cose:
@@ -16,7 +17,7 @@ export function useRunAction(onDone: () => void) {
       await action()
       return true
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Qualcosa è andato storto')
+      setError(errorMessage(e, 'azione'))
       return false
     } finally {
       setBusy(false)

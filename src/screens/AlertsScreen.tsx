@@ -17,7 +17,7 @@ export function AlertsScreen({ onOpen }: { onOpen: (eventId: string) => void }) 
     <PullToRefresh onRefresh={refresh}>
       <section className="alerts" aria-label="Avvisi">
         {loading && <ul className="alert-list" aria-busy="true">{[0, 1, 2].map((i) => <li key={i} className="alert-skeleton skeleton" />)}</ul>}
-        {!loading && failed && <LoadFailed text="Non riesco a caricare gli avvisi." />}
+        {!loading && failed && <LoadFailed text="Non riesco a caricare gli avvisi." onRetry={() => void refresh()} />}
         {!loading && !failed && alerts.length === 0 && <EmptyState art="no-alerts" text="Nessun avviso per ora. Qui trovi richieste, risposte e inviti a eventi nuovi." />}
         {!loading && !failed && alerts.length > 0 && (
           <ul className="alert-list">{alerts.map((a) => <AlertRow key={a.key} alert={a} fresh={!wasSeen.has(a.key)} onOpen={onOpen} />)}</ul>

@@ -51,7 +51,7 @@ export function EventListScreen({ uid, name, interessi, onOpen, onCreate, onOpen
         <SearchField value={query} onChange={setQuery} />
         <FiltersBar filters={filters} onChange={setFilters} position={position} onAskPosition={ask} />
         {loading && <EventListSkeleton />}
-        {failed && <LoadFailed text="Non riesco a caricare gli eventi." />}
+        {failed && <LoadFailed text="Non riesco a caricare gli eventi." onRetry={() => void refresh()} />}
         {ready && list.length === 0 && (
           <EmptyState art="no-events" text="Nessun evento in programma.">
             <button type="button" onClick={onCreate}>Organizza il primo</button>

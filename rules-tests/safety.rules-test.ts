@@ -1,5 +1,5 @@
 import { assertFails, assertSucceeds, type RulesTestEnvironment } from '@firebase/rules-unit-testing'
-import { Timestamp, addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, where, writeBatch } from 'firebase/firestore'
+import { Timestamp, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, where, writeBatch } from 'firebase/firestore'
 import { ANNA, BRUNO, ORG, createEnv, seedEvent } from './env'
 
 let env: RulesTestEnvironment
@@ -10,6 +10,15 @@ beforeEach(async () => { await env.clearFirestore() })
 const as = (uid: string) => env.authenticatedContext(uid).firestore()
 const block = (blocker: string, blocked: string, over: Record<string, unknown> = {}) => ({ blockerId: blocker, blockedId: blocked, creatoIl: serverTimestamp(), ...over })
 const blockRef = (db: ReturnType<typeof as>, blocker: string, blocked: string) => doc(db, 'blocchi', `${blocker}_${blocked}`)
+// Come FirestoreReportRepository: segnalazione + timbro dei limiti nello stesso batch.
+async function fileReport(col: ReturnType<typeof collection>, data: Record<string, unknown>, uid = ANNA) {
+  const ref = doc(col)
+  const batch = writeBatch(col.firestore)
+  batch.set(ref, data)
+  batch.set(doc(col.firestore, 'limiti', uid), { ultimaSegnalazione: serverTimestamp() }, { merge: true })
+  await batch.commit()
+  return ref
+}
 const report = (over: Record<string, unknown> = {}) => ({ reporterUid: ANNA, tipo: 'evento', targetId: 'e1', motivo: 'spam', dettagli: '', creatoIl: serverTimestamp(), ...over })
 
 describe('regole: blocchi', () => {
@@ -47,12 +56,12 @@ describe('regole: blocchi', () => {
 
 describe('regole: segnalazioni', () => {
   it('chi è collegato ne crea una valida', async () => {
-    await assertSucceeds(addDoc(collection(as(ANNA), 'segnalazioni'), report()))
-    await assertSucceeds(addDoc(collection(as(ANNA), 'segnalazioni'), report({ tipo: 'utente', targetId: BRUNO, motivo: 'altro', dettagli: 'Messaggi insistenti' })))
+    await assertSucceeds(fileReport(collection(as(ANNA), 'segnalazioni'), report()))
+    await assertSucceeds(fileReport(collection(as(BRUNO), 'segnalazioni'), report({ reporterUid: BRUNO, tipo: 'utente', targetId: ANNA, motivo: 'altro', dettagli: 'Messaggi insistenti' }), BRUNO))
   })
 
   it('nessun utente le rilegge, le modifica o le cancella', async () => {
-    const ref = await addDoc(collection(as(ANNA), 'segnalazioni'), report())
+    const ref = await fileReport(collection(as(ANNA), 'segnalazioni'), report())
     await assertFails(getDoc(doc(as(ANNA), 'segnalazioni', ref.id)))
     await assertFails(getDocs(collection(as(ANNA), 'segnalazioni')))
     await assertFails(deleteDoc(doc(as(ANNA), 'segnalazioni', ref.id)))
@@ -61,13 +70,13 @@ describe('regole: segnalazioni', () => {
 
   it('rifiuta firma altrui, auto-segnalazione, motivo o tipo inventati, testo lungo, campi extra, data falsa', async () => {
     const c = () => collection(as(ANNA), 'segnalazioni')
-    await assertFails(addDoc(c(), report({ reporterUid: BRUNO })))
-    await assertFails(addDoc(c(), report({ tipo: 'utente', targetId: ANNA })))
-    await assertFails(addDoc(c(), report({ motivo: 'noia' })))
-    await assertFails(addDoc(c(), report({ tipo: 'messaggio' })))
-    await assertFails(addDoc(c(), report({ dettagli: 'x'.repeat(301) })))
-    await assertFails(addDoc(c(), report({ extra: 1 })))
-    await assertFails(addDoc(c(), report({ creatoIl: Timestamp.fromDate(new Date('2020-01-01')) })))
-    await assertFails(addDoc(collection(env.unauthenticatedContext().firestore(), 'segnalazioni'), report()))
+    await assertFails(fileReport(c(), report({ reporterUid: BRUNO })))
+    await assertFails(fileReport(c(), report({ tipo: 'utente', targetId: ANNA })))
+    await assertFails(fileReport(c(), report({ motivo: 'noia' })))
+    await assertFails(fileReport(c(), report({ tipo: 'messaggio' })))
+    await assertFails(fileReport(c(), report({ dettagli: 'x'.repeat(301) })))
+    await assertFails(fileReport(c(), report({ extra: 1 })))
+    await assertFails(fileReport(c(), report({ creatoIl: Timestamp.fromDate(new Date('2020-01-01')) })))
+    await assertFails(fileReport(collection(env.unauthenticatedContext().firestore(), 'segnalazioni'), report()))
   })
 })
