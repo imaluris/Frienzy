@@ -1,4 +1,7 @@
-name: APK Android (debug)
+# Workflow per APK di debug (sempre) e AAB firmato per il Play Store (solo se esistono i segreti).
+# DA COPIARE A MANO in .github/workflows/android.yml (il token del PC non ha il permesso `workflow`,
+# quindi non si può pubblicare con il push). Sostituisce il file attuale: la configurazione web di Firebase è la stessa.
+name: Android (APK debug + AAB firmato)
 
 on:
   push:
@@ -6,8 +9,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  apk:
+  android:
     runs-on: ubuntu-latest
+    env:
+      # Numero di versione automatico: cresce a ogni esecuzione (Play Store lo richiede).
+      VERSION_CODE: ${{ github.run_number }}
+      VERSION_NAME: 1.0.${{ github.run_number }}
     steps:
       - uses: actions/checkout@v4
 
@@ -53,9 +60,52 @@ jobs:
 
       - name: Compila l'APK di debug
         working-directory: android
-        run: ./gradlew assembleDebug --no-daemon
+        run: ./gradlew assembleDebug --no-daemon -PversionCode=$VERSION_CODE -PversionName=$VERSION_NAME
 
       - uses: actions/upload-artifact@v4
         with:
           name: frienzy-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+
+      # ---- Rilascio firmato: solo se i 4 segreti della firma esistono ----
+      - name: Controlla se la firma è configurata
+        id: firma
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ] && [ -n "$KEYSTORE_PASSWORD" ] && [ -n "$KEY_ALIAS" ] && [ -n "$KEY_PASSWORD" ]; then
+            echo "presente=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "presente=false" >> "$GITHUB_OUTPUT"
+            echo "Segreti di firma assenti: salto l'AAB firmato (resta l'APK di debug)"
+          fi
+
+      - name: Ricrea la chiave di firma dal segreto
+        if: steps.firma.outputs.presente == 'true'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/frienzy-release.jks"
+
+      - name: Compila l'AAB firmato
+        if: steps.firma.outputs.presente == 'true'
+        working-directory: android
+        env:
+          FRIENZY_KEYSTORE_PATH: ${{ runner.temp }}/frienzy-release.jks
+          FRIENZY_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          FRIENZY_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          FRIENZY_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: ./gradlew bundleRelease --no-daemon -PversionCode=$VERSION_CODE -PversionName=$VERSION_NAME
+
+      - uses: actions/upload-artifact@v4
+        if: steps.firma.outputs.presente == 'true'
+        with:
+          name: frienzy-release-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+
+      - name: Cancella la chiave di firma dal runner
+        if: always() && steps.firma.outputs.presente == 'true'
+        run: rm -f "$RUNNER_TEMP/frienzy-release.jks"
