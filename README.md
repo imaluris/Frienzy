@@ -22,6 +22,8 @@ Con Firebase vero: copia `.env.example` in `.env` e metti i valori del tuo proge
 `src/domain` modelli, `src/data` interfacce dei repository (con versione in memoria), `src/firebase` versione Firebase, `src/screens` e `src/ui` schermate, `src/map` mappa, `src/styles` stili. Le note di studio sono in `docs/` (una per giorno).
 
 ## Stato
-MVP e Fase 2 completati. Cosa è stato provato e cosa no: vedi `docs/giorno-27-verifica-finale.md`.
+MVP, Fase 2 e Fase 3 completati. Cosa è stato provato e cosa no: vedi `docs/giorno-46-verifica-finale-fase-3.md` (Fase 2: `docs/giorno-27-verifica-finale.md`).
+
+Screenshot del tema chiaro in `docs/screenshots/`, del tema scuro in `docs/screenshots/scuro/` (`SHOTS_THEME=scuro npm run shots`). Controllo del contrasto reale a schermo: `npm run audit` (scuro: `SHOTS_THEME=scuro npm run audit`).
 
 Pubblicazione su Android (AAB firmato, APK senza store): vedi `docs/pubblicazione.md`.
