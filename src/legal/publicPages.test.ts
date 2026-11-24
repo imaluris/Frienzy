@@ -22,10 +22,16 @@ describe('pagine legali statiche', () => {
     expect(page('termini')).toContain('href="privacy.html"')
     expect(page('privacy')).toContain('href="eliminazione-account.html"')
   })
-  it('i campi da completare sono ben visibili (parentesi quadre) e la bozza è dichiarata', () => {
+  it('titolare ed email sono compilati (nessun campo tra parentesi quadre) e la bozza è dichiarata', () => {
     for (const name of ['privacy', 'termini']) {
-      expect(page(name)).toContain('[indirizzo email di assistenza]')
+      expect(page(name)).toContain('a.castellaniperelli@gmail.com')
+      expect(page(name)).not.toMatch(/\[[^\]]+\]/)
       expect(page(name)).toContain('Bozza.')
+    }
+  })
+  it('le copie pubblicate con GitHub Pages (docs/web) sono identiche a quelle in public/', () => {
+    for (const name of ['privacy', 'termini', 'eliminazione-account']) {
+      expect(readFileSync(`docs/web/${name}.html`, 'utf8')).toBe(page(name))
     }
   })
 })

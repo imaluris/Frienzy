@@ -40,4 +40,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Android 13+: serve per mostrare le notifiche -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Posizione (solo mentre l'app è aperta): serve a mostrare la distanza degli eventi e a centrare la mappa -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
 </manifest>

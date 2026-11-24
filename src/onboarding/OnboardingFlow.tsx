@@ -3,6 +3,7 @@ import { useServices } from '../app/ServicesContext'
 import type { UserProfile } from '../domain/user'
 import { buildConsent, NO_CONSENT, validateConsent, type ConsentChecks } from '../legal/consent'
 import { useMyPosition } from '../filters/useMyPosition'
+import { positionMessage } from '../map/positionMessage'
 import { saveProfile } from '../profile/profileService'
 import type { ProfileInput } from '../profile/validation'
 import { Icon } from '../ui/Icon'
@@ -27,6 +28,7 @@ export function OnboardingFlow({ uid, onSaved }: { uid: string; onSaved: (profil
   const { state: position, ask } = useMyPosition()
   const [checks, setChecks] = useState<ConsentChecks>(NO_CONSENT)
   const finishing = useRef(false)
+  const positionNote = positionMessage(position)
 
   async function finish() {
     if (finishing.current) return
@@ -41,11 +43,13 @@ export function OnboardingFlow({ uid, onSaved }: { uid: string; onSaved: (profil
     }
   }
 
-  // Quando il telefono ha risposto alla richiesta di posizione (sì, no o non disponibile) si conclude.
+  // Quando la posizione è stata letta (o il dispositivo non la offre) si conclude.
+  // Se il permesso è negato si resta qui con il messaggio: "Attiva la posizione" riprova (o apre le impostazioni
+  // dell'app) e "Non ora" prosegue senza posizione.
   // Solo nell'ultimo passo: se il permesso era già concesso la posizione si legge da sola fin dall'inizio,
   // e senza questo controllo la registrazione si chiuderebbe (con errore) già sul passo del profilo.
   useEffect(() => {
-    if (step === 'posizione' && position.status !== 'idle' && position.status !== 'asking') void finish()
+    if (step === 'posizione' && (position.status === 'ok' || position.status === 'unsupported')) void finish()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, position.status])
 
@@ -75,6 +79,7 @@ export function OnboardingFlow({ uid, onSaved }: { uid: string; onSaved: (profil
         {step === 'interessi' && <StepInterests selected={input.interessi} onChange={(interessi) => setInput((old) => ({ ...old, interessi }))} />}
         {step === 'posizione' && <StepLocation />}
         {step === 'posizione' && error && <p role="alert" className="error">{error}</p>}
+        {step === 'posizione' && positionNote && <p role="status" className="step-hint centered">{positionNote}</p>}
       </section>
       <footer className="onboarding-actions">
         {step === 'posizione' ? (
