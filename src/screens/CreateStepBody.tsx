@@ -42,15 +42,16 @@ export function CreateStepBody({ step, input, errors, change }: Props) {
       )
     case 'dove':
       return (
-        <>
-          <LocationField lat={input.lat} lng={input.lng} emoji={emoji} color={isEventTypeId(input.tipo) ? TYPE_COLOR[input.tipo] : TYPE_COLOR.altro} error={errors.punto} onPick={(p) => change('punto', { lat: p.lat.toFixed(6), lng: p.lng.toFixed(6) })} />
-          <Field label="Zona" hint="Visibile a tutti, ad esempio il quartiere." error={errors.zonaNome}>
-            <input value={input.zonaNome} aria-invalid={bad('zonaNome')} onChange={(e) => change('zonaNome', { zonaNome: e.target.value })} />
-          </Field>
-          <Field label="Indirizzo esatto" hint="Lo vedono solo tu e chi è confermato." error={errors.indirizzo}>
-            <input value={input.indirizzo} aria-invalid={bad('indirizzo')} onChange={(e) => change('indirizzo', { indirizzo: e.target.value })} />
-          </Field>
-        </>
+        <LocationField
+          lat={input.lat}
+          lng={input.lng}
+          indirizzo={input.indirizzo}
+          zonaNome={input.zonaNome}
+          emoji={emoji}
+          color={isEventTypeId(input.tipo) ? TYPE_COLOR[input.tipo] : TYPE_COLOR.altro}
+          error={errors.punto ?? errors.indirizzo ?? errors.zonaNome}
+          onPlace={(p) => change('punto', { lat: p.lat.toFixed(6), lng: p.lng.toFixed(6), indirizzo: p.address, zonaNome: p.zone })}
+        />
       )
     case 'posti':
       return (

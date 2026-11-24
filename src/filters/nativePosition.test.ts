@@ -59,10 +59,17 @@ describe('posizione sull\'app installata', () => {
     expect(settings.open).toHaveBeenCalledWith({ optionAndroid: 'location', optionIOS: 'app' })
   })
 
-  it('altro errore (per esempio tempo scaduto): nessuna impostazione aperta', async () => {
+  it('posizione non trovata: riprova col GPS e poi lo dice, senza aprire impostazioni', async () => {
     geo.checkPermissions.mockResolvedValue(perm('granted'))
     geo.getCurrentPosition.mockRejectedValue(new Error('Timeout expired'))
-    expect(await readNativePosition()).toEqual({ kind: 'error' })
+    expect(await readNativePosition()).toEqual({ kind: 'unavailable', detail: 'Timeout expired' })
+    expect(geo.getCurrentPosition).toHaveBeenCalledTimes(2)
     expect(settings.open).not.toHaveBeenCalled()
+  })
+
+  it('se la lettura veloce fallisce, quella col GPS può riuscire', async () => {
+    geo.checkPermissions.mockResolvedValue(perm('granted'))
+    geo.getCurrentPosition.mockRejectedValueOnce(new Error('Location unavailable')).mockResolvedValueOnce(fix)
+    expect((await readNativePosition()).kind).toBe('ok')
   })
 })

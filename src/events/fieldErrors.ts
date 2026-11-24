@@ -17,7 +17,7 @@ export type EventField =
 
 export type EventFieldErrors = Partial<Record<EventField, string>>
 
-export const POINT_MISSING = 'Tocca la mappa per scegliere dove si svolge l\'evento.'
+export const POINT_MISSING = 'Cerca l\'indirizzo o tocca la mappa per scegliere dove si svolge l\'evento.'
 
 function validatePoint(lat: string, lng: string): string | null {
   if (parseNumber(lat) === null && parseNumber(lng) === null) return POINT_MISSING

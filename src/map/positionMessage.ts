@@ -7,6 +7,7 @@ export function positionMessage(state: PositionState): string | null {
     case 'denied': return 'Non riesco a leggere la tua posizione: controlla i permessi del telefono.'
     case 'settings': return "Ho aperto le impostazioni dell'app: concedi la posizione a Frienzy, poi torna qui e riprova."
     case 'services': return 'La posizione del telefono è spenta: ho aperto le impostazioni, attivala e riprova.'
+    case 'unavailable': return `Non riesco a trovare la tua posizione (segnale debole?). Riprova, meglio all'aperto.${state.detail ? ` [${state.detail}]` : ''}`
     case 'unsupported': return 'Questo dispositivo non permette di leggere la posizione.'
     default: return null
   }

@@ -11,7 +11,7 @@ export type NativeResult =
   | { kind: 'denied' }    // l'utente ha appena rifiutato la richiesta del telefono
   | { kind: 'settings' }  // permesso bloccato: ho aperto le impostazioni dell'app
   | { kind: 'services' }  // la posizione del telefono è spenta: ho aperto le impostazioni di sistema
-  | { kind: 'error' }
+  | { kind: 'unavailable'; detail: string } // permesso ok ma il telefono non riesce a trovare la posizione
 
 export const isNativeApp = () => Capacitor.isNativePlatform()
 
@@ -24,6 +24,16 @@ function openLocationSettings() {
 }
 
 const isGranted = (s: { location: string; coarseLocation: string }) => s.location === 'granted' || s.coarseLocation === 'granted'
+
+// Prima si accetta anche una posizione recente (fino a 5 minuti) e poco precisa: è la più rapida e funziona anche al chiuso.
+// Se non basta si riprova col GPS.
+async function currentFix() {
+  try {
+    return await Geolocation.getCurrentPosition({ enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 })
+  } catch {
+    return await Geolocation.getCurrentPosition({ enableHighAccuracy: true, timeout: 20000, maximumAge: 0 })
+  }
+}
 
 /** True se il permesso è già stato dato (nessuna finestra di richiesta). */
 export async function nativePermissionGranted(): Promise<boolean> {
@@ -47,13 +57,13 @@ export async function readNativePosition(): Promise<NativeResult> {
       await openAppSettings()
       return { kind: 'settings' }
     }
-    const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: false, timeout: 10000 })
+    const pos = await currentFix()
     return { kind: 'ok', point: { lat: pos.coords.latitude, lng: pos.coords.longitude } }
   } catch (e) {
     if (/location services/i.test(e instanceof Error ? e.message : String(e))) {
       await openLocationSettings().catch(() => undefined)
       return { kind: 'services' }
     }
-    return { kind: 'error' }
+    return { kind: 'unavailable', detail: e instanceof Error ? e.message : String(e) }
   }
 }

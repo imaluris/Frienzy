@@ -12,6 +12,12 @@ vi.mock('../map/PointPicker', () => ({
   ),
 }))
 
+// Niente rete nei test: l'indirizzo del punto toccato è sempre lo stesso.
+vi.mock('../geo/geocode', () => ({
+  searchPlaces: async () => [],
+  reversePlace: async (p: { lat: number; lng: number }) => ({ ...p, address: 'Via Roma 1, Milano', zone: 'Navigli' }),
+}))
+
 function setup() {
   const services = createMemoryServices()
   const onDone = vi.fn()
@@ -61,8 +67,7 @@ describe('Crea evento a passi', () => {
     next()
     await screen.findByRole('heading', { name: 'Dove ci si trova?' })
     next()
-    expect(await screen.findByText(/Tocca la mappa per scegliere dove/)).toBeInTheDocument()
-    expect(screen.getByText(/Scrivi la zona/)).toBeInTheDocument()
+    expect(await screen.findByText(/Cerca l'indirizzo o tocca la mappa/)).toBeInTheDocument()
   })
 
   it('i tasti più e meno cambiano i posti', async () => {
@@ -75,8 +80,8 @@ describe('Crea evento a passi', () => {
     fireEvent.change(screen.getByLabelText(/^Data e ora/), { target: { value: futureText() } })
     next()
     fireEvent.click(screen.getByText('tocca-mappa'))
-    fireEvent.change(screen.getByLabelText(/^Zona/), { target: { value: 'Navigli' } })
-    fireEvent.change(screen.getByLabelText(/^Indirizzo esatto/), { target: { value: 'Via Roma 1' } })
+    expect(await screen.findByText('Via Roma 1, Milano')).toBeInTheDocument()
+    expect(screen.getByText('Navigli')).toBeInTheDocument()
     next()
     await screen.findByRole('heading', { name: 'Quanti posti ci sono?' })
     fireEvent.click(screen.getByRole('button', { name: 'Un posto in più' }))
@@ -92,8 +97,8 @@ describe('Crea evento a passi', () => {
     fireEvent.change(screen.getByLabelText(/^Data e ora/), { target: { value: futureText() } })
     next()
     fireEvent.click(screen.getByText('tocca-mappa'))
-    fireEvent.change(screen.getByLabelText(/^Zona/), { target: { value: 'Navigli' } })
-    fireEvent.change(screen.getByLabelText(/^Indirizzo esatto/), { target: { value: 'Via Roma 1' } })
+    expect(await screen.findByText('Via Roma 1, Milano')).toBeInTheDocument()
+    expect(screen.getByText('Navigli')).toBeInTheDocument()
     next()
     next()
     await screen.findByRole('heading', { name: 'Tutto pronto?' })

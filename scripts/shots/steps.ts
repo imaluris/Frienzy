@@ -27,6 +27,9 @@ async function onboarding(page: Page) {
 
 // Compila i passi di Crea evento fino a quello indicato (0 = tipo, 3 = dove, 4 = posti, 5 = riepilogo).
 async function toStep(page: Page, target: number) {
+  // Niente rete: l'indirizzo del punto toccato sulla mappa è sempre lo stesso.
+  await page.route('**/nominatim.openstreetmap.org/**', (route) =>
+    route.fulfill({ json: { lat: '45.46', lon: '9.19', address: { road: 'Via Roma', house_number: '1', suburb: 'Navigli', city: 'Milano' } } }))
   await fromHome(page, 'Crea')
   await page.getByRole('radio', { name: /cena/ }).click()
   await click(page, 'Continua')
@@ -38,8 +41,7 @@ async function toStep(page: Page, target: number) {
   await click(page, 'Continua')
   if (target <= 3) return
   await page.locator('.point-picker').click({ position: { x: 190, y: 110 } })
-  await page.getByLabel(/^Zona/).fill('Navigli')
-  await page.getByLabel(/^Indirizzo esatto/).fill('Via Roma 1')
+  await page.getByText('Via Roma 1, Milano').waitFor()
   await click(page, 'Continua')
   if (target <= 4) return
   await click(page, 'Continua')
@@ -135,7 +137,7 @@ export const STEPS: Step[] = [
   { name: '10-crea-evento', go: (p) => fromHome(p, 'Crea') },
   { name: '19-crea-errori', go: async (p) => { await fromHome(p, 'Crea', 'Continua', 'Continua', 'Continua'); await p.getByText(/almeno 3 caratteri/).waitFor() } },
   { name: '20-crea-testo', go: async (p) => { await fromHome(p, 'Crea'); await p.getByRole('radio', { name: /cena/ }).click(); await click(p, 'Continua'); await p.getByLabel(/^Titolo/).fill('Cena in terrazza con vista sui tetti di Milano') } },
-  { name: '31-crea-dove', go: async (p) => { await toStep(p, 3); await p.locator('.point-picker').click({ position: { x: 190, y: 110 } }); await p.getByLabel(/^Zona/).fill('Navigli'); await p.getByText(/Punto scelto/).waitFor() } },
+  { name: '31-crea-dove', go: async (p) => { await toStep(p, 3); await p.locator('.point-picker').click({ position: { x: 190, y: 110 } }); await p.getByText('Via Roma 1, Milano').waitFor() } },
   { name: '32-crea-posti', go: async (p) => { await toStep(p, 4); await click(p, 'Un posto in più') } },
   { name: '33-crea-riepilogo', go: async (p) => { await toStep(p, 5); await p.getByRole('heading', { name: 'Tutto pronto?' }).waitFor() } },
   { name: '18-profilo-scheda', go: (p) => fromHome(p, 'Profilo') },
