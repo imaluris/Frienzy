@@ -1,6 +1,6 @@
 import { assertFails, assertSucceeds, type RulesTestEnvironment } from '@firebase/rules-unit-testing'
 import { Timestamp, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore'
-import { ANNA, BRUNO, ORG, createEnv, seedEvent, seedParticipation } from './env'
+import { ANNA, BRUNO, ORG, createEnv, seedEvent, seedParticipation, userDb } from './env'
 
 // Presenze e voti. NB: scritti ma non eseguibili dal cloud (serve l'emulatore): vedi "Cose che restano ad Andrea".
 let env: RulesTestEnvironment
@@ -8,7 +8,7 @@ beforeAll(async () => { env = await createEnv() })
 afterAll(async () => { await env.cleanup() })
 beforeEach(async () => { await env.clearFirestore() })
 
-const as = (uid: string) => env.authenticatedContext(uid).firestore()
+const as = (uid: string) => userDb(env, uid)
 type Db = ReturnType<typeof as>
 const PAST = { dataOra: Timestamp.fromDate(new Date('2020-01-01T20:00:00Z')) }
 const presence = (db: Db, uid = ANNA) => doc(db, 'presenze', `e1_${uid}`)

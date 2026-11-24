@@ -1,6 +1,6 @@
 import { assertFails, assertSucceeds, type RulesTestEnvironment } from '@firebase/rules-unit-testing'
 import { Timestamp, deleteDoc, doc, setDoc, updateDoc, writeBatch } from 'firebase/firestore'
-import { ANNA, BRUNO, ORG, createEnv, seedEvent, seedParticipation } from './env'
+import { ANNA, BRUNO, ORG, createEnv, seedEvent, seedParticipation, userDb } from './env'
 
 // Lista d'attesa: eventi da 1 posto, Anna confermata, Bruno e Carla (eventualmente) in coda.
 // NB: questi test sono scritti ma non eseguibili dal cloud (serve l'emulatore): vedi "Cose che restano ad Andrea".
@@ -10,7 +10,7 @@ afterAll(async () => { await env.cleanup() })
 beforeEach(async () => { await env.clearFirestore() })
 
 const CARLA = 'carla'
-const as = (uid: string) => env.authenticatedContext(uid).firestore()
+const as = (uid: string) => userDb(env, uid)
 type Db = ReturnType<typeof as>
 const ref = (db: Db, uid: string) => doc(db, 'events', 'e1', 'partecipanti', uid)
 const seats = (db: Db) => doc(db, 'events', 'e1', 'contatori', 'posti')

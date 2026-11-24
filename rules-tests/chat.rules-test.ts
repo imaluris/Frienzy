@@ -1,6 +1,6 @@
 import { assertFails, assertSucceeds, type RulesTestEnvironment } from '@firebase/rules-unit-testing'
 import { Timestamp, collection, deleteDoc, doc, getDocs, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
-import { ANNA, BRUNO, ORG, addWithLimit, createEnv, seedEvent, seedParticipation } from './env'
+import { ANNA, BRUNO, ORG, addWithLimit, createEnv, seedEvent, seedParticipation, userDb } from './env'
 
 let env: RulesTestEnvironment
 beforeAll(async () => { env = await createEnv() })
@@ -12,7 +12,7 @@ beforeEach(async () => {
   await seedParticipation(env, 'e1', BRUNO, 'richiesta')
 })
 
-const as = (uid: string) => env.authenticatedContext(uid).firestore()
+const as = (uid: string) => userDb(env, uid)
 const msgs = (uid: string) => collection(as(uid), 'events', 'e1', 'messaggi')
 const message = (uid: string, over: Record<string, unknown> = {}) => ({ authorUid: uid, testo: 'Ciao a tutti', creatoIl: serverTimestamp(), ...over })
 

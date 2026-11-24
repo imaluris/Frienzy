@@ -1,13 +1,13 @@
 import { assertFails, assertSucceeds, type RulesTestEnvironment } from '@firebase/rules-unit-testing'
 import { Timestamp, deleteDoc, doc, getDoc, setDoc, updateDoc, writeBatch } from 'firebase/firestore'
-import { ANNA, BRUNO, ORG, createEnv, seedEvent, seedParticipation } from './env'
+import { ANNA, BRUNO, ORG, createEnv, seedEvent, seedParticipation, userDb } from './env'
 
 let env: RulesTestEnvironment
 beforeAll(async () => { env = await createEnv() })
 afterAll(async () => { await env.cleanup() })
 beforeEach(async () => { await env.clearFirestore() })
 
-const as = (uid: string) => env.authenticatedContext(uid).firestore()
+const as = (uid: string) => userDb(env, uid)
 const ref = (db: ReturnType<typeof as>, uid: string) => doc(db, 'events', 'e1', 'partecipanti', uid)
 const seats = (db: ReturnType<typeof as>) => doc(db, 'events', 'e1', 'contatori', 'posti')
 /** Iscrizione come la fa l'app: partecipazione + contatore (se confermato) nello stesso batch. */

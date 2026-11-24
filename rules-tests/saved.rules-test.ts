@@ -1,13 +1,13 @@
 import { assertFails, assertSucceeds, type RulesTestEnvironment } from '@firebase/rules-unit-testing'
 import { Timestamp, collection, deleteDoc, doc, getDoc, getDocs, serverTimestamp, setDoc } from 'firebase/firestore'
-import { ANNA, BRUNO, createEnv } from './env'
+import { ANNA, BRUNO, createEnv, userDb } from './env'
 
 let env: RulesTestEnvironment
 beforeAll(async () => { env = await createEnv() })
 afterAll(async () => { await env.cleanup() })
 beforeEach(async () => { await env.clearFirestore() })
 
-const as = (uid: string) => env.authenticatedContext(uid).firestore()
+const as = (uid: string) => userDb(env, uid)
 const saved = (uid: string, eventId: string, over: Record<string, unknown> = {}) => ({ eventId, creatoIl: serverTimestamp(), ...over })
 
 describe('regole: eventi salvati', () => {

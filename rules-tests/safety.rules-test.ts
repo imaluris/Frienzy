@@ -1,13 +1,13 @@
 import { assertFails, assertSucceeds, type RulesTestEnvironment } from '@firebase/rules-unit-testing'
 import { Timestamp, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, where, writeBatch } from 'firebase/firestore'
-import { ANNA, BRUNO, ORG, createEnv, seedEvent } from './env'
+import { ANNA, BRUNO, ORG, createEnv, seedEvent, userDb } from './env'
 
 let env: RulesTestEnvironment
 beforeAll(async () => { env = await createEnv() })
 afterAll(async () => { await env.cleanup() })
 beforeEach(async () => { await env.clearFirestore() })
 
-const as = (uid: string) => env.authenticatedContext(uid).firestore()
+const as = (uid: string) => userDb(env, uid)
 const block = (blocker: string, blocked: string, over: Record<string, unknown> = {}) => ({ blockerId: blocker, blockedId: blocked, creatoIl: serverTimestamp(), ...over })
 const blockRef = (db: ReturnType<typeof as>, blocker: string, blocked: string) => doc(db, 'blocchi', `${blocker}_${blocked}`)
 // Come FirestoreReportRepository: segnalazione + timbro dei limiti nello stesso batch.

@@ -71,3 +71,14 @@ export async function addWithLimit(db: Firestore, uid: string, field: LimitField
   batch.set(doc(db, 'limiti', uid), { [field]: serverTimestamp() }, { merge: true })
   await batch.commit()
 }
+
+// Una sola connessione per utente: se `as(uid)` ne creasse una nuova a ogni chiamata, il batch e i riferimenti
+// ai documenti userebbero istanze diverse e Firestore rifiuterebbe l'operazione ("different Firestore instance").
+const connections = new WeakMap<RulesTestEnvironment, Map<string, Firestore>>()
+export function userDb(env: RulesTestEnvironment, uid: string): Firestore {
+  let perUser = connections.get(env)
+  if (!perUser) { perUser = new Map(); connections.set(env, perUser) }
+  let db = perUser.get(uid)
+  if (!db) { db = env.authenticatedContext(uid).firestore() as unknown as Firestore; perUser.set(uid, db) }
+  return db
+}

@@ -1,13 +1,13 @@
 import { assertFails, assertSucceeds, type RulesTestEnvironment } from '@firebase/rules-unit-testing'
 import { collection, doc, getDoc, updateDoc, writeBatch, deleteDoc, serverTimestamp } from 'firebase/firestore'
-import { ANNA, BRUNO, ORG, createEnv, eventData, place, seedEvent, seedParticipation } from './env'
+import { ANNA, BRUNO, ORG, createEnv, eventData, place, seedEvent, seedParticipation, userDb } from './env'
 
 let env: RulesTestEnvironment
 beforeAll(async () => { env = await createEnv() })
 afterAll(async () => { await env.cleanup() })
 beforeEach(async () => { await env.clearFirestore() })
 
-const as = (uid: string) => env.authenticatedContext(uid).firestore()
+const as = (uid: string) => userDb(env, uid)
 
 // Come fa FirestoreEventRepository.create: evento + luogo esatto nello stesso batch.
 async function createLikeApp(uid: string, over: Record<string, unknown> = {}) {

@@ -74,7 +74,7 @@ service cloud.firestore {
         && eventNow(eventId).stato == 'aperto'
         && get(first).data.stato == 'inAttesa'
         && getAfter(first).data.stato == (eventNow(eventId).richiedeApprovazione ? 'richiesta' : 'confermato')
-        && queueAfter(eventId) == queueNow(eventId)[1:];
+        && queueAfter(eventId) == (queueNow(eventId).size() == 1 ? [] : queueNow(eventId)[1:]);
     }
 
     function isOrganizer(eventId) {

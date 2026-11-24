@@ -1,13 +1,13 @@
 import { assertFails, assertSucceeds, type RulesTestEnvironment } from '@firebase/rules-unit-testing'
 import { Timestamp, deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore'
-import { ANNA, BRUNO, createEnv, profile } from './env'
+import { ANNA, BRUNO, createEnv, profile, userDb } from './env'
 
 let env: RulesTestEnvironment
 beforeAll(async () => { env = await createEnv() })
 afterAll(async () => { await env.cleanup() })
 beforeEach(async () => { await env.clearFirestore() })
 
-const as = (uid: string) => env.authenticatedContext(uid).firestore()
+const as = (uid: string) => userDb(env, uid)
 
 describe('regole: profili', () => {
   it('ognuno scrive il proprio profilo', async () => {
@@ -49,7 +49,8 @@ describe('regole: profili', () => {
     void _unused
     await assertFails(setDoc(doc(as(ANNA), 'users', ANNA), senza))
     await env.withSecurityRulesDisabled(async (ctx) => { await setDoc(doc(ctx.firestore(), 'users', BRUNO), senza) })
-    await assertSucceeds(setDoc(doc(as(BRUNO), 'users', BRUNO), profile()))
+    // Stesso creatoIl del profilo vecchio: le regole non permettono di cambiarlo.
+    await assertSucceeds(setDoc(doc(as(BRUNO), 'users', BRUNO), profile({ creatoIl: senza.creatoIl })))
   })
 
   it('un utente collegato legge i profili', async () => {

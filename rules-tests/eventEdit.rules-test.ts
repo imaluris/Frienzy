@@ -1,13 +1,13 @@
 import { assertFails, assertSucceeds, type RulesTestEnvironment } from '@firebase/rules-unit-testing'
 import { doc, serverTimestamp, setDoc, Timestamp, updateDoc } from 'firebase/firestore'
-import { ANNA, ORG, createEnv, seedEvent } from './env'
+import { ANNA, ORG, createEnv, seedEvent, userDb } from './env'
 
 let env: RulesTestEnvironment
 beforeAll(async () => { env = await createEnv() })
 afterAll(async () => { await env.cleanup() })
 beforeEach(async () => { await env.clearFirestore() })
 
-const as = (uid: string) => env.authenticatedContext(uid).firestore()
+const as = (uid: string) => userDb(env, uid)
 const ev = (uid: string) => doc(as(uid), 'events', 'e1')
 const future = Timestamp.fromDate(new Date('2031-06-01T18:00:00Z'))
 
